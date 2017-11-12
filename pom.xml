@@ -30,5 +30,10 @@
   		<artifactId>owlapi-api</artifactId>
   		<version>3.4.3</version>
   	</dependency>
+  	<dependency>
+  		<groupId>net.sourceforge.owlapi</groupId>
+  		<artifactId>owlexplanation</artifactId>
+  		<version>1.1.0</version>
+  	</dependency>
   </dependencies>
 </project>
