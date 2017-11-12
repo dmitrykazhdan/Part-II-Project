@@ -2,7 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/owlapi.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/slf4j-nop-1.7.25.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/owlapi-api-3.4.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/HermiT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
