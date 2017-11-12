@@ -20,10 +20,11 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
 
-
 public class ExtractEntailments {
 	
 	public static void main(String args[]) throws OWLOntologyCreationException  {
+		
+		/* Need to move reader of ontologies into a separate class */
 		
 		// Add FileNotFound Exception
 		File file = new File("/Users/AdminDK/Desktop/TestOntology/testOnt.owl");
