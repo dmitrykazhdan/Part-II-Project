@@ -39,7 +39,7 @@ public class ExtractEntailments {
 		
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		OWLClass everything = dataFactory.getOWLThing();
-		OWLClass NonVegetarianPizza = dataFactory.getOWLClass(IRI.create("http://www.pizza.com/ontologies/pizza.owl#NonVegetarianPizza"));
+		OWLClass NonVegetarianPizza = dataFactory.getOWLClass(IRI.create("urn:absolute:N/A#NonVegetarianPizza"));
 		
 		NodeSet<OWLClass> subClasses = reasoner.getSubClasses(NonVegetarianPizza, true);
 			
@@ -48,11 +48,15 @@ public class ExtractEntailments {
 		
 
         // Usage of the explanation API:
-//		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
-//		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
-//		OWLAxiom entailment = null;
-//		Set<Explanation<OWLAxiom>> expl = gen.getExplanations(entailment, 5);
-
+		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
+		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
+		
+		OWLClass AmericanHotPizza = dataFactory.getOWLClass(IRI.create("urn:absolute:N/A#AmericanHotPizza"));
+		
+		OWLAxiom testEntailment = dataFactory.getOWLSubClassOfAxiom(AmericanHotPizza, NonVegetarianPizza);
+		Set<Explanation<OWLAxiom>> expl = gen.getExplanations(testEntailment, 5);
+				
+		System.out.println(expl.toString());
 		
 	}
 }

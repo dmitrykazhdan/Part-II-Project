@@ -31,9 +31,14 @@
   		<version>3.4.3</version>
   	</dependency>
   	<dependency>
-  		<groupId>net.sourceforge.owlapi</groupId>
+  		<groupId>net.sourceforge.owlapitools</groupId>
   		<artifactId>owlexplanation</artifactId>
-  		<version>1.1.0</version>
+  		<version>1.0.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>net.sourceforge.owlapi</groupId>
+  		<artifactId>telemetry</artifactId>
+  		<version>1.0.0</version>
   	</dependency>
   </dependencies>
 </project>
