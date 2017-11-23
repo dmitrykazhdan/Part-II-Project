@@ -40,35 +40,28 @@ public class ProcessOntology {
 	
 		
 	public void computeEntailmentsWithJustifications(OWLOntologyManager manager) {
-		
-		List<OWLClass> classesToExpand = new ArrayList<OWLClass>();
-		Set<OWLClass> expandedClasses = new HashSet<OWLClass>();
-		
+				
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
-		reasoner.precomputeInferences();
-		
+		// Can you simply get all subclass axioms?
+		// How to write to file conveniently?
+		// Can you write these to file directly without an intermediate representation
+		// Consider removing "entailmentsWithJustifications" and just writing to file
+
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
 		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
-		
-		OWLClass thingClass = dataFactory.getOWLThing();
-		
-		classesToExpand.add(thingClass);
-		
-		while (!classesToExpand.isEmpty()) {
+				
+		Set<OWLClass> allClasses = ontology.getClassesInSignature();
+				
+		for (OWLClass currentSuperclass : allClasses) {
 			
-			OWLClass currentSuperclass = classesToExpand.remove(0);
+			Set<OWLClass> subClasses = reasoner.getSubClasses(currentSuperclass, false).getFlattened();
 			
-			if (expandedClasses.contains(currentSuperclass)) {
-				continue;
-			}
-			
-			expandedClasses.add(currentSuperclass);
-			Set<OWLClass> subClasses = reasoner.getSubClasses(currentSuperclass, true).getFlattened();
-			
+			subClasses.addAll(reasoner.getEquivalentClasses(currentSuperclass).getEntities());
+						
 			for (OWLClass currentSubclass : subClasses) {
 								
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);
@@ -78,12 +71,8 @@ public class ProcessOntology {
 				
 				entailmentsWithJustifications.put(entailment, justification);
 				
-				classesToExpand.add(currentSubclass);
 			}		
-		}
-		
-
-		
+		}	
 	}
 	
 	public Map<OWLAxiom, Set<Explanation<OWLAxiom>>> getEntailmentsWithJustifications() {		
