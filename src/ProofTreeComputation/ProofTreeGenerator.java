@@ -15,6 +15,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProofTreeGenerator {
 
+	/* Perhaps allow both methods for a Set<OWLAxiom> and an Explanation<OWLAxiom> ? */
 	
 	
 	/*
@@ -42,17 +43,22 @@ public class ProofTreeGenerator {
 	from which axiom in the original justification this axiom follows.
 	If the two axioms are identical, no lemma will be added.
 	
-	
+	Otherwise, the axiom in the laconic justification will be used as a lemma, 
+	and a non-terminal node containing this lemma will be added between the root node 
+	and the associated terminal node.
 	
 	 */
+
 	private List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
 		
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		ExplanationGeneratorFactory<OWLAxiom> generatorFactory = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
-		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = new LaconicExplanationGeneratorFactory<OWLAxiom>(generatorFactory);
-			
-		ExplanationGenerator<OWLAxiom> explanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);
+		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = new LaconicExplanationGeneratorFactory<OWLAxiom>(generatorFactory);			
+		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);
 		
+		// Compute all sets of laconic justifications from the set of 		 
+		// (potentially non-laconic) justifications given. 
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
 		
 		
 		return null;		
@@ -103,6 +109,12 @@ public class ProofTreeGenerator {
 		/* Algorithm implementation goes here: */
 		
 		return null;
+	}
+	
+	
+	public static ProofTree GenerateProofTree(OWLAxiom entailment, Explanation<OWLAxiom> justification) {
+		
+		return GenerateProofTree(entailment, justification.getAxioms());
 	}
 	
 }
