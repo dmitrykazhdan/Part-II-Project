@@ -1,5 +1,9 @@
 package EntailmentJustificationExtractor;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,59 +28,80 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProcessOntology {
-	
-	
-	private Map<OWLAxiom, Set<Explanation<OWLAxiom>>> entailmentsWithJustifications = new HashMap<OWLAxiom, Set<Explanation<OWLAxiom>>>();
-	private OWLOntology ontology;
-	
-	public ProcessOntology(String ontologyFilename) throws OWLOntologyCreationException {
+
+	public static void GenerateExplanations(String ontologyFilename) throws OWLOntologyCreationException, IOException {
 		
-		File file = new File(ontologyFilename);
+		// Load the ontology from the specified file.
+		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		ontology = manager.loadOntologyFromOntologyDocument(file);	
-		
-		computeEntailmentsWithJustifications(manager);
-	}
-	
-		
-	public void computeEntailmentsWithJustifications(OWLOntologyManager manager) {
-				
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
+			
+		// Create a reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
-		// Can you simply get all subclass axioms?
-		// How to write to file conveniently?
-		// Can you write these to file directly without an intermediate representation
-		// Consider removing "entailmentsWithJustifications" and just writing to file
-
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
+		// Create an explanation generator from the reasoner and the ontology.
 		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
 				
+		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
-				
+		
+		File outputFile = new File("/Users/AdminDK/Desktop/test.txt");
+		OutputStream fileOutputStream = null;
+		
+		// If the output file does not exist, create it.
+		if (!outputFile.exists()) {
+			outputFile.createNewFile();
+		}
+		
+		
+		try {
+			
+			fileOutputStream = new FileOutputStream(outputFile);
+			
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
+				 
 		for (OWLClass currentSuperclass : allClasses) {
-			
-			Set<OWLClass> subClasses = reasoner.getSubClasses(currentSuperclass, false).getFlattened();
-			
-			subClasses.addAll(reasoner.getEquivalentClasses(currentSuperclass).getEntities());
-						
+
+			Set<OWLClass>  subClasses = GetAllSubclasses(reasoner, currentSuperclass);
+		
 			for (OWLClass currentSubclass : subClasses) {
 								
-				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);
-				
-				// Note size of entailments setting
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 2);
-				
-				entailmentsWithJustifications.put(entailment, justification);
-				
+				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
+				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, Integer.MAX_VALUE);				
+				StoreExplanations(justification, fileOutputStream);
+			
 			}		
 		}	
+		
+		fileOutputStream.close();
 	}
 	
-	public Map<OWLAxiom, Set<Explanation<OWLAxiom>>> getEntailmentsWithJustifications() {		
-		return entailmentsWithJustifications;
+	
+	private static Set<OWLClass> GetAllSubclasses(OWLReasoner reasoner, OWLClass superclass) {
+		
+		// For every class in the ontology, compute all of its subclasses.
+		Set<OWLClass> subClasses = reasoner.getSubClasses(superclass, false).getFlattened();
+		
+		// Note that "getSubClasses" returns strict subclasses.
+		// Hence need to manually add equivalent classes as well.
+		subClasses.addAll(reasoner.getEquivalentClasses(superclass).getEntities());
+		
+		return subClasses;
 	}
-
+	
+	
+	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, OutputStream out) throws IOException {
+		
+		// Write all explanations in the given set to the output stream.
+		for (Explanation<OWLAxiom> explanation : explanationSet) {
+			Explanation.store(explanation, out);
+		}	
+	}
 }
