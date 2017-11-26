@@ -1,6 +1,10 @@
 package ProofTreeComputation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.HermiT.Reasoner;
@@ -10,13 +14,16 @@ import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
 import org.semanticweb.owl.explanation.api.ExplanationManager;
 import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGenerator;
 import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGeneratorFactory;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProofTreeGenerator {
 
-	/* Perhaps allow both methods for a Set<OWLAxiom> and an Explanation<OWLAxiom> ? */
-	
 	
 	/*
 	For our purpose, an initial tree is as an incomplete proof tree in which the root node
@@ -49,19 +56,83 @@ public class ProofTreeGenerator {
 	
 	 */
 
-	private List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
+	private List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		ExplanationGeneratorFactory<OWLAxiom> generatorFactory = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = new LaconicExplanationGeneratorFactory<OWLAxiom>(generatorFactory);			
-		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);
+		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
+						
 		// Compute all sets of laconic justifications from the set of 		 
 		// (potentially non-laconic) justifications given. 
 		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
 		
+		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
+				
+		Map<OWLAxiom, OWLOntology> justificationAxiomToOnt = new HashMap<OWLAxiom, OWLOntology>();
 		
-		return null;		
+		for (OWLAxiom axiom : justification) {
+			
+			Set<OWLAxiom> ontAxiomSet = new HashSet<OWLAxiom>();
+			ontAxiomSet.add(axiom);
+			
+			justificationAxiomToOnt.put(axiom, manager.createOntology(ontAxiomSet));
+		}
+		
+		
+		for (Explanation<OWLAxiom> laconicJustification : laconicJustifications) {
+			
+			List<ProofTree> subTrees = new ArrayList<ProofTree>();
+			
+			for (OWLAxiom axiom : justification) {			
+				subTrees.add(new ProofTree(axiom, null));
+			}
+			
+					
+			for (OWLAxiom laconicAxiom : laconicJustification.getAxioms()) {	
+				
+				if (!justification.contains(laconicAxiom)) {
+					
+					if (ExceptionAxiom(laconicAxiom)) {
+						continue;
+					}
+					
+					for (OWLAxiom justificationAxiom : justificationAxiomToOnt.keySet()) {
+												
+						OWLReasoner reasoner = reasonerFactory.createReasoner(justificationAxiomToOnt.get(justificationAxiom)); 
+						
+						if (reasoner.isEntailed(laconicAxiom)) {
+							
+							ProofTree leaf = new ProofTree(justificationAxiom, null);
+							List<ProofTree> leaves = new ArrayList<ProofTree>();
+							leaves.add(leaf);
+														
+							ProofTree lemma = new ProofTree(laconicAxiom, leaves);												
+							subTrees.set(subTrees.indexOf(leaf), lemma);
+							
+							break;
+						}						
+					}				
+				}
+			}
+			
+			ProofTree initialTree = new ProofTree(entailment, subTrees);
+			initialTrees.add(initialTree);
+		}
+		
+		
+		
+		return initialTrees;		
+	}
+	
+	
+	
+	public boolean ExceptionAxiom(OWLAxiom axiom) {
+		
+		
+		return false;
 	}
 	
 	
@@ -84,9 +155,16 @@ public class ProofTreeGenerator {
 		// proof trees are constructed
 		
 		// Think of better variable names
-		List<ProofTree> initialProofTreeList = ComputeInitialProofTrees(justification, entailment);
-		List<ProofTree> completeProofTreeList = null;
-		List<ProofTree> completeProofTrees = null;
+		List<ProofTree> initialProofTreeList = null;
+		try {
+			initialProofTreeList = ComputeInitialProofTrees(justification, entailment);
+		} catch (OWLOntologyCreationException e) {
+
+			e.printStackTrace();
+		}
+		
+		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
+		List<ProofTree> completeProofTrees = new ArrayList<ProofTree>();
 		
 		
 		for (ProofTree initialTree : initialProofTreeList) {
