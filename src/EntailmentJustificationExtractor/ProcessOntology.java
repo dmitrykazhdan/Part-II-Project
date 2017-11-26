@@ -63,7 +63,7 @@ public class ProcessOntology {
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
 				
 				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 10);
+				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
 				
 				// Write these explanations to the output file.
 				StoreExplanations(justification, outputDir);
@@ -91,19 +91,14 @@ public class ProcessOntology {
 		// Write all explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
 			
+			// Generate unique identifier when naming the file
 			String uuid = UUID.randomUUID().toString();			
 			File outputFile = new File(outputDir + uuid);
 			OutputStream fileOutputStream = new FileOutputStream(outputFile);
-						
+			
+			// Store the explanation in the file
 			Explanation.store(explanation, fileOutputStream);
 			fileOutputStream.close();
-			
-			InputStream fileInputStream = new FileInputStream(outputFile);
-			Explanation<OWLAxiom> ex = Explanation.load(fileInputStream);
-			System.out.println(ex.toString());
-		}	
-		
-		
-		
+		}		
 	}
 }
