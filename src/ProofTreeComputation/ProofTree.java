@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 
+
 public class ProofTree {
 	
 	

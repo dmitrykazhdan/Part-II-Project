@@ -58,32 +58,39 @@ public class ProofTreeGenerator {
 
 	private List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
+		// Create a laconic explanation generator.
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		ExplanationGeneratorFactory<OWLAxiom> generatorFactory = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = new LaconicExplanationGeneratorFactory<OWLAxiom>(generatorFactory);			
 		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);		
+
+		// Compute all sets of laconic justifications from 		 		 
+		// the set of (potentially non-laconic) justifications given.
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
+				
+		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
+					
+		// In order to check whether one axiom is entailed by another,
+		// we must convert the axiom into an ontology first.
+		// Thus we create a map from a justification axiom to an ontology created from this axiom.
+		Map<OWLAxiom, OWLOntology> justificationAxiomToOnt = new HashMap<OWLAxiom, OWLOntology>();
+
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
-						
-		// Compute all sets of laconic justifications from the set of 		 
-		// (potentially non-laconic) justifications given. 
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
-		
-		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
-				
-		Map<OWLAxiom, OWLOntology> justificationAxiomToOnt = new HashMap<OWLAxiom, OWLOntology>();
-		
+		// Populate the map using all of the justification axioms.
 		for (OWLAxiom axiom : justification) {
 			
 			Set<OWLAxiom> ontAxiomSet = new HashSet<OWLAxiom>();
-			ontAxiomSet.add(axiom);
-			
+			ontAxiomSet.add(axiom);		
 			justificationAxiomToOnt.put(axiom, manager.createOntology(ontAxiomSet));
 		}
 		
 		
 		for (Explanation<OWLAxiom> laconicJustification : laconicJustifications) {
 			
+			// Create a list of proof trees, consisting of the initial justification axioms
+			// which will be the terminal nodes of the initial tree
+			// for this laconic justification.
 			List<ProofTree> subTrees = new ArrayList<ProofTree>();
 			
 			for (OWLAxiom axiom : justification) {			
@@ -93,16 +100,24 @@ public class ProofTreeGenerator {
 					
 			for (OWLAxiom laconicAxiom : laconicJustification.getAxioms()) {	
 				
+				// If the laconic axiom is contained in the justification axioms,
+				// it means that it is equivalent to one of these axioms and thus
+				// will not be a lemma.
 				if (!justification.contains(laconicAxiom)) {
 					
+					// Check whether this axiom is an exception that has to be ignored.
 					if (ExceptionAxiom(laconicAxiom)) {
 						continue;
 					}
 					
+					// Question: how do we know that a laconic justification
+					// follows from at most 1 axiom in the original justification?
+					// See the API documentation.
+					// Also, can multiple laconic axioms follow from a single non-laconic axiom?
 					for (OWLAxiom justificationAxiom : justificationAxiomToOnt.keySet()) {
 												
 						OWLReasoner reasoner = reasonerFactory.createReasoner(justificationAxiomToOnt.get(justificationAxiom)); 
-						
+												
 						if (reasoner.isEntailed(laconicAxiom)) {
 							
 							ProofTree leaf = new ProofTree(justificationAxiom, null);
@@ -118,7 +133,11 @@ public class ProofTreeGenerator {
 				}
 			}
 			
+			// Create this initial tree with the entailment as the root
+			// and the lemmas/axioms as the subtrees and leaves.
 			ProofTree initialTree = new ProofTree(entailment, subTrees);
+			
+			// Add this initial tree to the list of all initial trees.
 			initialTrees.add(initialTree);
 		}
 		
