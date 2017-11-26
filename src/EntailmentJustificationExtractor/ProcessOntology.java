@@ -1,8 +1,10 @@
 package EntailmentJustificationExtractor;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owl.explanation.api.Explanation;
@@ -29,7 +32,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProcessOntology {
 
-	public static void GenerateExplanations(String ontologyFilename, String outputFileName) throws OWLOntologyCreationException, IOException {
+	public static void GenerateExplanations(String ontologyFilename, String outputDir) throws OWLOntologyCreationException, IOException {
 		
 		// Load the ontology from the specified file.
 		File ontologyFile = new File(ontologyFilename);
@@ -48,27 +51,7 @@ public class ProcessOntology {
 				
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
-		
-		// Setup the output file and its output stream.
-		File outputFile = new File(outputFileName);
-		OutputStream fileOutputStream = null;
-		
-		// If the output file exists, delete it.
-		if (outputFile.exists()) {
-			outputFile.delete();
-		}
-		
-		// Create the new file.
-		outputFile.createNewFile();
-		
-		
-		try {		
-			fileOutputStream = new FileOutputStream(outputFile);			
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		
-		
+			
 		for (OWLClass currentSuperclass : allClasses) {
 
 			// For every class, compute all of its non-strict subclasses.
@@ -80,15 +63,13 @@ public class ProcessOntology {
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
 				
 				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 5);
+				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 10);
 				
 				// Write these explanations to the output file.
-				StoreExplanations(justification, fileOutputStream);
+				StoreExplanations(justification, outputDir);
 			
 			}		
 		}	
-		
-		fileOutputStream.close();
 	}
 	
 	
@@ -105,11 +86,24 @@ public class ProcessOntology {
 	}
 	
 	
-	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, OutputStream out) throws IOException {
+	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir) throws IOException {
 		
 		// Write all explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
-			Explanation.store(explanation, out);
+			
+			String uuid = UUID.randomUUID().toString();			
+			File outputFile = new File(outputDir + uuid);
+			OutputStream fileOutputStream = new FileOutputStream(outputFile);
+						
+			Explanation.store(explanation, fileOutputStream);
+			fileOutputStream.close();
+			
+			InputStream fileInputStream = new FileInputStream(outputFile);
+			Explanation<OWLAxiom> ex = Explanation.load(fileInputStream);
+			System.out.println(ex.toString());
 		}	
+		
+		
+		
 	}
 }
