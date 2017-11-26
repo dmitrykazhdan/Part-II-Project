@@ -29,14 +29,14 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProcessOntology {
 
-	public static void GenerateExplanations(String ontologyFilename) throws OWLOntologyCreationException, IOException {
+	public static void GenerateExplanations(String ontologyFilename, String outputFileName) throws OWLOntologyCreationException, IOException {
 		
 		// Load the ontology from the specified file.
 		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 			
-		// Create a reasoner for the ontology.
+		// Create the HermiT reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		
@@ -49,32 +49,40 @@ public class ProcessOntology {
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
 		
-		File outputFile = new File("/Users/AdminDK/Desktop/test.txt");
+		// Setup the output file and its output stream.
+		File outputFile = new File(outputFileName);
 		OutputStream fileOutputStream = null;
 		
-		// If the output file does not exist, create it.
-		if (!outputFile.exists()) {
-			outputFile.createNewFile();
+		// If the output file exists, delete it.
+		if (outputFile.exists()) {
+			outputFile.delete();
 		}
 		
+		// Create the new file.
+		outputFile.createNewFile();
 		
-		try {
-			
-			fileOutputStream = new FileOutputStream(outputFile);
-			
+		
+		try {		
+			fileOutputStream = new FileOutputStream(outputFile);			
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
 		
-				 
+		
 		for (OWLClass currentSuperclass : allClasses) {
 
-			Set<OWLClass>  subClasses = GetAllSubclasses(reasoner, currentSuperclass);
+			// For every class, compute all of its non-strict subclasses.
+			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, currentSuperclass);
 		
 			for (OWLClass currentSubclass : subClasses) {
-								
+				
+				// Generate a subsumption entailment from the (subclass, superclass) pair.
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, Integer.MAX_VALUE);				
+				
+				// For every such subsumption entailment, compute all of its justifications.
+				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 5);
+				
+				// Write these explanations to the output file.
 				StoreExplanations(justification, fileOutputStream);
 			
 			}		
@@ -84,9 +92,9 @@ public class ProcessOntology {
 	}
 	
 	
-	private static Set<OWLClass> GetAllSubclasses(OWLReasoner reasoner, OWLClass superclass) {
+	private static Set<OWLClass> GetNonStrictSubclasses(OWLReasoner reasoner, OWLClass superclass) {
 		
-		// For every class in the ontology, compute all of its subclasses.
+		// For every class in the ontology, compute all of its subclasses (direct and indirect).
 		Set<OWLClass> subClasses = reasoner.getSubClasses(superclass, false).getFlattened();
 		
 		// Note that "getSubClasses" returns strict subclasses.

@@ -149,8 +149,7 @@ public class ProofTreeGenerator {
 	
 	
 	public boolean ExceptionAxiom(OWLAxiom axiom) {
-		
-		
+				
 		return false;
 	}
 	
@@ -159,11 +158,9 @@ public class ProofTreeGenerator {
 		return null;
 	}
 	
-
+	
 	private List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
-		
-		
-		
+			
 		// the construction of the proof trees is through 
 		// exhaustive search of possible applications of the deduction rules
 		
@@ -209,9 +206,9 @@ public class ProofTreeGenerator {
 	}
 	
 	
-	public static ProofTree GenerateProofTree(OWLAxiom entailment, Explanation<OWLAxiom> justification) {
+	public static ProofTree GenerateProofTree(Explanation<OWLAxiom> explanation) {
 		
-		return GenerateProofTree(entailment, justification.getAxioms());
+		return GenerateProofTree(explanation.getEntailment(), explanation.getAxioms());
 	}
 	
 }

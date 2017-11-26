@@ -21,6 +21,7 @@ public class ProcessAllOntologies {
 	public static void main(String args[])   {
 		
 		File ontologyDir = new File("/Users/AdminDK/Desktop/TestOntology");
+		String outputFileName = "/Users/AdminDK/Desktop/test.txt";
 		
 		// Extract all files with ".owl" extension from the specified directory.
 		File[] ontologies = ontologyDir.listFiles(new FilenameFilter() {
@@ -37,7 +38,7 @@ public class ProcessAllOntologies {
 			String ontName = ontologies[i].getAbsolutePath();
 			
 			try {											
-				ProcessOntology.GenerateExplanations(ontName);
+				ProcessOntology.GenerateExplanations(ontName, outputFileName);
 					
 			} catch (OWLOntologyCreationException e) {				
 				System.out.println("Could not process ontology: " + ontName);
