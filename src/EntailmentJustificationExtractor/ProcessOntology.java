@@ -100,7 +100,7 @@ public class ProcessOntology {
 			
 			// Generate unique identifier when naming the file
 			String uuid = UUID.randomUUID().toString();			
-			File outputFile = new File(outputDir + uuid);
+			File outputFile = new File(outputDir + uuid + ".xml");
 			OutputStream fileOutputStream = new FileOutputStream(outputFile);
 			
 			// Store the explanation in the file
