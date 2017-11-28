@@ -1,8 +1,10 @@
 package EntailmentJustificationExtractor;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
@@ -21,6 +26,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.NodeSet;
@@ -29,16 +35,19 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 public class ProcessOntology {
 
-	public static void GenerateExplanations(String ontologyFilename, String outputFileName) throws OWLOntologyCreationException, IOException {
+	public static void GenerateExplanations(String ontologyFilename, String outputDir) throws OWLOntologyCreationException, IOException {
 		
 		// Load the ontology from the specified file.
 		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 			
+		OWLReasoner r = new Reasoner(new Configuration(), ontology);
+		
 		// Create the HermiT reasoner for the ontology.
-		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		reasoner.precomputeInferences();
 		
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
@@ -48,26 +57,7 @@ public class ProcessOntology {
 				
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
-		
-		// Setup the output file and its output stream.
-		File outputFile = new File(outputFileName);
-		OutputStream fileOutputStream = null;
-		
-		// If the output file exists, delete it.
-		if (outputFile.exists()) {
-			outputFile.delete();
-		}
-		
-		// Create the new file.
-		outputFile.createNewFile();
-		
-		
-		try {		
-			fileOutputStream = new FileOutputStream(outputFile);			
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		
+			
 		
 		for (OWLClass currentSuperclass : allClasses) {
 
@@ -80,15 +70,13 @@ public class ProcessOntology {
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
 				
 				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 5);
-				
+				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
+
 				// Write these explanations to the output file.
-				StoreExplanations(justification, fileOutputStream);
+				StoreExplanations(justification, outputDir);
 			
 			}		
 		}	
-		
-		fileOutputStream.close();
 	}
 	
 	
@@ -105,11 +93,19 @@ public class ProcessOntology {
 	}
 	
 	
-	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, OutputStream out) throws IOException {
+	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir) throws IOException {
 		
 		// Write all explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
-			Explanation.store(explanation, out);
-		}	
+			
+			// Generate unique identifier when naming the file
+			String uuid = UUID.randomUUID().toString();			
+			File outputFile = new File(outputDir + uuid + ".xml");
+			OutputStream fileOutputStream = new FileOutputStream(outputFile);
+			
+			// Store the explanation in the file
+			Explanation.store(explanation, fileOutputStream);
+			fileOutputStream.close();
+		}		
 	}
 }
