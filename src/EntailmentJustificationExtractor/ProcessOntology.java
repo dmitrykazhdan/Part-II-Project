@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
@@ -44,7 +45,7 @@ public class ProcessOntology {
 		OWLReasoner r = new Reasoner(new Configuration(), ontology);
 		
 		// Create the HermiT reasoner for the ontology.
-		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		reasoner.precomputeInferences();
 		
@@ -70,28 +71,7 @@ public class ProcessOntology {
 				
 				// For every such subsumption entailment, compute all of its justifications.
 				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
-				
-//				for (Explanation<OWLAxiom> expl : justification) {
-//					
-//					Set<OWLAxiom> axSet = expl.getAxioms();
-//					
-//					for (OWLAxiom ax: axSet) {
-//						
-//						Set<OWLClass> classes = ax.getClassesInSignature();
-//						
-//						for (OWLClass cl : classes) {
-//							
-//							String st = cl.toString();
-//							System.out.println("hey");
-//							
-//						}
-//						
-//						
-//						
-//					}					
-//					
-//				}
-//				
+
 				// Write these explanations to the output file.
 				StoreExplanations(justification, outputDir);
 			
