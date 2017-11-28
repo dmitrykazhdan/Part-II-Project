@@ -2,10 +2,62 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/slf4j-nop-1.7.25.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/owlapi-api-3.4.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/HermiT.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/owlexplanation-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/telemetry-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-assistedinject-4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-multibindings-4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jsr305-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlapi-api-4.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlexplanation-2.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/slf4j-api-1.7.10.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/telemetry-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/trove4j-3.0.3.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/xz-1.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlapi-apibinding-4.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlapi-impl-4.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlapi-distribution-4.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/slf4j-nop-1.7.25.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guava-20.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-4.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-assistedinject-4.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/guice-multibindings-4.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/httpclient-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/httpclient-cache-4.2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/httpcore-4.2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jackson-annotations-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jackson-core-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jackson-databind-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jcl-over-slf4j-1.7.22.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jsonld-java-0.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jsonld-java-sesame-0.5.1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/jsr305-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlapi-distribution-4.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/semargl-core-0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/semargl-rdf-0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/semargl-rdfa-0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/semargl-sesame-0.7.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-model-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-api-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-binary-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-datatypes-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-languages-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-n3-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-nquads-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-ntriples-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-rdfjson-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-rdfxml-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-trig-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-trix-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-rio-turtle-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/sesame-util-2.7.16.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/slf4j-api-1.7.22.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/xz-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/org.semanticweb.hermit-1.3.8.431.jar"/>
+	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/automaton-1.11-8.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

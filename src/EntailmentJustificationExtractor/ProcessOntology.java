@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
@@ -24,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.NodeSet;
@@ -39,9 +41,12 @@ public class ProcessOntology {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 			
+		OWLReasoner r = new Reasoner(new Configuration(), ontology);
+		
 		// Create the HermiT reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		reasoner.precomputeInferences();
 		
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
 		
@@ -52,6 +57,7 @@ public class ProcessOntology {
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
 			
+		
 		for (OWLClass currentSuperclass : allClasses) {
 
 			// For every class, compute all of its non-strict subclasses.
@@ -65,6 +71,27 @@ public class ProcessOntology {
 				// For every such subsumption entailment, compute all of its justifications.
 				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
 				
+//				for (Explanation<OWLAxiom> expl : justification) {
+//					
+//					Set<OWLAxiom> axSet = expl.getAxioms();
+//					
+//					for (OWLAxiom ax: axSet) {
+//						
+//						Set<OWLClass> classes = ax.getClassesInSignature();
+//						
+//						for (OWLClass cl : classes) {
+//							
+//							String st = cl.toString();
+//							System.out.println("hey");
+//							
+//						}
+//						
+//						
+//						
+//					}					
+//					
+//				}
+//				
 				// Write these explanations to the output file.
 				StoreExplanations(justification, outputDir);
 			
