@@ -42,8 +42,6 @@ public class ProcessOntology {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 			
-		OWLReasoner r = new Reasoner(new Configuration(), ontology);
-		
 		// Create the HermiT reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);

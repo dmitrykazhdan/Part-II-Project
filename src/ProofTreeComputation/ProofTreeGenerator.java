@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
@@ -56,17 +57,16 @@ public class ProofTreeGenerator {
 	
 	 */
 
-	private List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
+	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
 		// Create a laconic explanation generator.
-		OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
-		ExplanationGeneratorFactory<OWLAxiom> generatorFactory = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
-		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = new LaconicExplanationGeneratorFactory<OWLAxiom>(generatorFactory);			
+		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
+		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);		
-
+		
 		// Compute all sets of laconic justifications from 		 		 
 		// the set of (potentially non-laconic) justifications given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
 				
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
 					
@@ -148,18 +148,18 @@ public class ProofTreeGenerator {
 	
 	
 	
-	public boolean ExceptionAxiom(OWLAxiom axiom) {
+	public static boolean ExceptionAxiom(OWLAxiom axiom) {
 				
 		return false;
 	}
 	
 	
-	private List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
+	private static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
 		return null;
 	}
 	
 	
-	private List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
+	private static List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
 			
 		// the construction of the proof trees is through 
 		// exhaustive search of possible applications of the deduction rules
@@ -201,6 +201,7 @@ public class ProofTreeGenerator {
 	public static ProofTree GenerateProofTree(OWLAxiom entailment, Set<OWLAxiom> justification) {
 		
 		/* Algorithm implementation goes here: */
+		List<ProofTree> proofTreeList = ComputeProofTrees(justification, entailment);
 		
 		return null;
 	}
