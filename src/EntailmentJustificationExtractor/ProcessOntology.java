@@ -72,6 +72,11 @@ public class ProcessOntology {
 				// For every such subsumption entailment, compute all of its justifications.
 				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
 
+				
+				// timeout when you are unable to generate a justification
+				// check whether the justification is trivial or not before storing it
+				
+				
 				// Write these explanations to the output file.
 				StoreExplanations(justification, outputDir);
 			
