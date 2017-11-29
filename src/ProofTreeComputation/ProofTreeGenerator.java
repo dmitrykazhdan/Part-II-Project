@@ -66,7 +66,8 @@ public class ProofTreeGenerator {
 		
 		// Compute all sets of laconic justifications from 		 		 
 		// the set of (potentially non-laconic) justifications given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
+		/* timeout if computation is taking too long */
 				
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
 					
