@@ -216,47 +216,6 @@ public class ProofTreeGenerator {
 	
 	
 	
-	public static String findSinglePremiseRule(OWLAxiom entailment, OWLAxiom axiom) {
-		
-		
-		// Rule 1: EquCls
-		if ((axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) && (entailment.isOfType(AxiomType.SUBCLASS_OF))) {			
-			if (axiom.getClassesInSignature().containsAll(entailment.getClassesInSignature())) {				
-				return "EquCls";
-			}			
-		}
-		
-		
-		// Rule 6: ObjExt
-		if ((axiom.isOfType(AxiomType.SUBCLASS_OF)) && (entailment.isOfType(AxiomType.SUBCLASS_OF))) {			
-			
-			OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) axiom).getSuperClass();
-			OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) axiom).getSubClass();
-			OWLClassExpression entSuperCls = ((OWLSubClassOfAxiom) entailment).getSuperClass();
-			OWLClassExpression entSubCls = ((OWLSubClassOfAxiom) entailment).getSubClass();
-
-			
-			if ((axiomSubCls.equals(entSubCls)) &&			
-				(axiomSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) 
-					&& (entSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_MIN_CARDINALITY))) {
-					
-				int n1 = ((OWLObjectExactCardinality) axiomSuperCls).getCardinality();
-				int n2 = ((OWLObjectMinCardinality) entSuperCls).getCardinality();
-					
-				if ((n1 >= n2) && (n2 >= 0)) {
-						
-					return "ObjExt";
-										
-				}				
-			}			
-		}
-		
-		return null;
-	}
-	
-	
-	
-	
 	public static boolean ExceptionRule (OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
 		
 		
@@ -287,6 +246,96 @@ public class ProofTreeGenerator {
 	
 	
 	private static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
+		
+		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
+		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();
+		List<ProofTree> newIncompleteProofTreeList;
+
+		incompleteProofTreeList.add(initialTree);
+		
+		while (!incompleteProofTreeList.isEmpty()) {
+			
+			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
+				
+				OWLAxiom rootAxiom = incompleteProofTree.getAxiom();
+				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
+				newIncompleteProofTreeList = new ArrayList<ProofTree>();
+				
+				String rule = findRuleApplication(childAxioms, rootAxiom);
+				
+				if ((rule != null) && (!rule.isEmpty())) {					
+					completeProofTreeList.add(incompleteProofTree);
+				} else {
+					
+					
+					
+					
+					
+					
+					
+				}				
+			}			
+		}
+		
+		
+		return null;
+	}
+	
+	
+	
+	private static String findRuleApplication(List<OWLAxiom> premises, OWLAxiom conclusion) {
+		
+		if (premises.size() == 1) {
+			return findSinglePremiseRule(premises.get(0), conclusion);
+		} else {
+			return findMultiplePremiseRule(conclusion, premises);
+		}
+	}
+	
+	
+	
+	public static String findMultiplePremiseRule(OWLAxiom conclusion, List<OWLAxiom> premises) {
+		
+				
+		return null;
+	}
+	
+	
+	public static String findSinglePremiseRule(OWLAxiom conclusion, OWLAxiom premise) {
+		
+		
+		// Rule 1: EquCls
+		if ((premise.isOfType(AxiomType.EQUIVALENT_CLASSES)) && (conclusion.isOfType(AxiomType.SUBCLASS_OF))) {			
+			if (premise.getClassesInSignature().containsAll(conclusion.getClassesInSignature())) {				
+				return "EquCls";
+			}			
+		}
+		
+		
+		// Rule 6: ObjExt
+		if ((premise.isOfType(AxiomType.SUBCLASS_OF)) && (conclusion.isOfType(AxiomType.SUBCLASS_OF))) {			
+			
+			OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+			OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+			OWLClassExpression entSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+			OWLClassExpression entSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+
+			
+			if ((axiomSubCls.equals(entSubCls)) &&			
+				(axiomSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) 
+					&& (entSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_MIN_CARDINALITY))) {
+					
+				int n1 = ((OWLObjectExactCardinality) axiomSuperCls).getCardinality();
+				int n2 = ((OWLObjectMinCardinality) entSuperCls).getCardinality();
+					
+				if ((n1 >= n2) && (n2 >= 0)) {
+						
+					return "ObjExt";
+										
+				}				
+			}			
+		}
+		
 		return null;
 	}
 	
@@ -304,6 +353,7 @@ public class ProofTreeGenerator {
 		
 		// Think of better variable names
 		List<ProofTree> initialProofTreeList = null;
+		
 		try {
 			initialProofTreeList = ComputeInitialProofTrees(justification, entailment);
 		} catch (OWLOntologyCreationException e) {
