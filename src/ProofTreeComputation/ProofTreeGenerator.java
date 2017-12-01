@@ -36,7 +36,7 @@ public class ProofTreeGenerator {
 	node that contains unnecessary parts, a non-terminal node that links the root node to
 	the associated terminal node is added.
 	
-	Such a non-terminal node, if existing, and the associated terminal nodes 
+	Such a non-terminal node, if existing, and the associated terminal node 
 	form a local tree which corresponds to a single-premise deduction rule.
 	
 	Each non-terminal node is a lemma that unpacks part of the 
@@ -60,8 +60,23 @@ public class ProofTreeGenerator {
 	and the associated terminal node.
 	
 	 */
-
-	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
+	
+	private static Set<OWLAxiom> getLogicalAxioms (Set<OWLAxiom> axiomSet) {
+		
+		Set<OWLAxiom> logicalAxiomSet = new HashSet<OWLAxiom>();
+		
+		for (OWLAxiom axiom : axiomSet) {
+			
+			if (axiom.isLogicalAxiom()) {
+				logicalAxiomSet.add(axiom);
+			}
+		}
+		
+		return logicalAxiomSet;
+	}
+	
+	
+	private static Set<Explanation<OWLAxiom>> getLaconicJustifications (Set<OWLAxiom> justification, OWLAxiom entailment) {
 		
 		// Create a laconic explanation generator.
 		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
@@ -72,16 +87,28 @@ public class ProofTreeGenerator {
 		// the set of (potentially non-laconic) justifications given.
 		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
 		/* timeout if computation is taking too long */
-						
+		
+		return laconicJustifications;
+	}
+	
+
+	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
+		
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
-					
+				
+		Set<Explanation<OWLAxiom>> laconicJustifications = getLaconicJustifications(justification, entailment);
+				
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
+		
+		// Remove any non-logical axioms that have to be excluded from the proof trees.
+		justification = getLogicalAxioms(justification);
+			
 		// In order to check whether one axiom is entailed by another,
 		// we must convert the axiom into an ontology first.
 		// Thus we create a map from a justification axiom to an ontology created from this axiom.
 		Map<OWLAxiom, OWLOntology> justificationAxiomToOnt = new HashMap<OWLAxiom, OWLOntology>();
 
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		
 		// Populate the map using all of the justification axioms.
 		for (OWLAxiom axiom : justification) {
 			
@@ -90,7 +117,7 @@ public class ProofTreeGenerator {
 			justificationAxiomToOnt.put(axiom, manager.createOntology(ontAxiomSet));
 		}
 		
-		
+				
 		for (Explanation<OWLAxiom> laconicJustification : laconicJustifications) {
 			
 			// Create a list of proof trees, consisting of the initial justification axioms
@@ -101,24 +128,15 @@ public class ProofTreeGenerator {
 			for (OWLAxiom axiom : justification) {			
 				subTrees.add(new ProofTree(axiom, null, null));
 			}
+		
 			
-					
 			for (OWLAxiom laconicAxiom : laconicJustification.getAxioms()) {	
 				
 				// If the laconic axiom is contained in the justification axioms,
 				// it means that it is equivalent to one of these axioms and thus
 				// will not be a lemma.
 				if (!justification.contains(laconicAxiom)) {
-					
-					// Check whether this axiom is an exception that has to be ignored.
-					if (ExceptionAxiom(laconicAxiom)) {
-						continue;
-					}
-					
-					// Question: how do we know that a laconic justification
-					// follows from at most 1 axiom in the original justification?
-					// See the API documentation.
-					// Also, can multiple laconic axioms follow from a single non-laconic axiom?
+										
 					for (OWLAxiom justificationAxiom : justificationAxiomToOnt.keySet()) {
 												
 						OWLReasoner reasoner = reasonerFactory.createReasoner(justificationAxiomToOnt.get(justificationAxiom)); 
@@ -128,10 +146,9 @@ public class ProofTreeGenerator {
 							ProofTree leaf = new ProofTree(justificationAxiom, null, null);
 							List<ProofTree> leaves = new ArrayList<ProofTree>();
 							leaves.add(leaf);
+																				
+							ProofTree lemma = new ProofTree(laconicAxiom, leaves, null);		
 							
-							String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
-														
-							ProofTree lemma = new ProofTree(laconicAxiom, leaves, rule);												
 							subTrees.set(subTrees.indexOf(leaf), lemma);
 							
 							break;
@@ -140,18 +157,47 @@ public class ProofTreeGenerator {
 				}
 			}
 			
-			// Create this initial tree with the entailment as the root
-			// and the lemmas/axioms as the subtrees and leaves.
-			ProofTree initialTree = new ProofTree(entailment, subTrees, null);
+			boolean foundRulesForAllLemmas = true;
 			
-			// Add this initial tree to the list of all initial trees.
-			initialTrees.add(initialTree);
+			// We assume that these trees will either be single terminal nodes
+			// or lemmas, which are always trees with a root and one child
+			for (ProofTree tree : subTrees) {
+				
+				if (tree.getSubTrees() != null) {
+					
+					OWLAxiom laconicAxiom = tree.getAxiom();
+					OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
+					
+					// Check whether this axiom is an exception that has to be ignored.
+					if (!ExceptionRule(laconicAxiom, justificationAxiom)) {
+						
+						// Attempt to find matching rule.
+						String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
+						
+						if ((rule == null) || rule.isEmpty()) {
+							
+							foundRulesForAllLemmas = false;
+							break;
+						}
+					}						
+				}							
+			}
+		
+			if (foundRulesForAllLemmas) {
+				// Create this initial tree with the entailment as the root
+				// and the lemmas/axioms as the subtrees and leaves.
+				ProofTree initialTree = new ProofTree(entailment, subTrees, null);
+			
+				// Add this initial tree to the list of all initial trees.
+				initialTrees.add(initialTree);
+			}
 		}
 		
 		
 		
 		return initialTrees;		
 	}
+	
 	
 	
 	public static String findSinglePremiseRule(OWLAxiom entailment, OWLAxiom axiom) {
@@ -166,7 +212,7 @@ public class ProofTreeGenerator {
 	}
 	
 	
-	public static boolean ExceptionAxiom(OWLAxiom axiom) {
+	public static boolean ExceptionRule (OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
 				
 		return false;
 	}
