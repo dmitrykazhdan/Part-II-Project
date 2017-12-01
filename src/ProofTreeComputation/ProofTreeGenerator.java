@@ -18,9 +18,14 @@ import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGenerator;
 import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGeneratorFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -180,6 +185,7 @@ public class ProofTreeGenerator {
 					
 					OWLAxiom laconicAxiom = tree.getAxiom();
 					OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
+
 					
 					// Attempt to find matching rule.
 					String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
@@ -212,9 +218,36 @@ public class ProofTreeGenerator {
 	
 	public static String findSinglePremiseRule(OWLAxiom entailment, OWLAxiom axiom) {
 		
+		
+		// Rule 1: EquCls
 		if ((axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) && (entailment.isOfType(AxiomType.SUBCLASS_OF))) {			
 			if (axiom.getClassesInSignature().containsAll(entailment.getClassesInSignature())) {				
 				return "EquCls";
+			}			
+		}
+		
+		
+		// Rule 6: ObjExt
+		if ((axiom.isOfType(AxiomType.SUBCLASS_OF)) && (entailment.isOfType(AxiomType.SUBCLASS_OF))) {			
+			
+			OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) axiom).getSuperClass();
+			OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) axiom).getSubClass();
+			OWLClassExpression entSuperCls = ((OWLSubClassOfAxiom) entailment).getSuperClass();
+			OWLClassExpression entSubCls = ((OWLSubClassOfAxiom) entailment).getSubClass();
+
+			
+			if ((axiomSubCls.equals(entSubCls)) &&			
+				(axiomSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) 
+					&& (entSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_MIN_CARDINALITY))) {
+					
+				int n1 = ((OWLObjectExactCardinality) axiomSuperCls).getCardinality();
+				int n2 = ((OWLObjectMinCardinality) entSuperCls).getCardinality();
+					
+				if ((n1 >= n2) && (n2 >= 0)) {
+						
+					return "ObjExt";
+										
+				}				
 			}			
 		}
 		
