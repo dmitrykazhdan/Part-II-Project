@@ -20,10 +20,13 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
@@ -92,6 +95,7 @@ public class ProofTreeGenerator {
 	}
 	
 
+	
 	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
@@ -125,11 +129,6 @@ public class ProofTreeGenerator {
 			// for this laconic justification.
 			List<ProofTree> subTrees = new ArrayList<ProofTree>();
 			
-			for (OWLAxiom axiom : justification) {			
-				subTrees.add(new ProofTree(axiom, null, null));
-			}
-		
-			
 			for (OWLAxiom laconicAxiom : laconicJustification.getAxioms()) {	
 				
 				// If the laconic axiom is contained in the justification axioms,
@@ -142,18 +141,32 @@ public class ProofTreeGenerator {
 						OWLReasoner reasoner = reasonerFactory.createReasoner(justificationAxiomToOnt.get(justificationAxiom)); 
 												
 						if (reasoner.isEntailed(laconicAxiom)) {
-							
-							ProofTree leaf = new ProofTree(justificationAxiom, null, null);
-							List<ProofTree> leaves = new ArrayList<ProofTree>();
-							leaves.add(leaf);
+													
+							// Check whether this axiom is an exception that has to be ignored.
+							if (!ExceptionRule(laconicAxiom, justificationAxiom)) {
+												
+								ProofTree leaf = new ProofTree(justificationAxiom, null, null);
+								List<ProofTree> leaves = new ArrayList<ProofTree>();
+								leaves.add(leaf);
 																				
-							ProofTree lemma = new ProofTree(laconicAxiom, leaves, null);		
+								ProofTree lemma = new ProofTree(laconicAxiom, leaves, null);		
 							
-							subTrees.set(subTrees.indexOf(leaf), lemma);
+								subTrees.add(lemma);
 							
-							break;
-						}						
-					}				
+								break;
+								
+							} else {
+								
+								subTrees.add(new ProofTree(justificationAxiom, null, null));
+							}
+						}
+					}	
+					
+					
+				// If the laconic axiom is equivalent to an existing one, add it directly.
+				} else {
+					
+					subTrees.add(new ProofTree(laconicAxiom, null, null));
 				}
 			}
 			
@@ -168,20 +181,17 @@ public class ProofTreeGenerator {
 					OWLAxiom laconicAxiom = tree.getAxiom();
 					OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
 					
-					// Check whether this axiom is an exception that has to be ignored.
-					if (!ExceptionRule(laconicAxiom, justificationAxiom)) {
-						
-						// Attempt to find matching rule.
-						String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
-						
-						if ((rule == null) || rule.isEmpty()) {
+					// Attempt to find matching rule.
+					String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
+					
+					if ((rule == null) || rule.isEmpty()) {
 							
-							foundRulesForAllLemmas = false;
-							break;
-						}
-					}						
-				}							
-			}
+						foundRulesForAllLemmas = false;
+						break;
+					}
+				}
+			}					
+			
 		
 			if (foundRulesForAllLemmas) {
 				// Create this initial tree with the entailment as the root
@@ -212,8 +222,33 @@ public class ProofTreeGenerator {
 	}
 	
 	
+	
+	
 	public static boolean ExceptionRule (OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
+		
+		
+		
+		// Case 5: Unpacking R <= Inv(S) from Invs(R, S)
+		if ((laconicAxiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) && (justificationAxiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES))) {
+			
+			OWLSubObjectPropertyOfAxiom subObjAxiom = (OWLSubObjectPropertyOfAxiom) laconicAxiom;
+			OWLInverseObjectPropertiesAxiom inverseObjAxiom = (OWLInverseObjectPropertiesAxiom) justificationAxiom;
+			
+			OWLObjectPropertyExpression justPropertyOne = inverseObjAxiom.getFirstProperty();
+			OWLObjectPropertyExpression justPropertyTwo = inverseObjAxiom.getSecondProperty();
+			OWLObjectPropertyExpression lacSubProperty = subObjAxiom.getSubProperty();
+			OWLObjectPropertyExpression lacSuperProperty = subObjAxiom.getSuperProperty();
+			
+			if (lacSubProperty.equals(justPropertyOne) && lacSuperProperty.equals(justPropertyTwo.getInverseProperty())) {
 				
+				return true;
+			} else if (lacSubProperty.equals(justPropertyTwo) && lacSuperProperty.equals(justPropertyOne.getInverseProperty())) {
+				
+				return true;
+			}			
+		}
+		
+		
 		return false;
 	}
 	
@@ -248,11 +283,12 @@ public class ProofTreeGenerator {
 		
 		
 		for (ProofTree initialTree : initialProofTreeList) {
-			
-			
+						
 			completeProofTrees = ComputeCompleteProofTrees(initialTree);
-			completeProofTreeList.addAll(completeProofTrees);
 			
+			if (completeProofTrees != null) {
+				completeProofTreeList.addAll(completeProofTrees);
+			}
 			
 		}
 		
