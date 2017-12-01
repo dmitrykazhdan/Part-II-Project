@@ -9,13 +9,15 @@ public class ProofTree {
 	
 	
 	private OWLAxiom axiom;
+	private String inferenceRule;
 	private List<ProofTree> subTrees;
 	
 	
-	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees) {
+	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees, String inferenceRule) {
 		
 		this.axiom = axiom;
 		this.subTrees = subTrees;
+		this.inferenceRule = inferenceRule;
 	}
 	
 		

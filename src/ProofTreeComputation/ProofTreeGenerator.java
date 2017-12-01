@@ -1,6 +1,7 @@
 package ProofTreeComputation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,10 +17,13 @@ import org.semanticweb.owl.explanation.api.ExplanationManager;
 import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGenerator;
 import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGeneratorFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
@@ -66,9 +70,9 @@ public class ProofTreeGenerator {
 		
 		// Compute all sets of laconic justifications from 		 		 
 		// the set of (potentially non-laconic) justifications given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
 		/* timeout if computation is taking too long */
-				
+						
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
 					
 		// In order to check whether one axiom is entailed by another,
@@ -95,7 +99,7 @@ public class ProofTreeGenerator {
 			List<ProofTree> subTrees = new ArrayList<ProofTree>();
 			
 			for (OWLAxiom axiom : justification) {			
-				subTrees.add(new ProofTree(axiom, null));
+				subTrees.add(new ProofTree(axiom, null, null));
 			}
 			
 					
@@ -121,11 +125,13 @@ public class ProofTreeGenerator {
 												
 						if (reasoner.isEntailed(laconicAxiom)) {
 							
-							ProofTree leaf = new ProofTree(justificationAxiom, null);
+							ProofTree leaf = new ProofTree(justificationAxiom, null, null);
 							List<ProofTree> leaves = new ArrayList<ProofTree>();
 							leaves.add(leaf);
+							
+							String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
 														
-							ProofTree lemma = new ProofTree(laconicAxiom, leaves);												
+							ProofTree lemma = new ProofTree(laconicAxiom, leaves, rule);												
 							subTrees.set(subTrees.indexOf(leaf), lemma);
 							
 							break;
@@ -136,7 +142,7 @@ public class ProofTreeGenerator {
 			
 			// Create this initial tree with the entailment as the root
 			// and the lemmas/axioms as the subtrees and leaves.
-			ProofTree initialTree = new ProofTree(entailment, subTrees);
+			ProofTree initialTree = new ProofTree(entailment, subTrees, null);
 			
 			// Add this initial tree to the list of all initial trees.
 			initialTrees.add(initialTree);
@@ -147,6 +153,17 @@ public class ProofTreeGenerator {
 		return initialTrees;		
 	}
 	
+	
+	public static String findSinglePremiseRule(OWLAxiom entailment, OWLAxiom axiom) {
+		
+		if ((axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) && (entailment.isOfType(AxiomType.SUBCLASS_OF))) {			
+			if (axiom.getClassesInSignature().containsAll(entailment.getClassesInSignature())) {				
+				return "EquCls";
+			}			
+		}
+		
+		return null;
+	}
 	
 	
 	public static boolean ExceptionAxiom(OWLAxiom axiom) {
