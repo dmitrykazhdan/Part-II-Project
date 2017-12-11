@@ -10,15 +10,29 @@ public class ProofTree {
 	
 	
 	private OWLAxiom axiom;
-	private String inferenceRule;
+	private InferenceRule inferenceRule;
 	private List<ProofTree> subTrees;
 	
 	
-	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees, String inferenceRule) {
+	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees, InferenceRule inferenceRule) {
 		
 		this.axiom = axiom;
 		this.subTrees = subTrees;
 		this.inferenceRule = inferenceRule;
+	}
+	
+	// Create a copy of the tree.
+	public ProofTree(ProofTree proofTree) {
+		
+		this.axiom = proofTree.getAxiom();
+		this.inferenceRule = proofTree.inferenceRule;
+	
+		List<ProofTree> copySubTrees = new ArrayList<ProofTree>();
+		
+		for (ProofTree subTree : proofTree.getSubTrees()) {
+			ProofTree copySubTree = new ProofTree(subTree);
+			copySubTrees.add(copySubTree);
+		}	
 	}
 	
 		

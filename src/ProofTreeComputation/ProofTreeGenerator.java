@@ -279,7 +279,8 @@ public class ProofTreeGenerator {
 					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);
 					
 					for (PartitionWithRules partition : partitionList) {
-						ProofTree newProofTree = ComputeProofByApplyingPartition(incompleteProofTree, partition);						
+						ProofTree newProofTree = ComputeProofByApplyingPartition(incompleteProofTree, partition);	
+						
 						if (newProofTree != null) {
 							newIncompleteProofTreeList.add(newProofTree);
 						}					
@@ -296,18 +297,29 @@ public class ProofTreeGenerator {
 	 */
 	
 	
-	private static ProofTree ComputeProofByApplyingPartition(ProofTree pIncomplete, PartitionWithRules partition) {
+	private static ProofTree ComputeProofByApplyingPartition(ProofTree incompleteTree, PartitionWithRules partition) {
 		
 		
+		ProofTree copiedTree = new ProofTree(incompleteTree);
+		List<ProofTree> subTrees = copiedTree.getSubTrees();
 		
+		for (RuleApplication subSet : partition.getItems()) {
+			
+			if (subSet.getRule() != null) {
+				RuleApplication newInference = RuleFinder.generateInference(subSet.getPremises());
+				
+				if (newInference == null) {
+					return null;
+				}
+							
+				ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
+				
+				
+			}		
+		}
 		
 		return null;
 	}
-	
-
-	
-	
-
 	
 
 	private static List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {

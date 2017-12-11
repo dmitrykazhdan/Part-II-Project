@@ -20,4 +20,24 @@ public class RuleFinder {
 		return null;
 	}
 	
+	
+	public static RuleApplication generateInference(List<OWLAxiom> premises) {
+		
+		List<InferenceRule> rules = RuleGenerator.getRules().get(premises.size());
+		
+		for (InferenceRule rule : rules) {
+			
+			OWLAxiom conclusion = rule.generateConclusion(premises);
+			
+			if (conclusion != null) {
+				
+				RuleApplication appliedRule = new RuleApplication(premises, conclusion, rule);
+				
+				return appliedRule;
+			}
+		}
+		
+		return null;
+	}
+	
 }
