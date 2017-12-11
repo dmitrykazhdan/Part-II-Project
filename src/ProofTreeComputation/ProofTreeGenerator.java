@@ -314,6 +314,12 @@ public class ProofTreeGenerator {
 							
 				ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
 				
+				for (ProofTree subTree : subTrees) {
+					if (newInference.getPremises().contains(subTree.getAxiom())) {
+						newInference.getPremises().remove(subTree.getAxiom());
+						newSubTree.getSubTrees().add(subTree);
+					}
+				}
 				
 			}		
 		}
