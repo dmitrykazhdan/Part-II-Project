@@ -187,10 +187,12 @@ public class ProofTreeGenerator {
 					
 					OWLAxiom laconicAxiom = tree.getAxiom();
 					OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
-
+					
+					List<OWLAxiom> premises = new ArrayList<OWLAxiom>();
+					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					InferenceRule rule = RuleFinder.findSinglePremiseRule(laconicAxiom, justificationAxiom);
+					InferenceRule rule = RuleFinder.findRuleApplication(premises, laconicAxiom);
 					
 					if (rule == null) {							
 						foundRulesForAllLemmas = false;

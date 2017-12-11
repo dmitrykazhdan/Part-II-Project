@@ -2,7 +2,9 @@ package ProofTreeComputation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
@@ -14,9 +16,9 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 public class RuleGenerator {
 
-	private static List<InferenceRule> rules = null;
+	private static Map<Integer, List<InferenceRule>> rules = null;
 
-	public static List<InferenceRule> getRules() {
+	public static Map<Integer, List<InferenceRule>> getRules() {
 
 		if (rules == null) {
 			generateRules();
@@ -28,8 +30,12 @@ public class RuleGenerator {
 
 	private static void generateRules() {
 
+		rules = new HashMap<Integer, List<InferenceRule>>();
 
-
+		for (int i = 1; i <= 4; i++) {			
+			rules.put(i, new ArrayList<InferenceRule>());			
+		}
+		
 		// RULE 1
 		InferenceRule rule1 = 
 				new InferenceRule("1", "EquCls", 1) {
@@ -94,7 +100,7 @@ public class RuleGenerator {
 			}					
 		};	
 
-		rules.add(rule1);
+		rules.get(1).add(rule1);
 
 	}	
 }
