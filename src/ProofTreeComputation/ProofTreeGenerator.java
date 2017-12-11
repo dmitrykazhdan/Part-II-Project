@@ -100,7 +100,9 @@ public class ProofTreeGenerator {
 	}
 	
 
-	
+	/*
+	 	COMPUTATION OF INITIAL TREES
+	 */
 	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
@@ -244,12 +246,19 @@ public class ProofTreeGenerator {
 		return false;
 	}
 	
+	/*
+ 		END OF COMPUTATION OF INITIAL TREES
+	 */
 	
+	
+	/*
+		COMPUTATION OF COMPLETE PROOF TREES
+	 */
 	private static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
 		
 		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
 		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();
-		List<ProofTree> newIncompleteProofTreeList;
+		List<ProofTree> newIncompleteProofTreeList =  new ArrayList<ProofTree>();
 
 		incompleteProofTreeList.add(initialTree);
 		
@@ -274,11 +283,62 @@ public class ProofTreeGenerator {
 					
 					
 				}				
-			}			
+			}
+			
+			incompleteProofTreeList = newIncompleteProofTreeList;
 		}
 		
 		
 		return null;
+	}	
+	/*
+		END OF COMPUTATION OF COMPLETE PROOF TREES
+	 */
+	
+	
+	private List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
+		
+		List<Partition> partitions = generateAllPartitions(nodes);
+		
+		
+		
+		
+		return null;
+	}
+	
+	private List<Partition> generateAllPartitions(List<OWLAxiom> nodes) {
+		
+		List<Partition> allPartitions = new ArrayList<Partition>();
+		
+		if (nodes.size() == 0) {
+			return allPartitions;
+		}
+				
+		OWLAxiom node = nodes.get(0);
+		List<Partition> partitionOfSublist = generateAllPartitions(nodes.subList(1, nodes.size()));
+		
+		for (Partition partition : partitionOfSublist) {
+						
+			List<OWLAxiom> newSubset = new ArrayList<OWLAxiom>();
+			newSubset.add(node);
+			
+			Partition newPartition = new Partition(partition);
+			newPartition.getElements().add(newSubset);
+			allPartitions.add(newPartition);
+			
+			for (List<OWLAxiom> subSet : partition.getElements()) {
+				
+				List<OWLAxiom> newSubSet = new ArrayList<OWLAxiom>(subSet);
+				newSubSet.add(node);
+				
+				newPartition = new Partition(partition);
+				newPartition.getElements().remove(subSet);
+				newPartition.getElements().add(newSubSet);
+				allPartitions.add(newPartition);				
+			}		
+		}
+				
+		return allPartitions;
 	}
 	
 	
