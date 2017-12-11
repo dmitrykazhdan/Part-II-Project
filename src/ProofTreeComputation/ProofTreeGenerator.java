@@ -276,29 +276,27 @@ public class ProofTreeGenerator {
 					completeProofTreeList.add(incompleteProofTree);
 				} else {
 					
+					List<PartitionWithRules> partitionList = generateAllPartitionsWithRules(childAxioms);
 					
-					
-					
-					
-					
-					
+					for (PartitionWithRules partition : partitionList) {
+						ProofTree newProofTree = ComputeProofByApplyingPartition(incompleteProofTree, partition);						
+						if (newProofTree != null) {
+							newIncompleteProofTreeList.add(newProofTree);
+						}					
+					}
 				}				
 			}
 			
 			incompleteProofTreeList = newIncompleteProofTreeList;
-		}
-		
-		
-		return null;
+		}	
+		return completeProofTreeList;
 	}	
 	/*
 		END OF COMPUTATION OF COMPLETE PROOF TREES
 	 */
 	
 	
-	private List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
-		
-		List<Partition> partitions = generateAllPartitions(nodes);
+	private static ProofTree ComputeProofByApplyingPartition(ProofTree pIncomplete, PartitionWithRules partition) {
 		
 		
 		
@@ -306,7 +304,30 @@ public class ProofTreeGenerator {
 		return null;
 	}
 	
-	private List<Partition> generateAllPartitions(List<OWLAxiom> nodes) {
+	private static List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
+		
+		List<Partition> partitions = generateAllPartitions(nodes);
+		List<PartitionWithRules> allRuleApplications = new ArrayList<PartitionWithRules>();
+		
+		boolean atLeastOneApplication = false;
+		
+		
+		for (Partition partition : partitions) {
+			
+			atLeastOneApplication = false;
+			for (List<OWLAxiom> subSet : partition.getElements()) {
+				
+				
+				
+				
+			}			
+		}
+			
+		return allRuleApplications;
+	}
+	
+	
+	private static List<Partition> generateAllPartitions(List<OWLAxiom> nodes) {
 		
 		List<Partition> allPartitions = new ArrayList<Partition>();
 		
