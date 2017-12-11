@@ -190,10 +190,9 @@ public class ProofTreeGenerator {
 
 					
 					// Attempt to find matching rule.
-					String rule = findSinglePremiseRule(laconicAxiom, justificationAxiom);
+					InferenceRule rule = RuleFinder.findSinglePremiseRule(laconicAxiom, justificationAxiom);
 					
-					if ((rule == null) || rule.isEmpty()) {
-							
+					if (rule == null) {							
 						foundRulesForAllLemmas = false;
 						break;
 					}
@@ -214,8 +213,10 @@ public class ProofTreeGenerator {
 		
 		
 		return initialTrees;		
-	}
-	
+	}	
+	/*
+ 		END OF COMPUTATION OF INITIAL TREES
+	 */	
 	
 	
 	public static boolean ExceptionRule (OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
@@ -245,10 +246,7 @@ public class ProofTreeGenerator {
 		
 		return false;
 	}
-	
-	/*
- 		END OF COMPUTATION OF INITIAL TREES
-	 */
+
 	
 	
 	/*
@@ -270,13 +268,13 @@ public class ProofTreeGenerator {
 				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
 				newIncompleteProofTreeList = new ArrayList<ProofTree>();
 				
-				String rule = findRuleApplication(childAxioms, rootAxiom);
+				InferenceRule rule = RuleFinder.findRuleApplication(childAxioms, rootAxiom);
 				
-				if ((rule != null) && (!rule.isEmpty())) {					
+				if (rule != null) {					
 					completeProofTreeList.add(incompleteProofTree);
 				} else {
 					
-					List<PartitionWithRules> partitionList = generateAllPartitionsWithRules(childAxioms);
+					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);
 					
 					for (PartitionWithRules partition : partitionList) {
 						ProofTree newProofTree = ComputeProofByApplyingPartition(incompleteProofTree, partition);						
@@ -304,123 +302,12 @@ public class ProofTreeGenerator {
 		return null;
 	}
 	
-	private static List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
-		
-		List<Partition> partitions = generateAllPartitions(nodes);
-		List<PartitionWithRules> allRuleApplications = new ArrayList<PartitionWithRules>();
-		
-		boolean atLeastOneApplication = false;
-		
-		
-		for (Partition partition : partitions) {
-			
-			atLeastOneApplication = false;
-			for (List<OWLAxiom> subSet : partition.getElements()) {
-				
-				
-				
-				
-			}			
-		}
-			
-		return allRuleApplications;
-	}
-	
-	
-	private static List<Partition> generateAllPartitions(List<OWLAxiom> nodes) {
-		
-		List<Partition> allPartitions = new ArrayList<Partition>();
-		
-		if (nodes.size() == 0) {
-			return allPartitions;
-		}
-				
-		OWLAxiom node = nodes.get(0);
-		List<Partition> partitionOfSublist = generateAllPartitions(nodes.subList(1, nodes.size()));
-		
-		for (Partition partition : partitionOfSublist) {
-						
-			List<OWLAxiom> newSubset = new ArrayList<OWLAxiom>();
-			newSubset.add(node);
-			
-			Partition newPartition = new Partition(partition);
-			newPartition.getElements().add(newSubset);
-			allPartitions.add(newPartition);
-			
-			for (List<OWLAxiom> subSet : partition.getElements()) {
-				
-				List<OWLAxiom> newSubSet = new ArrayList<OWLAxiom>(subSet);
-				newSubSet.add(node);
-				
-				newPartition = new Partition(partition);
-				newPartition.getElements().remove(subSet);
-				newPartition.getElements().add(newSubSet);
-				allPartitions.add(newPartition);				
-			}		
-		}
-				
-		return allPartitions;
-	}
-	
-	
-	
-	private static String findRuleApplication(List<OWLAxiom> premises, OWLAxiom conclusion) {
-		
-		if (premises.size() == 1) {
-			return findSinglePremiseRule(premises.get(0), conclusion);
-		} else {
-			return findMultiplePremiseRule(conclusion, premises);
-		}
-	}
-	
-	
-	
-	public static String findMultiplePremiseRule(OWLAxiom conclusion, List<OWLAxiom> premises) {
-		
-				
-		return null;
-	}
-	
-	
-	public static String findSinglePremiseRule(OWLAxiom conclusion, OWLAxiom premise) {
-		
-		
-		// Rule 1: EquCls
-		if ((premise.isOfType(AxiomType.EQUIVALENT_CLASSES)) && (conclusion.isOfType(AxiomType.SUBCLASS_OF))) {			
-			if (premise.getClassesInSignature().containsAll(conclusion.getClassesInSignature())) {				
-				return "EquCls";
-			}			
-		}
-		
-		
-		// Rule 6: ObjExt
-		if ((premise.isOfType(AxiomType.SUBCLASS_OF)) && (conclusion.isOfType(AxiomType.SUBCLASS_OF))) {			
-			
-			OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
-			OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
-			OWLClassExpression entSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
-			OWLClassExpression entSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
 
-			
-			if ((axiomSubCls.equals(entSubCls)) &&			
-				(axiomSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) 
-					&& (entSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_MIN_CARDINALITY))) {
-					
-				int n1 = ((OWLObjectExactCardinality) axiomSuperCls).getCardinality();
-				int n2 = ((OWLObjectMinCardinality) entSuperCls).getCardinality();
-					
-				if ((n1 >= n2) && (n2 >= 0)) {
-						
-					return "ObjExt";
-										
-				}				
-			}			
-		}
-		
-		return null;
-	}
 	
 	
+
+	
+
 	private static List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
 			
 		// the construction of the proof trees is through 

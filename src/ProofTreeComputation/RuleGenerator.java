@@ -12,7 +12,7 @@ import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-public class GenerateRules {
+public class RuleGenerator {
 
 	private static List<InferenceRule> rules = null;
 
