@@ -262,6 +262,8 @@ public class ProofTreeGenerator {
 
 		incompleteProofTreeList.add(initialTree);
 		
+		// Add rules to all of the rule applications.
+		// Need to copy tree as appropriate.
 		while (!incompleteProofTreeList.isEmpty()) {
 			
 			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
@@ -318,8 +320,11 @@ public class ProofTreeGenerator {
 					if (newInference.getPremises().contains(subTree.getAxiom())) {
 						newInference.getPremises().remove(subTree.getAxiom());
 						newSubTree.getSubTrees().add(subTree);
-						subTrees.remove(subTree);
 					}
+				}
+				
+				for (ProofTree subTree : newSubTree.getSubTrees()) {
+					subTrees.remove(subTree);
 				}
 				
 				copiedTree.getSubTrees().add(newSubTree);			
@@ -376,7 +381,13 @@ public class ProofTreeGenerator {
 		/* Algorithm implementation goes here: */
 		List<ProofTree> proofTreeList = ComputeProofTrees(justification, entailment);
 		
-		return null;
+		
+		// Get most understandable tree.
+		if ((proofTreeList != null) && proofTreeList.size() > 0) {
+			return proofTreeList.get(0);
+		} else {
+			return null;
+		}
 	}
 	
 	

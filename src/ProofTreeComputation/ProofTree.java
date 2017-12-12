@@ -26,16 +26,17 @@ public class ProofTree {
 		
 		this.axiom = proofTree.getAxiom();
 		this.inferenceRule = proofTree.inferenceRule;
-	
-		List<ProofTree> copySubTrees = new ArrayList<ProofTree>();
-		
+			
 		if (proofTree.getSubTrees() == null) {
 			this.subTrees = null;
 		} else {
+			
+			this.subTrees = new ArrayList<ProofTree>();
+			
 			for (ProofTree subTree : proofTree.getSubTrees()) {
 				ProofTree copySubTree = new ProofTree(subTree);
-				copySubTrees.add(copySubTree);
-			}
+				this.subTrees.add(copySubTree);
+			}		
 		}
 	}
 	
