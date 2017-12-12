@@ -56,15 +56,20 @@ public class RuleFinder {
 	public static RuleApplication generateInference(RuleApplication incompleteRuleApplication) {
 		
 		List<OWLAxiom> premises = incompleteRuleApplication.getPremises();
+		List<List<OWLAxiom>> premisePermutations = getPremisePermutations(premises);
 		InferenceRule rule = incompleteRuleApplication.getRule();
-		OWLAxiom conclusion = rule.generateConclusion(premises);	
 
-		if (conclusion != null) {
-			RuleApplication appliedRule = new RuleApplication(premises, conclusion, rule);
-			return appliedRule;
-		} else {
-			return null;
-		}	
+		for (List<OWLAxiom> premisePermutation : premisePermutations) {
+
+			OWLAxiom conclusion = rule.generateConclusion(premisePermutation);	
+
+			if (conclusion != null) {
+
+				RuleApplication appliedRule = new RuleApplication(premisePermutation, conclusion, rule);
+				return appliedRule;
+			}
+		}
+		return null;	
 	}	
 	
 	
@@ -81,7 +86,7 @@ public class RuleFinder {
 		
 		for (OWLAxiom premise : premises) {
 			List<OWLAxiom> premiseCopy = new ArrayList<OWLAxiom>(premises);
-			premiseCopy.remove(premises);			
+			premiseCopy.remove(premise);			
 			List<List<OWLAxiom>> subPremises = getPremisePermutations(premiseCopy);
 			
 			for (List<OWLAxiom> subPermutation : subPremises) {

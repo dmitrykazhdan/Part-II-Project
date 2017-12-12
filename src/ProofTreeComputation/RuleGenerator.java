@@ -18,6 +18,8 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
 public class RuleGenerator {
 
@@ -239,10 +241,31 @@ public class RuleGenerator {
 
 			@Override
 			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+					
+					OWLAxiom premise1 = premises.get(0);
+					OWLAxiom premise2 = premises.get(1);
+					
+					OWLClassExpression firstPremSuperCls = ((OWLSubClassOfAxiom) premise1).getSuperClass();
+					OWLClassExpression firstPremSubCls = ((OWLSubClassOfAxiom) premise1).getSubClass();
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+					
+					Set<OWLClassExpression> axiomSet = new HashSet<OWLClassExpression>();
+					axiomSet.add(firstPremSuperCls);
+					axiomSet.add(secondPremSuperCls);					
+					OWLClassExpression conclusionSuperCls = new OWLObjectIntersectionOfImpl(axiomSet);
+					
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(firstPremSubCls, conclusionSuperCls, null);
+					
+					return conclusion;
+				}
+				
 				return null;
 			}					
 		};	
 
+		
 		
 		// RULE 43
 		InferenceRule rule43 = 
@@ -294,6 +317,22 @@ public class RuleGenerator {
 
 			@Override
 			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+					
+					OWLAxiom premise1 = premises.get(0);
+					OWLAxiom premise2 = premises.get(1);
+					
+					OWLClassExpression firstPremSubCls = ((OWLSubClassOfAxiom) premise1).getSubClass();
+					OWLObjectSomeValuesFrom firstPremSuperCls = (OWLObjectSomeValuesFrom)((OWLSubClassOfAxiom) premise1).getSubClass();
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+					
+					OWLObjectSomeValuesFrom conclusionSuperCls = new OWLObjectSomeValuesFromImpl(firstPremSuperCls.getProperty(), secondPremSuperCls);
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(firstPremSubCls, conclusionSuperCls, null);
+					
+					return conclusion;
+				}
+				
 				return null;
 			}					
 		};	
