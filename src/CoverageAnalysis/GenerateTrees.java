@@ -12,6 +12,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
 
 public class GenerateTrees {
@@ -35,7 +36,9 @@ public class GenerateTrees {
 			InputStream fileInputStream = new FileInputStream(explanationFilename);
 
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
-			ProofTreeGenerator.GenerateProofTree(explanation);
+			ProofTree proofTree = ProofTreeGenerator.GenerateProofTree(explanation);
+			
+			System.out.println("Proof Tree computed successfully.");
 					
 		}	
 	}

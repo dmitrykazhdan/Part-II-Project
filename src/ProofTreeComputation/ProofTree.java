@@ -29,10 +29,14 @@ public class ProofTree {
 	
 		List<ProofTree> copySubTrees = new ArrayList<ProofTree>();
 		
-		for (ProofTree subTree : proofTree.getSubTrees()) {
-			ProofTree copySubTree = new ProofTree(subTree);
-			copySubTrees.add(copySubTree);
-		}	
+		if (proofTree.getSubTrees() == null) {
+			this.subTrees = null;
+		} else {
+			for (ProofTree subTree : proofTree.getSubTrees()) {
+				ProofTree copySubTree = new ProofTree(subTree);
+				copySubTrees.add(copySubTree);
+			}
+		}
 	}
 	
 		

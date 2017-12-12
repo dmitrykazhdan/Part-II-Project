@@ -39,8 +39,15 @@ public class RuleGenerator {
 		// RULE 1
 		InferenceRule rule1 = 
 				new InferenceRule("1", "EquCls", 1) {
+			
 			@Override	
-			public boolean ruleApplicable(List<OWLAxiom> premises, OWLAxiom conclusion) {
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				OWLAxiom premise = premises.get(0);
+				return premise.isOfType(AxiomType.EQUIVALENT_CLASSES);
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
 
 				OWLAxiom premise = premises.get(0);
 
@@ -63,8 +70,29 @@ public class RuleGenerator {
 		// RULE 6
 		InferenceRule rule6 = 
 				new InferenceRule("6", "ObjExt", 1) {
+			
 			@Override	
-			public boolean ruleApplicable(List<OWLAxiom> premises, OWLAxiom conclusion) {
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise = premises.get(0);
+
+				if (premise.isOfType(AxiomType.SUBCLASS_OF)) {			
+
+					OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+					OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+
+					if (axiomSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY))  {
+
+						int n1 = ((OWLObjectExactCardinality) axiomSuperCls).getCardinality();
+						if (n1 >= 0) { return true; }			
+					}
+				}
+
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
 
 				OWLAxiom premise = premises.get(0);
 
@@ -84,9 +112,7 @@ public class RuleGenerator {
 						int n2 = ((OWLObjectMinCardinality) entSuperCls).getCardinality();
 
 						if ((n1 >= n2) && (n2 >= 0)) {
-
 							return true;
-
 						}				
 					}
 				}
@@ -101,6 +127,7 @@ public class RuleGenerator {
 		};	
 
 		rules.get(1).add(rule1);
+		rules.get(1).add(rule6);
 
 	}	
 }

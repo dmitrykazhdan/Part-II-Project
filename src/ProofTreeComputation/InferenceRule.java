@@ -16,8 +16,8 @@ public abstract class InferenceRule {
 		this.premiseNumber = premiseNumber;
 	}
 	
-	
-	public abstract boolean ruleApplicable(List<OWLAxiom> premises, OWLAxiom conclusion);
+	public abstract boolean matchPremises(List<OWLAxiom> premises);
+	public abstract boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion);
 	public abstract OWLAxiom generateConclusion(List<OWLAxiom> premises);
 	
 }

@@ -192,7 +192,7 @@ public class ProofTreeGenerator {
 					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					InferenceRule rule = RuleFinder.findRuleApplication(premises, laconicAxiom);
+					InferenceRule rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
 					if (rule == null) {							
 						foundRulesForAllLemmas = false;
@@ -270,7 +270,7 @@ public class ProofTreeGenerator {
 				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
 				newIncompleteProofTreeList = new ArrayList<ProofTree>();
 				
-				InferenceRule rule = RuleFinder.findRuleApplication(childAxioms, rootAxiom);
+				InferenceRule rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
 				if (rule != null) {					
 					completeProofTreeList.add(incompleteProofTree);
@@ -298,15 +298,14 @@ public class ProofTreeGenerator {
 	
 	
 	private static ProofTree ComputeProofByApplyingPartition(ProofTree incompleteTree, PartitionWithRules partition) {
-		
-		
+			
 		ProofTree copiedTree = new ProofTree(incompleteTree);
 		List<ProofTree> subTrees = copiedTree.getSubTrees();
 		
 		for (RuleApplication subSet : partition.getItems()) {
 			
 			if (subSet.getRule() != null) {
-				RuleApplication newInference = RuleFinder.generateInference(subSet.getPremises());
+				RuleApplication newInference = RuleFinder.generateInference(subSet);
 				
 				if (newInference == null) {
 					return null;
@@ -314,17 +313,20 @@ public class ProofTreeGenerator {
 							
 				ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
 				
+				// Consider using a map ***
 				for (ProofTree subTree : subTrees) {
 					if (newInference.getPremises().contains(subTree.getAxiom())) {
 						newInference.getPremises().remove(subTree.getAxiom());
 						newSubTree.getSubTrees().add(subTree);
+						subTrees.remove(subTree);
 					}
 				}
 				
+				copiedTree.getSubTrees().add(newSubTree);			
 			}		
 		}
 		
-		return null;
+		return copiedTree;
 	}
 	
 
