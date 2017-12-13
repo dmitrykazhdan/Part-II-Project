@@ -14,13 +14,18 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
 public class RuleGenerator {
@@ -131,6 +136,197 @@ public class RuleGenerator {
 
 			@Override
 			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				return null;
+			}					
+		};
+		
+		
+		
+		// RULE 8
+		InferenceRule rule8 = 
+				new InferenceRule("8", "Top", 1) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise = premises.get(0);
+
+				if (premise.isOfType(AxiomType.SUBCLASS_OF)) {			
+					OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					return axiomSubCls.isOWLThing();
+				}
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises) && conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+					OWLClassExpression conclusionSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+					
+					return premiseSuperCls.equals(conclusionSuperCls);
+				}
+				return false;
+			}
+
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				// How do you generate Y <= X, without any restrictions on Y?
+				// Consider it.
+				return null;
+			}					
+		};	
+		
+		
+		// RULE 9
+		InferenceRule rule9 = 
+				new InferenceRule("9", "Bot", 1) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise = premises.get(0);
+
+				if (premise.isOfType(AxiomType.SUBCLASS_OF)) {			
+					OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+					return axiomSuperCls.isOWLNothing();
+				}
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises) && conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					OWLClassExpression conclusionSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+					
+					return premiseSubCls.equals(conclusionSubCls);
+				}
+				return false;
+			}
+
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				// How do you generate X <= Y, without any restrictions on Y?
+				// Consider it.
+				return null;
+			}					
+		};	
+		
+		
+		// RULE 10
+		InferenceRule rule10 = 
+				new InferenceRule("10", "ObjCom-1", 1) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise = premises.get(0);
+
+				if (premise.isOfType(AxiomType.SUBCLASS_OF)) {			
+					OWLClassExpression axiomSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+					OWLClassExpression axiomSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					
+					return axiomSuperCls.getObjectComplementOf().equals(axiomSubCls);
+				}
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises) && conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					OWLClassExpression conclusionSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+					OWLClassExpression conclusionSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+					
+					return premiseSubCls.equals(conclusionSubCls) && conclusionSuperCls.isOWLNothing();
+				}
+				return false;
+			}
+
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+	
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(premiseSubCls, dataFactory.getOWLNothing(), new ArrayList<OWLAnnotation>());				
+					
+					return conclusion;		
+				}
+				return null;
+			}					
+		};	
+		
+		
+		
+		// RULE 11
+		InferenceRule rule11 = 
+				new InferenceRule("11", "ObjCom-2", 1) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise = premises.get(0);
+				return premise.isOfType(AxiomType.SUBCLASS_OF);
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises) && conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					OWLClassExpression premiseSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+					OWLClassExpression conclusionSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+					OWLClassExpression conclusionSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+					
+					if (conclusionSubCls.isOWLThing() &&
+							conclusionSuperCls.getClassExpressionType().equals(ClassExpressionType.OBJECT_UNION_OF)) {
+						
+						Set<OWLClassExpression> conclusionSuperClsUnion = ((OWLObjectUnionOf) conclusionSuperCls).getOperands();
+
+						return (conclusionSuperClsUnion.size() == 2) 
+								&& conclusionSuperClsUnion.contains(premiseSubCls.getObjectComplementOf())
+								&& conclusionSuperClsUnion.contains(premiseSuperCls);
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+	
+					OWLAxiom premise = premises.get(0);
+					OWLClassExpression premiseSubCls = ((OWLSubClassOfAxiom) premise).getSubClass();
+					OWLClassExpression premiseSuperCls = ((OWLSubClassOfAxiom) premise).getSuperClass();
+
+					Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>();
+					operands.add(premiseSubCls.getObjectComplementOf());
+					operands.add(premiseSuperCls);
+					OWLClassExpression union = new OWLObjectUnionOfImpl(operands);		
+					
+					OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(dataFactory.getOWLThing(), union, new ArrayList<OWLAnnotation>());				
+					
+					return conclusion;		
+				}
 				return null;
 			}					
 		};	
