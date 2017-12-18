@@ -24,12 +24,14 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLSubObjectPropertyOfAxiomImpl;
 
 public class RuleGenerator {
 
@@ -404,6 +406,143 @@ public class RuleGenerator {
 		};	
 		
 		
+		// RULE 25, 2nd variant
+		InferenceRule rule25_2 = 
+				new InferenceRule("25.2", "ObjDom-ObjAll", 2) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise1 = premises.get(0);
+				OWLAxiom premise2 = premises.get(1);
+
+				if (premise1.isOfType(AxiomType.SUBCLASS_OF) && premise2.isOfType(AxiomType.SUBCLASS_OF)) {			
+					
+					OWLClassExpression firstPremSubCls = ((OWLSubClassOfAxiom) premise1).getSubClass();
+					OWLClassExpression firstPremSuperCls = ((OWLSubClassOfAxiom) premise1).getSuperClass();
+					OWLClassExpression secondPremSubCls = ((OWLSubClassOfAxiom) premise2).getSubClass();
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+					
+					if (secondPremSubCls.getClassExpressionType().equals(ClassExpressionType.DATA_ALL_VALUES_FROM)
+						&& firstPremSubCls.getClassExpressionType().equals(ClassExpressionType.DATA_SOME_VALUES_FROM)) {
+
+						OWLObjectPropertyExpression firstPremSubClsProp = ((OWLObjectSomeValuesFrom) firstPremSubCls).getProperty();
+						OWLClassExpression firstPremSubClsClassExp = ((OWLObjectSomeValuesFrom) firstPremSubCls).getFiller();
+						OWLObjectPropertyExpression secondPremSubClsProp = ((OWLObjectAllValuesFrom) secondPremSubCls).getProperty();
+						OWLClassExpression secondPremSubClsClassExp = ((OWLObjectAllValuesFrom) secondPremSubCls).getFiller();
+						
+						return firstPremSubClsClassExp.isOWLThing() 
+								&& secondPremSubClsClassExp.isOWLNothing() 
+								&& secondPremSubClsProp.equals(firstPremSubClsProp)
+								&& secondPremSuperCls.equals(firstPremSuperCls);
+					}
+				}
+
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises)) {
+				
+					OWLAxiom premise2 = premises.get(1);
+					
+					if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+						OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+						OWLClassExpression conclusionSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+						OWLClassExpression conclusionSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+								
+						return conclusionSuperCls.equals(secondPremSuperCls) && conclusionSubCls.isOWLThing();
+					}		
+				}
+				
+				return false;
+			}
+
+			
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+					
+					OWLAxiom premise2 = premises.get(1);
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();										
+					OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(dataFactory.getOWLThing(), secondPremSuperCls, new ArrayList<OWLAnnotation>());				
+					
+					return conclusion;
+				}
+				
+				return null;
+			}					
+		};	
+		
+		
+		
+		// RULE 26
+		InferenceRule rule26 = 
+				new InferenceRule("26", "SubObj-SubObj", 2) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise1 = premises.get(0);
+				OWLAxiom premise2 = premises.get(1);
+
+				if (premise1.isOfType(AxiomType.SUB_OBJECT_PROPERTY) && premise2.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {			
+
+					OWLObjectPropertyExpression firstPremSuperProp = ((OWLSubObjectPropertyOfAxiom) premise1).getSuperProperty();
+					OWLObjectPropertyExpression secondPremSubProp = ((OWLSubObjectPropertyOfAxiom) premise2).getSubProperty();
+						
+					return firstPremSuperProp.equals(secondPremSubProp);
+				}
+
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises)) {
+				
+					OWLAxiom premise1 = premises.get(0);
+					OWLAxiom premise2 = premises.get(1);
+					
+					if (conclusion.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
+
+						OWLObjectPropertyExpression firstPremSubProp = ((OWLSubObjectPropertyOfAxiom) premise1).getSubProperty();
+						OWLObjectPropertyExpression secondPremSuperProp = ((OWLSubObjectPropertyOfAxiom) premise2).getSuperProperty();
+						OWLObjectPropertyExpression conclusionPremSuperProp = ((OWLSubObjectPropertyOfAxiom) conclusion).getSuperProperty();
+						OWLObjectPropertyExpression conclusionPremSubProp = ((OWLSubObjectPropertyOfAxiom) conclusion).getSubProperty();
+								
+						return conclusionPremSuperProp.equals(secondPremSuperProp)
+								&& conclusionPremSubProp.equals(firstPremSubProp);
+					}		
+				}
+				
+				return false;
+			}
+
+			
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+					
+					OWLAxiom premise1 = premises.get(0);
+					OWLAxiom premise2 = premises.get(1);
+					OWLObjectPropertyExpression firstPremSubProp = ((OWLSubObjectPropertyOfAxiom) premise1).getSubProperty();
+					OWLObjectPropertyExpression secondPremSuperProp = ((OWLSubObjectPropertyOfAxiom) premise2).getSuperProperty();
+					OWLSubObjectPropertyOfAxiom conclusion = new OWLSubObjectPropertyOfAxiomImpl(firstPremSubProp, secondPremSuperProp, new ArrayList<OWLAnnotation>());				
+					
+					return conclusion;
+				}
+				
+				return null;
+			}					
+		};	
 		
 		
 		
