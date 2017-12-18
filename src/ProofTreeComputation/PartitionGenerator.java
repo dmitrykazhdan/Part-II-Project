@@ -6,7 +6,6 @@ import java.util.List;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 public class PartitionGenerator {
-
 	
 	public static List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
 		

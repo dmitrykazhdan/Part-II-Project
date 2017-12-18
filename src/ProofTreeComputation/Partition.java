@@ -23,9 +23,9 @@ public class Partition {
 		
 		elements = new ArrayList<List<OWLAxiom>>();
 		
-		for (List<OWLAxiom> partSubset : partition.elements) {
-			List<OWLAxiom> partSubsetCopy = new ArrayList<OWLAxiom>(partSubset);
-			elements.add(partSubsetCopy);			
+		for (List<OWLAxiom> partitionSubset : partition.elements) {
+			List<OWLAxiom> partitionSubsetCopy = new ArrayList<OWLAxiom>(partitionSubset);
+			elements.add(partitionSubsetCopy);			
 		}		
 	}
 }

@@ -15,9 +15,12 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -330,6 +333,79 @@ public class RuleGenerator {
 				return null;
 			}					
 		};	
+		
+		
+		
+		// RULE 25, 1st variant
+		InferenceRule rule25_1 = 
+				new InferenceRule("25.1", "ObjDom-ObjAll", 2) {
+			
+			@Override	
+			public boolean matchPremises(List<OWLAxiom> premises) {
+				
+				OWLAxiom premise1 = premises.get(0);
+				OWLAxiom premise2 = premises.get(1);
+
+				if (premise1.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN) && premise2.isOfType(AxiomType.SUBCLASS_OF)) {			
+					
+					OWLObjectPropertyExpression property = ((OWLObjectPropertyDomainAxiom) premise1).getProperty();
+					OWLClassExpression classExpression = ((OWLObjectPropertyDomainAxiom) premise1).getDomain();
+					OWLClassExpression secondPremSubCls = ((OWLSubClassOfAxiom) premise2).getSubClass();
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+					
+					if (secondPremSubCls.getClassExpressionType().equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
+			
+						OWLObjectPropertyExpression secondPremSubClsProp = ((OWLObjectAllValuesFrom) secondPremSubCls).getProperty();
+						OWLClassExpression secondPremSubClsClassExp = ((OWLObjectAllValuesFrom) secondPremSubCls).getFiller();
+						
+						return secondPremSubClsClassExp.isOWLNothing() && secondPremSubClsProp.equals(property)
+								&& secondPremSuperCls.equals(classExpression);
+					}
+				}
+
+				return false;
+			}
+			
+			@Override	
+			public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+
+				if (matchPremises(premises)) {
+				
+					OWLAxiom premise2 = premises.get(1);
+					
+					if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+					
+						OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();
+						OWLClassExpression conclusionSuperCls = ((OWLSubClassOfAxiom) conclusion).getSuperClass();
+						OWLClassExpression conclusionSubCls = ((OWLSubClassOfAxiom) conclusion).getSubClass();
+								
+						return conclusionSuperCls.equals(secondPremSuperCls) && conclusionSubCls.isOWLThing();
+					}		
+				}
+				
+				return false;
+			}
+
+			@Override
+			public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+				
+				if (matchPremises(premises)) {
+					
+					OWLAxiom premise2 = premises.get(1);
+					OWLClassExpression secondPremSuperCls = ((OWLSubClassOfAxiom) premise2).getSuperClass();										
+					OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+					OWLSubClassOfAxiom conclusion = new OWLSubClassOfAxiomImpl(dataFactory.getOWLThing(), secondPremSuperCls, new ArrayList<OWLAnnotation>());				
+					
+					return conclusion;
+				}
+				
+				return null;
+			}					
+		};	
+		
+		
+		
+		
 		
 		
 		

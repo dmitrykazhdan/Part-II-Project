@@ -36,78 +36,90 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 public class ProcessOntology {
 
 	public static void GenerateExplanations(String ontologyFilename, String outputDir) throws OWLOntologyCreationException, IOException {
-		
+
 		// Load the ontology from the specified file.
 		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
-			
+
 		// Create the HermiT reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
 		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
 
 		OWLDataFactory dataFactory = manager.getOWLDataFactory();
-		
+
 		// Create an explanation generator from the reasoner and the ontology.
 		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
 		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
-				
+
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
-			
-		
+
+
 		for (OWLClass currentSuperclass : allClasses) {
 
-			// For every class, compute all of its non-strict subclasses.
+			// For every class, compute all of its (non-strict) subclasses.
 			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, currentSuperclass);
-		
+
 			for (OWLClass currentSubclass : subClasses) {
-				
+
 				// Generate a subsumption entailment from the (subclass, superclass) pair.
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
-				
-				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> justification = gen.getExplanations(entailment, 4);
 
-				
+				// For every such subsumption entailment, compute all of its justifications.
+				Set<Explanation<OWLAxiom>> explanationSet = gen.getExplanations(entailment, 4);
+
+
 				// timeout when you are unable to generate a justification
 				// check whether the justification is trivial or not before storing it
-				
-				
+
+
 				// Write these explanations to the output file.
-				StoreExplanations(justification, outputDir);
-			
+				StoreExplanations(explanationSet, outputDir, ontologyFile.getName());
+
 			}		
 		}	
 	}
-	
-	
+
+
 	private static Set<OWLClass> GetNonStrictSubclasses(OWLReasoner reasoner, OWLClass superclass) {
-		
+
 		// For every class in the ontology, compute all of its subclasses (direct and indirect).
 		Set<OWLClass> subClasses = reasoner.getSubClasses(superclass, false).getFlattened();
-		
+
 		// Note that "getSubClasses" returns strict subclasses.
 		// Hence need to manually add equivalent classes as well.
 		subClasses.addAll(reasoner.getEquivalentClasses(superclass).getEntities());
-		
+
 		return subClasses;
 	}
-	
-	
-	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir) throws IOException {
-		
-		// Write all explanations in the given set to the output stream.
+
+
+	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir, String ontName) throws IOException {
+
+		// Write all non-trivial explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
-			
-			// Generate unique identifier when naming the file
-			String uuid = UUID.randomUUID().toString();			
-			File outputFile = new File(outputDir + uuid + ".xml");
-			OutputStream fileOutputStream = new FileOutputStream(outputFile);
-			
-			// Store the explanation in the file
-			Explanation.store(explanation, fileOutputStream);
-			fileOutputStream.close();
+
+			if (!isTrivialExplanation(explanation)) {
+				
+				// Generate unique identifier when naming the file
+				String uuid = UUID.randomUUID().toString();			
+				File outputFile = new File(outputDir + ontName + uuid + ".xml");
+				OutputStream fileOutputStream = new FileOutputStream(outputFile);
+
+				// Store the explanation in the file
+				Explanation.store(explanation, fileOutputStream);
+				fileOutputStream.close();
+			}
 		}		
+	}
+
+	
+	
+	private static boolean isTrivialExplanation(Explanation<OWLAxiom> explanation) {
+
+		// COMPLETE
+		// Define a "trivial" subsumption
+		return false;
 	}
 }
