@@ -32,6 +32,7 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLQuantifiedDataRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
@@ -228,7 +229,11 @@ public class RuleString {
 				
 			} else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM) ||
 					   classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
-				// STUB
+				
+				OWLQuantifiedDataRestriction quantDataRest = (OWLQuantifiedDataRestriction) classExp;
+				return match(quantDataRest.getProperty(), (EntityStr) pattern.getChildren().get(0)) &&
+						match(quantDataRest.getFiller(), (EntityStr) pattern.getChildren().get(1));
+				
 			} else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
 				// STUB
 				
@@ -239,7 +244,7 @@ public class RuleString {
 				OWLDataCardinalityRestriction dataCardRest = (OWLDataCardinalityRestriction) classExp;
 				int n = dataCardRest.getCardinality();
 				
-				return match((OWLEntity) dataCardRest.getProperty(), (EntityStr) pattern.getChildren().get(0))
+				return match(dataCardRest.getProperty(), (EntityStr) pattern.getChildren().get(0))
 						&& match(dataCardRest.getFiller(), (EntityStr)  pattern.getChildren().get(1));
 			} 
 		}
@@ -268,6 +273,18 @@ public class RuleString {
 
 	public OWLAxiom generate(List<OWLAxiom> premises) {
 
+		/*
+		 Types of conclusion axioms:		 
+		 X <= Y
+		 Ro <= So
+		 Tra(So)
+		 Dom(Ro, Y)
+		 Rng(Ro, Y)
+		 Dis(U, V)
+ 
+		 */
+		
+		
 		if (matchPremises(premises)) {
 
 			OWLAxiom conclusionAxiom;
@@ -282,6 +299,12 @@ public class RuleString {
 		return null;	
 	}
 
+	
+	/*
+	 Types of conclusion expressions:
+	 
+	 
+	 */
 
 	private OWLObject generate(ClsExpStr classExpression) {
 		if (classExpression.isAtomic) {
