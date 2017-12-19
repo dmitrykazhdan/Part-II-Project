@@ -1,11 +1,14 @@
 package InferenceRules;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -15,27 +18,40 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
+
 public class RuleString {
 
-	private List<OWLAxiomStr> ruleContents;
+	private OWLAxiomStr conclusion;
+	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
 	
 	private Map<String, OWLObject> usedSymbols;
 
 	
-	public RuleString(List<OWLAxiomStr> ruleContents, int premiseNumber) {
-		this.ruleContents = ruleContents;
+	public RuleString(List<OWLAxiomStr> premisesStr, OWLAxiomStr conclusion, int premiseNumber) {
+		this.premisesStr = premisesStr;
 		this.premiseNumber = premiseNumber;
+		this.conclusion = conclusion;
 	}
 	
 	
 	
 	public boolean matchPremises(List<OWLAxiom> premises) {
-		return false;
+		
+		usedSymbols = new HashMap<String, OWLObject>();
+		
+		for (int i = 0; i < premises.size(); i++) {
+			if (!match(premises.get(i), premisesStr.get(i))) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	
-	public boolean match(OWLAxiom axiom, OWLAxiomStr pattern) {
+	private boolean match(OWLAxiom axiom, OWLAxiomStr pattern) {
 		
 		if (axiom.isOfType(pattern.getConstructor())) {
 			
@@ -99,5 +115,34 @@ public class RuleString {
 			return usedSymbols.get(key).equals(owlObj);			
 		}		
 	}
+	
+	
+	
+	
+	public OWLAxiom generate(List<OWLAxiom> premises) {
+		
+		if (matchPremises(premises)) {
+			
+			OWLAxiom conclusionAxiom;
+			
+			if (conclusion.getConstructor().equals(AxiomType.SUBCLASS_OF)) {
+				OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(0));
+				OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+				conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
+				return conclusionAxiom;
+			}
+		}		
+		return null;	
+	}
+	
+	
+	private OWLObject generate(ClsExpStr classExpression) {
+		if (classExpression.isAtomic) {
+			return usedSymbols.get(classExpression.getAtomic());
+		}
+		
+		return null;
+	}
+	
 	
 }
