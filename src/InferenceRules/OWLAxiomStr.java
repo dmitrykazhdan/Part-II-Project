@@ -3,14 +3,14 @@ package InferenceRules;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLObject;
 
-public class OWLAxiomString {
+public class OWLAxiomStr {
 
 	private AxiomType constructor;
-	private List<ClassExpressionString> children;
+	private List<GenericExpStr> children;
 	
-	public OWLAxiomString (AxiomType constructor, List<ClassExpressionString> children) {
-		
+	public OWLAxiomStr (AxiomType constructor, List<GenericExpStr> children) {		
 		this.constructor = constructor;
 		this.children = children;
 	}
@@ -19,7 +19,7 @@ public class OWLAxiomString {
 		return constructor;
 	}
 	
-	public List<ClassExpressionString> getClassExpressions() {
+	public List<GenericExpStr> getExpressions() {
 		return children;
 	}
 

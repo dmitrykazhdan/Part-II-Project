@@ -4,25 +4,34 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-public class ClassExpressionString {
+public class ClsExpStr implements GenericExpStr {
 
 	private String atomic;
 	private ClassExpressionType constructor;
-	private List<ClassExpressionString> children;
+	private List<ClsExpStr> children;
 	boolean isAtomic;
 	
-	public ClassExpressionString(String atomic) {
+	public ClsExpStr(String atomic) {
 		this.atomic = atomic;
 		isAtomic = true;
 	}
 	
-	public ClassExpressionString (ClassExpressionType constructor, List<ClassExpressionString> children) {
+	public ClsExpStr (ClassExpressionType constructor, List<ClsExpStr> children) {
 		
 		this.constructor = constructor;
 		this.children = children;
 		isAtomic = false;
+	}
+	
+	public ClassExpressionType getConstructor() {
+		return constructor;
+	}
+	
+	public String getAtomic() {
+		return atomic;
 	}
 	
 }
