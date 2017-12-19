@@ -11,7 +11,7 @@ public class ClsExpStr implements GenericExpStr {
 
 	private String atomic;
 	private ClassExpressionType constructor;
-	private List<ClsExpStr> children;
+	private List<GenericExpStr> children;
 	boolean isAtomic;
 	
 	public ClsExpStr(String atomic) {
@@ -19,7 +19,7 @@ public class ClsExpStr implements GenericExpStr {
 		isAtomic = true;
 	}
 	
-	public ClsExpStr (ClassExpressionType constructor, List<ClsExpStr> children) {
+	public ClsExpStr (ClassExpressionType constructor, List<GenericExpStr> children) {
 		
 		this.constructor = constructor;
 		this.children = children;
@@ -32,6 +32,10 @@ public class ClsExpStr implements GenericExpStr {
 	
 	public String getAtomic() {
 		return atomic;
+	}
+	
+	public List<GenericExpStr> getChildren() {
+		return children;
 	}
 	
 }

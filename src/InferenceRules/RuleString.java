@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
@@ -67,7 +69,16 @@ public class RuleString {
 		
 		if (classExp.getClassExpressionType().equals(pattern.getConstructor())) {
 			
-			
+			if (classExp.getClassExpressionType().equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
+				
+				OWLObjectMinCardinality objMinCard = (OWLObjectMinCardinality) classExp;
+				OWLObjectPropertyExpression property = objMinCard.getProperty();
+				OWLClassExpression innerClassExp = objMinCard.getFiller();
+				
+				return match((OWLEntity) property, (EntityStr) pattern.getChildren().get(0))
+						&& match(innerClassExp, (ClsExpStr) pattern.getChildren().get(1));
+				
+			}			
 		}
 		return false;
 	}

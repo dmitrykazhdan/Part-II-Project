@@ -17,7 +17,7 @@ public class GenerateRules {
 		
 		
 		// Sample rule: rule 18	
-		List<ClsExpStr> leaves = new ArrayList<ClsExpStr>();
+		List<GenericExpStr> leaves = new ArrayList<GenericExpStr>();
 		leaves.add(new ClsExpStr("n"));
 		leaves.add(new ClsExpStr("R_0"));
 		leaves.add(new ClsExpStr("Y"));
