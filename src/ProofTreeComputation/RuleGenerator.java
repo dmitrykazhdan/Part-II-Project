@@ -26,6 +26,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 
+import InferenceRules.ClassExpressionString;
+import InferenceRules.OWLAxiomString;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
@@ -769,19 +771,6 @@ public class RuleGenerator {
 		rules.get(2).add(rule39);
 		rules.get(2).add(rule40);
 		rules.get(2).add(rule43);
-		
-		
-		
-		
-		ClassExpressionString subCls = new ClassExpressionString("T");
-		ClassExpressionString superCls = new ClassExpressionString("Y");
-		List<ClassExpressionString> children = new ArrayList<ClassExpressionString>();
-		children.add(subCls);
-		children.add(superCls);	
-		OWLAxiomString premise1 = new OWLAxiomString(AxiomType.SUBCLASS_OF, children);
-		
-	
-		OWLAxiomString premise2 = new OWLAxiomString(AxiomType.DISJOINT_CLASSES, children);		
-		
+
 	}	
 }

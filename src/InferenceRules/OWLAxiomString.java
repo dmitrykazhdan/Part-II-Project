@@ -1,4 +1,4 @@
-package ProofTreeComputation;
+package InferenceRules;
 
 import java.util.List;
 
