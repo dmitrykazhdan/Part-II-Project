@@ -12,8 +12,10 @@ import org.semanticweb.owlapi.model.HasProperty;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
@@ -21,11 +23,16 @@ import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
@@ -104,14 +111,14 @@ public class RuleString {
 				if (axiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
 
 					OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) axiom;
-					return match((OWLEntity) subObjPropAxiom.getSubProperty(), (EntityStr) pattern.getExpressions().get(0))
-							&& match((OWLEntity) subObjPropAxiom.getSuperProperty(), (EntityStr) pattern.getExpressions().get(1));
+					return match(subObjPropAxiom.getSubProperty(), (EntityStr) pattern.getExpressions().get(0))
+							&& match(subObjPropAxiom.getSuperProperty(), (EntityStr) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES)) {
 
 					OWLInverseObjectPropertiesAxiom invObjPropAxiom = (OWLInverseObjectPropertiesAxiom) axiom;
-					return match((OWLEntity) invObjPropAxiom.getFirstProperty(), (EntityStr) pattern.getExpressions().get(0))
-							&& match((OWLEntity) invObjPropAxiom.getSecondProperty(), (EntityStr) pattern.getExpressions().get(1));
+					return match(invObjPropAxiom.getFirstProperty(), (EntityStr) pattern.getExpressions().get(0))
+							&& match(invObjPropAxiom.getSecondProperty(), (EntityStr) pattern.getExpressions().get(1));
 
 							
 				} else if (axiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) ||
@@ -138,26 +145,26 @@ public class RuleString {
 				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ) {
 
 					OWLObjectPropertyRangeAxiom objPropRngAxiom = (OWLObjectPropertyRangeAxiom) axiom;
-					return match((OWLEntity) objPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match((OWLEntity) objPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
+					return match(objPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match(objPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
 
 					OWLObjectPropertyDomainAxiom objPropDomAxiom = (OWLObjectPropertyDomainAxiom) axiom;
-					return match((OWLEntity) objPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match((OWLEntity) objPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
+					return match(objPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match(objPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN)) {
 
 					OWLDataPropertyDomainAxiom dataPropDomAxiom = (OWLDataPropertyDomainAxiom) axiom;
-					return match((OWLEntity) dataPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match((OWLEntity) dataPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
+					return match(dataPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match(dataPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
 				
 				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
 
 					OWLDataPropertyRangeAxiom dataPropRngAxiom = (OWLDataPropertyRangeAxiom) axiom;
-					return match((OWLEntity) dataPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match((OWLEntity) dataPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
+					return match(dataPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match(dataPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
 				} 
 			}
 		}
@@ -172,12 +179,6 @@ public class RuleString {
 		/*
 		 Skipped:
 		 		 
-		 Needed for rules:
-		 
-		 7.  Exists Ro.{a}
-		 14. Exists Rd.{l}
-		 
-		 
 		 Not needed for rules:
 		 
 		 4.  One(a, b, ...)		 
@@ -193,59 +194,62 @@ public class RuleString {
 		
 		if (classExpType.equals(pattern.getConstructor())) {
 
-			if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
-
-				OWLObjectMinCardinality objMinCard = (OWLObjectMinCardinality) classExp;
-				OWLObjectPropertyExpression property = objMinCard.getProperty();
-				OWLClassExpression innerClassExp = objMinCard.getFiller();
-
-				return match((OWLEntity) property, (EntityStr) pattern.getChildren().get(0))
-						&& match(innerClassExp, (ClsExpStr) pattern.getChildren().get(1));
-
-				
-				
-				
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
-				// STUB
+			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
+				// Need some exception handling.
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
-				// STUB
+				// Need some exception handling.
+				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
+				
+				OWLObjectComplementOf compObj = (OWLObjectComplementOf) classExp;
+				return match(compObj.getOperand(), (ClsExpStr) pattern.getChildren().get(0));
+							
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
+					   classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
+					
+				OWLQuantifiedObjectRestriction objSomeValFrom = (OWLQuantifiedObjectRestriction) classExp;
+				return match(objSomeValFrom.getProperty(), (EntityStr) pattern.getChildren().get(0))
+						&& match(objSomeValFrom.getFiller(), (ClsExpStr)  pattern.getChildren().get(1));
+							
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
+						classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
+						classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
+							
+				OWLObjectCardinalityRestriction objCardRest = (OWLObjectCardinalityRestriction) classExp;				
+				int n = objCardRest.getCardinality();
+				
+				return match(objCardRest.getProperty(), (EntityStr) pattern.getChildren().get(0))
+						&& match(objCardRest.getFiller(), (ClsExpStr)  pattern.getChildren().get(1));
+				
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+				
+				OWLObjectHasValue objHasVal = (OWLObjectHasValue) classExp;
+				
+				
+			} else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM) ||
+					   classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
 				// STUB
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM)) {
+			} else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
 				// STUB
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
-				// STUB				
-			} else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY)) {
-				// STUB
-			} else if (classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
-				// STUB
-			}
-			
-			
-			
-			
-			
-			
+				
+			} else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY) ||
+					   classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
+					   classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
+				
+				OWLDataCardinalityRestriction dataCardRest = (OWLDataCardinalityRestriction) classExp;
+				int n = dataCardRest.getCardinality();
+				
+				return match((OWLEntity) dataCardRest.getProperty(), (EntityStr) pattern.getChildren().get(0))
+						&& match(dataCardRest.getFiller(), (EntityStr)  pattern.getChildren().get(1));
+			} 
 		}
 		return false;
 	}
 
 
 
-	private boolean match(OWLEntity entity, EntityStr pattern) {
-		return addToMap((OWLObject) entity, pattern.getAtomic());
+	private boolean match(OWLObject entity, EntityStr pattern) {
+		return addToMap(entity, pattern.getAtomic());
 	}
 
 
