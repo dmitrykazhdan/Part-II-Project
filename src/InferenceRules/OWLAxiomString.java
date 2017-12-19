@@ -14,6 +14,14 @@ public class OWLAxiomString {
 		this.constructor = constructor;
 		this.children = children;
 	}
+	
+	public AxiomType getConstructor() {
+		return constructor;
+	}
+	
+	public List<ClassExpressionString> getClassExpressions() {
+		return children;
+	}
 
 }
 
