@@ -169,14 +169,31 @@ public class RuleString {
 
 
 	private boolean match(OWLClassExpression classExp, ClsExpStr pattern) {
-
+		/*
+		 Skipped:
+		 		 
+		 Needed for rules:
+		 
+		 7.  Exists Ro.{a}
+		 14. Exists Rd.{l}
+		 
+		 
+		 Not needed for rules:
+		 
+		 4.  One(a, b, ...)		 
+		 8.  Exists Ro.Self		 
+		 18. Inv(Ro)
+	 		 
+		 */
 		if (pattern.isAtomic) {
 			return addToMap((OWLObject) classExp, pattern.getAtomic());
 		}
 
-		if (classExp.getClassExpressionType().equals(pattern.getConstructor())) {
+		ClassExpressionType classExpType = classExp.getClassExpressionType();
+		
+		if (classExpType.equals(pattern.getConstructor())) {
 
-			if (classExp.getClassExpressionType().equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
+			if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
 
 				OWLObjectMinCardinality objMinCard = (OWLObjectMinCardinality) classExp;
 				OWLObjectPropertyExpression property = objMinCard.getProperty();
@@ -185,7 +202,42 @@ public class RuleString {
 				return match((OWLEntity) property, (EntityStr) pattern.getChildren().get(0))
 						&& match(innerClassExp, (ClsExpStr) pattern.getChildren().get(1));
 
-			}			
+				
+				
+				
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
+				// STUB				
+			} else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY)) {
+				// STUB
+			} else if (classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
+				// STUB
+			}
+			
+			
+			
+			
+			
+			
 		}
 		return false;
 	}
