@@ -8,18 +8,28 @@ import java.util.Map;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.HasProperty;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
@@ -62,6 +72,7 @@ public class RuleString {
 		 Needed for rules:		 
 		 17) Equivalent classes
 		 18) Disjoint classes
+		 28) Different individuals
 
 
 		 Not needed:
@@ -93,54 +104,25 @@ public class RuleString {
 				if (axiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
 
 					OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) axiom;
-
 					return match((OWLEntity) subObjPropAxiom.getSubProperty(), (EntityStr) pattern.getExpressions().get(0))
 							&& match((OWLEntity) subObjPropAxiom.getSuperProperty(), (EntityStr) pattern.getExpressions().get(1));
-
 
 				} else if (axiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES)) {
 
 					OWLInverseObjectPropertiesAxiom invObjPropAxiom = (OWLInverseObjectPropertiesAxiom) axiom;
-
 					return match((OWLEntity) invObjPropAxiom.getFirstProperty(), (EntityStr) pattern.getExpressions().get(0))
 							&& match((OWLEntity) invObjPropAxiom.getSecondProperty(), (EntityStr) pattern.getExpressions().get(1));
 
-
-				} else if (axiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY)) {
-
-					OWLFunctionalObjectPropertyAxiom funObjAxiom = (OWLFunctionalObjectPropertyAxiom) axiom;				
-
-					return match((OWLEntity) funObjAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-
-				} else if (axiom.isOfType(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-
-				} else if (axiom.isOfType(AxiomType.SYMMETRIC_OBJECT_PROPERTY)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-
-				} else if (axiom.isOfType(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-
-				}  else if (axiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-				}
+							
+				} else if (axiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) ||
+							axiom.isOfType(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) ||
+							axiom.isOfType(AxiomType.SYMMETRIC_OBJECT_PROPERTY) ||
+							axiom.isOfType(AxiomType.TRANSITIVE_OBJECT_PROPERTY) ||
+							axiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
+										
+					HasProperty<OWLProperty> axiomWithProperty = (HasProperty<OWLProperty>) axiom;
+					return match(axiomWithProperty.getProperty(), (EntityStr) pattern.getExpressions().get(0));
+				} 
 			}
 
 
@@ -150,51 +132,34 @@ public class RuleString {
 				if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
 
 					OWLSubClassOfAxiom subClsAxiom = (OWLSubClassOfAxiom) axiom;
-
 					return match(subClsAxiom.getSubClass(), (ClsExpStr) pattern.getExpressions().get(0))
 							&& match(subClsAxiom.getSuperClass(), (ClsExpStr) pattern.getExpressions().get(1));
 
+				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ) {
 
-				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
+					OWLObjectPropertyRangeAxiom objPropRngAxiom = (OWLObjectPropertyRangeAxiom) axiom;
+					return match((OWLEntity) objPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match((OWLEntity) objPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
 
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
-
-				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-
+					OWLObjectPropertyDomainAxiom objPropDomAxiom = (OWLObjectPropertyDomainAxiom) axiom;
+					return match((OWLEntity) objPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match((OWLEntity) objPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN)) {
 
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
+					OWLDataPropertyDomainAxiom dataPropDomAxiom = (OWLDataPropertyDomainAxiom) axiom;
+					return match((OWLEntity) dataPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match((OWLEntity) dataPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
+				
+				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
 
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
+					OWLDataPropertyRangeAxiom dataPropRngAxiom = (OWLDataPropertyRangeAxiom) axiom;
+					return match((OWLEntity) dataPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
+							match((OWLEntity) dataPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
 				} 
 			}
-
-
-			// ABox axioms
-			if (axiom.isOfType(AxiomType.ABoxAxiomTypes)) {
-				if (axiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
-
-					OWLInverseFunctionalObjectPropertyAxiom invFuncObjPropAxiom = (OWLInverseFunctionalObjectPropertyAxiom) axiom;
-
-					return match((OWLEntity) invFuncObjPropAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0));
-				}
-			}
-
 		}
 		return false;
 	}
