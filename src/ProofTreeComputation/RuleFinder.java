@@ -72,8 +72,7 @@ public class RuleFinder {
 		return null;	
 	}	
 	
-	
-	
+		
 	private static List<List<OWLAxiom>> getPremisePermutations(List<OWLAxiom> premises) {
 		
 		List<List<OWLAxiom>> allPermutations = new ArrayList<List<OWLAxiom>>();

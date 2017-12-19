@@ -41,24 +41,24 @@ public class ProofTree {
 	}
 	
 		
-	public OWLAxiom getAxiom() {
-		
+	public OWLAxiom getAxiom() {		
 		return axiom;
 	}
 	
-	public void setAxiom(OWLAxiom axiom) {
-		
+	public void setAxiom(OWLAxiom axiom) {		
 		this.axiom = axiom;
 	}
 	
-	public List<ProofTree> getSubTrees() {
-		
+	public List<ProofTree> getSubTrees() {		
 		return subTrees;
 	}
 	
-	public void setSubTrees(List<ProofTree> subTrees) {
-		
+	public void setSubTrees(List<ProofTree> subTrees) {		
 		this.subTrees = subTrees;
+	}
+	
+	public void setInferenceRule(InferenceRule inferenceRule) {
+		this.inferenceRule = inferenceRule;
 	}
 	
 	// Return the root axioms of all direct children  as a list.
