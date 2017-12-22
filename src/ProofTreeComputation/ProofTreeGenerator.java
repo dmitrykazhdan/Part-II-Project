@@ -35,6 +35,11 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
+import InfRuleAsAnonClass.ExceptionFinder;
+import InfRuleAsAnonClass.InferenceRule;
+import InfRuleAsAnonClass.RuleApplication;
+import InfRuleAsAnonClass.RuleFinder;
+
 public class ProofTreeGenerator {
 
 	
