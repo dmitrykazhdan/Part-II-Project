@@ -39,6 +39,11 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
 public class RuleString {
@@ -302,17 +307,65 @@ public class RuleString {
 	
 	/*
 	 Types of conclusion expressions:
+	 	 
+	 Need to be implemented:
 	 
-	 
+	 1)  Conjunction.
+	 2)  Exists Ro
+	 3)  Union
+	 4)  Object-min-cardinality
+	 5)  Object-max-cardinality
+	 6)  Object-all-values-from
+	 7)  Object-exact-cardinality	 
 	 */
 
-	private OWLObject generate(ClsExpStr classExpression) {
-		if (classExpression.isAtomic) {
-			return usedSymbols.get(classExpression.getAtomic());
+	private OWLObject generate(ClsExpStr conclusionExp) {
+		
+		if (conclusionExp.isAtomic) {
+			return usedSymbols.get(conclusionExp.getAtomic());
+		}
+		
+		ClassExpressionType classExpType = conclusionExp.getConstructor();
+		
+		if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
+			classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
+			
+			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate((EntityStr) conclusionExp.getChildren().get(0));
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionExp.getChildren().get(1));			
+			
+			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ) {
+				return new OWLObjectSomeValuesFromImpl(objPropExp, classExp);
+			} else {
+				return new OWLObjectAllValuesFromImpl(objPropExp, classExp);			
+			}
+			
+		} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY) ||
+				   classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
+				   classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
+		
+			int cardinality = Integer.parseInt(conclusionExp.getAtomic());
+			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate((EntityStr) conclusionExp.getChildren().get(0));
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionExp.getChildren().get(1));			
+						
+			if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
+				return new OWLObjectMinCardinalityImpl(objPropExp, cardinality, classExp );				
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
+				return new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );				
+			} else {
+				return new OWLObjectExactCardinalityImpl(objPropExp, cardinality, classExp );				
+			}
+						
+		} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
+			// STUB
+		} else if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
+			// STUB
 		}
 
 		return null;
 	}
-
-
+	
+	
+	private OWLObject generate(EntityStr conclusionExp) {
+		return usedSymbols.get(conclusionExp.getAtomic());
+	}
 }
