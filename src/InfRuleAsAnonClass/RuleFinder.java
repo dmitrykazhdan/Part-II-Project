@@ -1,4 +1,4 @@
-package ProofTreeComputation;
+package InfRuleAsAnonClass;
 
 import java.util.ArrayList;
 import java.util.List;

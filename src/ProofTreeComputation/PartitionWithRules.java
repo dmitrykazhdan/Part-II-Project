@@ -2,6 +2,8 @@ package ProofTreeComputation;
 
 import java.util.List;
 
+import InfRuleAsAnonClass.RuleApplication;
+
 // Partition with rules that can be applied to the subsets.
 public class PartitionWithRules {
 

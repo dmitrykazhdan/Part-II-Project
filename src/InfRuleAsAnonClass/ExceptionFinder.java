@@ -1,4 +1,6 @@
-package ProofTreeComputation;
+package InfRuleAsAnonClass;
+
+import ProofTreeComputation.ProofTree;
 
 public class ExceptionFinder {
 	

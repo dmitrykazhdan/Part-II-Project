@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 
+import InfRuleAsAnonClass.InferenceRule;
+import InfRuleAsAnonClass.RuleApplication;
+import InfRuleAsAnonClass.RuleFinder;
+
 public class PartitionGenerator {
 	
 	public static List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {

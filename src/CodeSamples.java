@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 
 
-public class ExtractEntailments {
+public class CodeSamples {
 	
 	public static void main(String args[]) throws OWLOntologyCreationException  {
 		
