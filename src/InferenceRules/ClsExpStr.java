@@ -1,5 +1,7 @@
 package InferenceRules;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.AxiomType;
@@ -24,6 +26,13 @@ public class ClsExpStr implements GenericExpStr {
 		this.constructor = constructor;
 		this.children = children;
 		isAtomic = false;
+	}
+	
+	public ClsExpStr (ClassExpressionType constructor, GenericExpStr... children) {
+		
+		this.constructor = constructor;
+		isAtomic = false;
+		this.children = new ArrayList<GenericExpStr>(Arrays.asList(children));
 	}
 	
 	public ClassExpressionType getConstructor() {

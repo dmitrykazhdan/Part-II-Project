@@ -1,6 +1,7 @@
 package InferenceRules;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,12 @@ public class RuleString {
 	public RuleString(List<OWLAxiomStr> premisesStr, OWLAxiomStr conclusion, int premiseNumber) {
 		this.premisesStr = premisesStr;
 		this.premiseNumber = premiseNumber;
+		this.conclusion = conclusion;
+	}
+	
+	public RuleString(OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
+		this.premiseNumber = premisesStr.size();
 		this.conclusion = conclusion;
 	}
 

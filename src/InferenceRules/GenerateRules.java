@@ -21,6 +21,12 @@ import ProofTreeComputation.ProofTreeGenerator;
 
 public class GenerateRules {
 
+	/*
+	 ToDo:
+	 
+	 Implement exception Case1, subCase1.
+	 Implement rule application for the string rules.
+	 */
 	
 	
 	public static void main (String args[]) throws IOException {
@@ -29,6 +35,7 @@ public class GenerateRules {
 		List<GenericExpStr> leaves = new ArrayList<GenericExpStr>();
 		
 		
+		// Rule 39
 		premiseChildren.add(new ClsExpStr("X"));
 		premiseChildren.add(new ClsExpStr("Y"));
 		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, premiseChildren);
@@ -49,57 +56,37 @@ public class GenerateRules {
 		RuleString rule39 = new RuleString(premises, conclusion, 2);
 		
 		
-		String explanationDirName = "/Users/AdminDK/Desktop/TestExplanations/";
-		File explanationDir = new File(explanationDirName);
-		
-		File[] explanationFiles = explanationDir.listFiles(new FilenameFilter() {
-		    @Override
-		    public boolean accept(File dir, String name) {
-		        return name.endsWith(".xml");
-		    }
-		});
-		
-		
-		for (int i = 0; i < explanationFiles.length; i++) {
-			
-			String explanationFilename = explanationFiles[i].getAbsolutePath();		
-			InputStream fileInputStream = new FileInputStream(explanationFilename);
 
-			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
-			
-			Set<OWLAxiom> justification = explanation.getAxioms();
-			List<OWLAxiom> justsAsList = new ArrayList<OWLAxiom>(justification);	
-			
-			OWLAxiom conc = rule39.generate(justsAsList);
-			System.out.println("hey");
-					
-		}	
+		// Rule 43
+		GenericExpStr tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+										new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+										new ClsExpStr("Y"));
+		
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("Y"), new ClsExpStr("Z"));
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+																		new ClsExpStr("Z"));
+		
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+		RuleString rule43 = new RuleString(conclusion, premise1, premise2);
+		
+		
+		
+		// Rule 40
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), new ClsExpStr("Y"));
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), new ClsExpStr("Z"));
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_INTERSECTION_OF, new ClsExpStr("Y"), new ClsExpStr("Z"));		
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+		RuleString rule40 = new RuleString(conclusion, premise1, premise2);
 
 		
+	}
+	
+	
+	private static GenericExpStr createExpression(GenericExpStr...expStrs) {
 		
-		// Sample rule: rule 18	
-//		List<GenericExpStr> leaves = new ArrayList<GenericExpStr>();
-//		leaves.add(new ClsExpStr("n"));
-//		leaves.add(new ClsExpStr("R_0"));
-//		leaves.add(new ClsExpStr("Y"));
-//		GenericExpStr premise1Child = new ClsExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, leaves);
-//		GenericExpStr premise2Child = new ClsExpStr("X");
-//		premiseChildren.add(premise2Child);
-//		premiseChildren.add(premise1Child);
-//		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, premiseChildren);
-//		
-//		
-//		premise2Child = new EntityStr("R_0", EntityType.OBJECT_PROPERTY);
-//		premiseChildren = new ArrayList<GenericExpStr>();
-//		premiseChildren.add(premise2Child);
-//		OWLAxiomStr premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, premiseChildren);
-//
-//		
-//		List<OWLAxiomStr> premises = new ArrayList<OWLAxiomStr>();
-//		premises.add(premise1);
-//		premises.add(premise2);
-//		
-//		RuleString rule18 = new RuleString(premises, 2);
-//		
+		
+		return null;
 	}
 }

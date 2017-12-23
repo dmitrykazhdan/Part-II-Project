@@ -1,5 +1,7 @@
 package InferenceRules;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.AxiomType;
@@ -13,6 +15,11 @@ public class OWLAxiomStr {
 	public OWLAxiomStr (AxiomType constructor, List<GenericExpStr> children) {		
 		this.constructor = constructor;
 		this.children = children;
+	}
+	
+	public OWLAxiomStr (AxiomType constructor, GenericExpStr... children) {		
+		this.constructor = constructor;		
+		this.children = new ArrayList<GenericExpStr>(Arrays.asList(children));
 	}
 	
 	public AxiomType getConstructor() {
