@@ -26,6 +26,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 
+import InferenceRules.ClsExpStr;
+import InferenceRules.OWLAxiomStr;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
@@ -769,5 +771,6 @@ public class RuleGenerator {
 		rules.get(2).add(rule39);
 		rules.get(2).add(rule40);
 		rules.get(2).add(rule43);
+
 	}	
 }

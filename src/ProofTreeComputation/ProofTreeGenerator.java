@@ -35,10 +35,7 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import InfRuleAsAnonClass.ExceptionFinder;
-import InfRuleAsAnonClass.InferenceRule;
-import InfRuleAsAnonClass.RuleApplication;
-import InfRuleAsAnonClass.RuleFinder;
+import InferenceRules.GenerateExceptions;
 
 public class ProofTreeGenerator {
 
@@ -116,12 +113,14 @@ public class ProofTreeGenerator {
 					
 		for (Explanation<OWLAxiom> laconicJustification : laconicJustifications) {
 			
+			// Match up the laconic axioms to the axioms in the justification which entail them.
 			List<ProofTree> subTrees = matchLaconicToNonLaconicJust(justification, laconicJustification.getAxioms());
 			
 			if (subTrees == null) {
 				continue;
 			}
 			
+			// Attempt to assign rules to lemma nodes.
 			List<ProofTree> subTreesWithRules = findRulesForLemmas(subTrees);
 			
 			if (subTreesWithRules != null) {
@@ -149,8 +148,9 @@ public class ProofTreeGenerator {
 			
 			if (tree.getSubTrees() != null) {
 				
-				if (ExceptionFinder.isException(tree)) {
-					appliedTrees.add(ExceptionFinder.applyException(tree));
+				if (GenerateExceptions.isException(tree)) {
+					appliedTrees.add(GenerateExceptions.applyExceptionRule(tree));
+					
 				} else {
 					
 					OWLAxiom laconicAxiom = tree.getAxiom();
@@ -171,7 +171,6 @@ public class ProofTreeGenerator {
 				}
 			}
 		}			
-		
 		return appliedTrees;
 	}
 	
