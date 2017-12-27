@@ -275,6 +275,74 @@ public class GenerateRules {
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new ClsExpStr("X"));
 		RuleString rule47 = new RuleString(conclusion, premise1, premise2);
+
+
+		
+		// Rule 48
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("T"));
+
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("Y"));
+
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("Y"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+		RuleString rule48 = new RuleString(conclusion, premise1, premise2);
+		
+		
+		
+		
+		// Rule 49
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+				new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+						new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+						new ClsExpStr("Y")));
+
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+
+		premise2 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("Y"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), tmp);
+		RuleString rule49_1 = new RuleString(conclusion, premise1, premise2);
+
+		
+
+		// Rule 50
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), new ClsExpStr("F"));
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("F"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("T"), tmp);
+		RuleString rule50 = new RuleString(conclusion, premise1, premise2);
+
+
+		
+		// Rule 51
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("X"), new ClsExpStr("F"));
+
+		tmp = new ClsExpStr(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("F"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new ClsExpStr("T"), tmp);
+		RuleString rule51 = new RuleString(conclusion, premise1, premise2);
+
 		
 
 
