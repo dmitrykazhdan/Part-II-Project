@@ -7,12 +7,12 @@ import org.semanticweb.owlapi.model.EntityType;
 
 public class EntityStr  implements GenericExpStr {
 	
-	private String atomic;
+	private String value;
 	private EntityType entityType;
 	
-	public EntityStr(String atomic, EntityType entityType) {
+	public EntityStr(String value, EntityType entityType) {
 		this.entityType = entityType;
-		this.atomic = atomic;	
+		this.value = value;	
 	}
 
 	public EntityType getEntityType() {
@@ -20,6 +20,6 @@ public class EntityStr  implements GenericExpStr {
 	}
 	
 	public String getAtomic() {
-		return atomic;
+		return value;
 	}
 }

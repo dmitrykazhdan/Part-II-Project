@@ -58,6 +58,7 @@ public class RuleString {
 	private Map<String, OWLObject> usedSymbols;
 
 
+
 	public RuleString(List<OWLAxiomStr> premisesStr, OWLAxiomStr conclusion, int premiseNumber) {
 		this.premisesStr = premisesStr;
 		this.premiseNumber = premiseNumber;
@@ -244,13 +245,13 @@ public class RuleString {
 		 18. Inv(Ro)
 	 		 
 		 */
-		if (pattern.isAtomic) {
-			return addToMap((OWLObject) classExp, pattern.getAtomic());
+		if (pattern.getExpressionType() == null) {
+			return addToMap((OWLObject) classExp, ((AtomicCls) pattern).getPlaceholder());
 		}
 
 		ClassExpressionType classExpType = classExp.getClassExpressionType();
 		
-		if (classExpType.equals(pattern.getConstructor())) {
+		if (classExpType.equals(pattern.getExpressionType())) {
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
 				// Need some exception handling.
@@ -260,14 +261,16 @@ public class RuleString {
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
 				
 				OWLObjectComplementOf compObj = (OWLObjectComplementOf) classExp;
-				return match(compObj.getOperand(), (ClsExpStr) pattern.getChildren().get(0));
+				return match(compObj.getOperand(), ((InterUnionComp) pattern).getSubExpressions().get(0));
 							
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
 					   classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
 					
 				OWLQuantifiedObjectRestriction objSomeValFrom = (OWLQuantifiedObjectRestriction) classExp;
-				return match(objSomeValFrom.getProperty(), (EntityStr) pattern.getChildren().get(0))
-						&& match(objSomeValFrom.getFiller(), (ClsExpStr)  pattern.getChildren().get(1));
+				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
+				
+				return match(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
+						&& match(objSomeValFrom.getFiller(), specialisedPattern.getExpression());
 							
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
 						classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
