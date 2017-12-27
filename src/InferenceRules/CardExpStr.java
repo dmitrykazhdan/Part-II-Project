@@ -7,29 +7,29 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 public class CardExpStr extends ClsExpStr {
 	
 	private EntityStr property;
-	private int cardinality;
-	private int lowerBound;
-	private int upperBound;
-	private GenericExpStr expression;
+	private String cardinality;
+	private String lowerBound;
+	private ClsExpStr expression;
+	private boolean isRelativeBound;
 		
-	public CardExpStr(ClassExpressionType expType, EntityStr property, int cardinality, int lowerBound, int upperBound, GenericExpStr expression) {
+	public CardExpStr(ClassExpressionType expType, boolean isRelativeBound, EntityStr property, String cardinality, String lowerBound, ClsExpStr expression) {
 		
 		super(expType);
 		this.property = property;
 		this.cardinality = cardinality;
 		this.lowerBound = lowerBound;
-		this.upperBound = upperBound;
 		this.expression = expression;
+		this.isRelativeBound = isRelativeBound;
 	}
 	
-	public int getLowerBound() { return lowerBound; }
+	public String getLowerBound() { return lowerBound; }
 	
-	public int getUpperBound() { return upperBound; }
-	
-	public int getCardinality() { return cardinality; }
+	public String getCardinality() { return cardinality; }
 	
 	public EntityStr getProperty() { return property; }
 	
-	public GenericExpStr getExpression() { return expression; }
+	public ClsExpStr getExpression() { return expression; }
+	
+	public boolean isRelativeBound() { return isRelativeBound; }
 	
 }
