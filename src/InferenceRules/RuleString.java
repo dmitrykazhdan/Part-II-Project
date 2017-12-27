@@ -19,8 +19,10 @@ import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
@@ -92,7 +94,6 @@ public class RuleString {
 		 Needed for rules:		 
 		 17) Equivalent classes
 		 18) Disjoint classes
-		 28) Different individuals
 
 
 		 Not needed:
@@ -178,8 +179,52 @@ public class RuleString {
 					OWLDataPropertyRangeAxiom dataPropRngAxiom = (OWLDataPropertyRangeAxiom) axiom;
 					return match(dataPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
 							match(dataPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
-				} 
+				
+				} else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
+					
+					OWLEquivalentClassesAxiom eqvClassesAxiom = (OWLEquivalentClassesAxiom) axiom;
+					ClsExpStr firstPatternClsExp = (ClsExpStr) pattern.getExpressions().get(0);
+					ClsExpStr secondPatternClsExp = (ClsExpStr) pattern.getExpressions().get(1);
+					
+					for (OWLEquivalentClassesAxiom pairwiseAxiom : eqvClassesAxiom.asPairwiseAxioms()) {
+						
+						OWLClassExpression firstClsExp = pairwiseAxiom.getClassExpressionsAsList().get(0);
+						OWLClassExpression secondClsExp = pairwiseAxiom.getClassExpressionsAsList().get(1);
+						
+						if ((match(firstClsExp, firstPatternClsExp) && match(secondClsExp, secondPatternClsExp)) ||
+							(match(firstClsExp, secondPatternClsExp) && match(secondClsExp, firstPatternClsExp))){
+							return true;
+						}					
+					}
+					
+					return false;
+				}
 			}
+		}
+		
+		
+		// ABox Axioms
+		if (axiom.isOfType(AxiomType.ABoxAxiomTypes)) {
+			
+			// Note, this assumes that the "Different Individuals" string pattern only has 2 children!
+			if (axiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
+				
+				OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) axiom;				
+				boolean matchedFirstArgument = false;
+				boolean matchedSecondArgument = false;
+				
+				for (OWLIndividual i : diffIndividualsAxiom.getIndividualsAsList()) {
+					if (match(i, (EntityStr) pattern.getExpressions().get(0))) {
+						matchedFirstArgument = true;
+					}
+					
+					if (match(i, (EntityStr) pattern.getExpressions().get(1))) {
+						matchedSecondArgument = true;
+					}
+				}
+				
+				return matchedFirstArgument && matchedSecondArgument;
+			}		
 		}
 		return false;
 	}
