@@ -160,6 +160,35 @@ public class GenerateRules {
 		
 		
 		// Rule 34
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY),
+				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
+				new EntityStr("So", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		RuleString rule34 = new RuleString(conclusion, premise1, premise2);
+		
+
+		
+		// Rule 35
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new ClsExpStr("X"));
+
+		RuleString rule35 = new RuleString(conclusion, premise1, premise2);
+
+
+		
+		
 		
 		
 		
@@ -215,6 +244,12 @@ public class GenerateRules {
 
 	}
 
+	
+	private static void getDomainAxiomStr() {
+		// Fill in and change return type
+	}
+	
+	
 
 	private static GenericExpStr createExpression(GenericExpStr...expStrs) {
 
