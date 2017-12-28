@@ -9,10 +9,10 @@ public class CardExpStr extends ClsExpStr {
 	private EntityStr property;
 	private String cardinality;
 	private String lowerBound;
-	private ClsExpStr expression;
+	private GenericExpStr expression;
 	private boolean isRelativeBound;
 		
-	public CardExpStr(ClassExpressionType expType, boolean isRelativeBound, EntityStr property, String cardinality, String lowerBound, ClsExpStr expression) {
+	public CardExpStr(ClassExpressionType expType, boolean isRelativeBound, EntityStr property, String cardinality, String lowerBound, GenericExpStr expression) {
 		
 		super(expType);
 		this.property = property;
@@ -28,7 +28,7 @@ public class CardExpStr extends ClsExpStr {
 	
 	public EntityStr getProperty() { return property; }
 	
-	public ClsExpStr getExpression() { return expression; }
+	public GenericExpStr getExpression() { return expression; }
 	
 	public boolean isRelativeBound() { return isRelativeBound; }
 	

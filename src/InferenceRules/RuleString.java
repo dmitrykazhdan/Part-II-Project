@@ -303,7 +303,7 @@ public class RuleString {
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
 				
 				return match(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
-						&& match(objSomeValFrom.getFiller(), specialisedPattern.getExpression());
+						&& match(objSomeValFrom.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
 				
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
@@ -315,7 +315,7 @@ public class RuleString {
 
 				return matchCardinality(objCardRest.getCardinality(), specialisedPattern) 
 						&& match(objCardRest.getProperty(), specialisedPattern.getProperty())
-						&& match(objCardRest.getFiller(), specialisedPattern.getExpression());
+						&& match(objCardRest.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
 	
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
@@ -330,7 +330,7 @@ public class RuleString {
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
 				
 				return match(quantDataRest.getProperty(), specialisedPattern.getProperty())
-						&& match(quantDataRest.getFiller(), specialisedPattern.getExpression());
+						&& match(quantDataRest.getFiller(), (EntityStr) specialisedPattern.getExpression());
 				
 			} else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
 				// STUB
@@ -339,11 +339,12 @@ public class RuleString {
 					   classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
 					   classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
 				
-				OWLDataCardinalityRestriction dataCardRest = (OWLDataCardinalityRestriction) classExp;
-				int n = dataCardRest.getCardinality();
-				
-				return match(dataCardRest.getProperty(), (EntityStr) pattern.getChildren().get(0))
-						&& match(dataCardRest.getFiller(), (EntityStr)  pattern.getChildren().get(1));
+				OWLObjectCardinalityRestriction dataCardRest = (OWLObjectCardinalityRestriction) classExp;				
+				CardExpStr specialisedPattern = (CardExpStr) pattern;
+
+				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern) 
+						&& match(dataCardRest.getProperty(), specialisedPattern.getProperty())
+						&& match(dataCardRest.getFiller(), (EntityStr) specialisedPattern.getExpression());
 			} 
 		}
 		return false;
@@ -428,17 +429,19 @@ public class RuleString {
 
 	private OWLObject generate(ClsExpStr conclusionExp) {
 		
-		if (conclusionExp.isAtomic) {
-			return usedSymbols.get(conclusionExp.getAtomic());
+		if (conclusionExp.getExpressionType() == null) {
+			return usedSymbols.get(((AtomicCls) conclusionExp).getPlaceholder());
 		}
 		
-		ClassExpressionType classExpType = conclusionExp.getConstructor();
+		ClassExpressionType classExpType = conclusionExp.getExpressionType();
 		
 		if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
 			classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
 			
-			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate((EntityStr) conclusionExp.getChildren().get(0));
-			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionExp.getChildren().get(1));			
+			ExistsOrForAll specialisedPattern = (ExistsOrForAll) conclusionExp;
+
+			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate(specialisedPattern.getProperty());
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression());			
 			
 			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ) {
 				return new OWLObjectSomeValuesFromImpl(objPropExp, classExp);
@@ -450,9 +453,11 @@ public class RuleString {
 				   classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
 				   classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
 		
-			int cardinality = Integer.parseInt(conclusionExp.getAtomic());
-			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate((EntityStr) conclusionExp.getChildren().get(0));
-			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionExp.getChildren().get(1));			
+			CardExpStr specialisedPattern = (CardExpStr) conclusionExp;
+			
+			int cardinality = Integer.parseInt(specialisedPattern.getCardinality());
+			OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate(specialisedPattern.getProperty());
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression());			
 						
 			if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
 				return new OWLObjectMinCardinalityImpl(objPropExp, cardinality, classExp );				

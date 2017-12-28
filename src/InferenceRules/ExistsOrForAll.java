@@ -7,9 +7,9 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 public class ExistsOrForAll extends ClsExpStr {
 
 	private EntityStr property;
-	private ClsExpStr expression;
+	private GenericExpStr expression;
 
-	public ExistsOrForAll(ClassExpressionType expType, EntityStr property, ClsExpStr expression) {
+	public ExistsOrForAll(ClassExpressionType expType, EntityStr property, GenericExpStr expression) {
 		super(expType);
 		this.property = property;
 		this.expression = expression;
@@ -17,6 +17,6 @@ public class ExistsOrForAll extends ClsExpStr {
 	
 	public EntityStr getProperty() { return property; }
 	
-	public ClsExpStr getExpression() { return expression; }
+	public GenericExpStr getExpression() { return expression; }
 
 }
