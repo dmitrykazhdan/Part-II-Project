@@ -49,6 +49,7 @@ import OWLExpressionTemplates.EntityStr;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.InterUnionComp;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.TemplatePrimitive;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
@@ -359,7 +360,7 @@ public class RuleString {
 
 
 
-	private boolean match(OWLObject entity, EntityStr pattern) {
+	private boolean match(OWLObject entity, TemplatePrimitive pattern) {
 		return addToMap(entity, pattern.getAtomic());
 	}
 	

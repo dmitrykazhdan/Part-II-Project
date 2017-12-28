@@ -20,6 +20,8 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
+import OWLExpressionTemplates.ClsExpStr;
+import OWLExpressionTemplates.DataRangeTemplatePrimitive;
 import OWLExpressionTemplates.EntityStr;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.GenericExpStr;
@@ -33,8 +35,16 @@ public class GenerateRules {
 	/*
 	 ToDo:
 
-	 Implement exception Case1, subCase1.
-	 Implement rule application for the string rules.
+	 - Implement exception Case1, subCase1.
+	 - Implement rule application for the string rules.
+	 
+	 - Need to fixup the way cardinality is currently implemented.
+	   Strings are too ugly to use as integer representation.
+	   
+	 - Methods at the bottom are indeed convenient, but instead integrate them
+	   into constructors of the classes. That way can only have a limited amount of classes
+	   and you promote type-safety and eliminate sources of bugs.
+
 	 */
 	
 	private static Map<Integer, List<RuleString>> rules = null;
@@ -345,10 +355,51 @@ public class GenerateRules {
 		
 		
 		
+		// Rule 42
+		
+		// 42.1
+		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+		
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+
+		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "1", 
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
+		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", conclusion, premise1, premise2);
+
+
+		// 42.2
+		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "0", 
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+		
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+
+		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+	
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
+		RuleString rule42_2 = new RuleString("42.2", "DatSom-DatMin", conclusion, premise1, premise2);
+
+
+		// 42.3
+		tmp = new CardExpStr(ClassExpressionType.DATA_EXACT_CARDINALITY, "n", false, "0", 
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+		
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		RuleString rule42_3 = new RuleString("42.3", "DatSom-DatMin", conclusion, premise1, premise2);
 
 		
-
+		
+			
 		// Rule 43
+		
+		// 43.1
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
 				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
 				new AtomicCls("Y"));
@@ -363,6 +414,65 @@ public class GenerateRules {
 		RuleString rule43_1 = new RuleString("43.1", "ObjSom-SubCls", conclusion, premise1, premise2);
 
 
+		// 43.2
+		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("Y"), new AtomicCls("Z"));
+
+		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", conclusion, premise1, premise2);
+
+		
+		// 43.3
+		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+
+		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("Y"), new AtomicCls("Z"));
+
+		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+
+		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", conclusion, premise1, premise2);
+
+		
+		
+		
+		
+		// Rule 44
+		
+		// 44.1
+		premise1 = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("Ro", "Y"));
+		premise2 = getSubObjectPropertyOf("Ro", "So");
+		conclusion = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("So", "Y"));
+		RuleString rule44_1 = new RuleString("44.1", "ObjSom-SubObj", conclusion, premise1, premise2);
+				
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "So", "Y"));
+		RuleString rule44_2 = new RuleString("44.2", "ObjSom-SubObj", conclusion, premise1, premise2);
+
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "Ro", "Y"));
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "So", "Y"));
+		RuleString rule44_3 = new RuleString("44.3", "ObjSom-SubObj", conclusion, premise1, premise2);
+
+		
+		
+		
+		// Rule 45
+		premise1 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_UNION_OF, 
+															new AtomicCls("Y"), new AtomicCls("Z")));
+		premise2 = getSubClassOfAxiom("Y", "Z");
+		conclusion = getSubClassOfAxiom("X", "Z");
+		RuleString rule45 = new RuleString("45", "ObjUni-SubCls", conclusion, premise1, premise2);
+
+// 	private static CardExpStr createPrimitiveObjMinCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		
 		
 		
 		// Rule 46
@@ -474,6 +584,56 @@ public class GenerateRules {
 	}
 
 	
+	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
+		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
+	}
+	
+	private static ExistsOrForAll getPrimitiveObjSomeValFrom(String property, String cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(cls));
+	}
+	
+	
+	private static OWLAxiomStr getSubClassOfAxiom(String subCls, String superCls) {
+		return getSubClassOfAxiom(new AtomicCls(subCls), new AtomicCls(subCls));
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, String superCls) {
+		return getSubClassOfAxiom(subCls, new AtomicCls(superCls));
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(String subCls, ClsExpStr superCls) {
+		return getSubClassOfAxiom(new AtomicCls(subCls), superCls);
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, ClsExpStr superCls) {
+		return new OWLAxiomStr(AxiomType.SUBCLASS_OF, subCls, superCls);
+	}
+	
+	
+	private static CardExpStr createPrimitiveObjExactCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.OBJECT_EXACT_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
+	
+	private static CardExpStr createPrimitiveObjMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.OBJECT_MAX_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
+	private static CardExpStr createPrimitiveObjMinCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.OBJECT_MIN_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
+	private static CardExpStr createObjCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return new CardExpStr(expType, cardinality, 
+				isRelativeBound, lowerBound, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(expression));
+	}
+	
+
+	
 	private static void getDomainAxiomStr() {
 		// Fill in and change return type
 	}
@@ -485,4 +645,6 @@ public class GenerateRules {
 
 		return null;
 	}
+	
+
 }
