@@ -12,7 +12,7 @@ public class CardExpStr extends ClsExpStr {
 	private GenericExpStr expression;
 	private boolean isRelativeBound;
 		
-	public CardExpStr(ClassExpressionType expType, boolean isRelativeBound, EntityStr property, String cardinality, String lowerBound, GenericExpStr expression) {
+	public CardExpStr(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, EntityStr property, GenericExpStr expression) {
 		
 		super(expType);
 		this.property = property;
