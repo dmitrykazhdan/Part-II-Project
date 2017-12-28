@@ -714,6 +714,47 @@ public class GenerateRules {
 		
 		
 		
+		// Rule 6
+		
+		// 6.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n1", true, "n2", "Ro", "Y"));
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n2", false, "0", "Ro", "Y"));
+		RuleString rule6_1 = new RuleString("6.1", "ObjExt", conclusion, premise1);
+
+		// 6.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n1", true, "n2", "Ro", "Y"));
+		RuleString rule6_2 = new RuleString("6.2", "ObjExt", conclusion, premise1);
+		
+		// 6.3
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "Ro", "Y"));
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjMaxCard("n", false, "0", "Ro", "Y"));
+		RuleString rule6_3 = new RuleString("6.3", "ObjExt", conclusion, premise1);
+
+		
+		
+		
+		// Rule 8
+		premise1 = getSubClassOfAxiom("T", "X");
+		conclusion = getSubClassOfAxiom("Y", "X");
+		RuleString rule8 = new RuleString("8", "Top", conclusion, premise1);
+		
+		
+		
+		// Rule 9
+		premise1 = getSubClassOfAxiom("X", "F");
+		conclusion = getSubClassOfAxiom("X", "Y");
+		RuleString rule9 = new RuleString("9", "Bot", conclusion, premise1);
+
+		
+		
+		// Rule 10
+		premise1 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_INTERSECTION_OF, new AtomicCls("X")));
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule10 = new RuleString("10", "ObjCom-1", conclusion, premise1);
+
+		
+		
+		
 		// Add all of the rules.
 		rules.get(2).add(rule51);
 
