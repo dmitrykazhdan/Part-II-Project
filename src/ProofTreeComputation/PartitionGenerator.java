@@ -6,7 +6,7 @@ import java.util.List;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 import InferenceRules.InstanceOfRule;
-import InferenceRules.RuleFinder2;
+import InferenceRules.RuleFinder;
 import InferenceRules.RuleString;
 
 
@@ -33,7 +33,7 @@ public class PartitionGenerator {
 			//				 ... etc.				
 			for (List<OWLAxiom> subSet : partition.getElements()) {
 				
-				RuleString applicableRule = RuleFinder2.findRuleAppWithoutConclusion(subSet);
+				RuleString applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
 				
 				if (applicableRule != null) {
 					atLeastOneApplication = true;

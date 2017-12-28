@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 
-public class RuleFinder2 {
+public class RuleFinder {
 
 	// Given premises only, find a rule that fits the pattern.
 	public static RuleString findRuleAppWithoutConclusion(List<OWLAxiom> premises) {

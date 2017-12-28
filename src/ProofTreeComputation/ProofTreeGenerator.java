@@ -37,7 +37,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import InferenceRules.GenerateExceptions;
 import InferenceRules.InstanceOfRule;
-import InferenceRules.RuleFinder2;
+import InferenceRules.RuleFinder;
 import InferenceRules.RuleString;
 
 public class ProofTreeGenerator {
@@ -162,7 +162,7 @@ public class ProofTreeGenerator {
 					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					RuleString rule = RuleFinder2.findRuleAppGivenConclusion(premises, laconicAxiom);
+					RuleString rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
 					if (rule == null) {							
 						return null;
@@ -262,7 +262,7 @@ public class ProofTreeGenerator {
 				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
 				newIncompleteProofTreeList = new ArrayList<ProofTree>();
 				
-				RuleString rule = RuleFinder2.findRuleAppGivenConclusion(childAxioms, rootAxiom);
+				RuleString rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
 				if (rule != null) {					
 					completeProofTreeList.add(incompleteProofTree);
@@ -297,7 +297,7 @@ public class ProofTreeGenerator {
 		for (InstanceOfRule subSet : partition.getItems()) {
 			
 			if (subSet.getRule() != null) {
-				InstanceOfRule newInference = RuleFinder2.generateInference(subSet);
+				InstanceOfRule newInference = RuleFinder.generateInference(subSet);
 				
 				if (newInference == null) {
 					return null;
