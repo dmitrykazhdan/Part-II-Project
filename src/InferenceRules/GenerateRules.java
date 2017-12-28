@@ -471,8 +471,7 @@ public class GenerateRules {
 		conclusion = getSubClassOfAxiom("X", "Z");
 		RuleString rule45 = new RuleString("45", "ObjUni-SubCls", conclusion, premise1, premise2);
 
-// 	private static CardExpStr createPrimitiveObjMinCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
-		
+
 		
 		
 		// Rule 46
@@ -579,11 +578,110 @@ public class GenerateRules {
 
 		
 		
+		
+		
+		
+		// Rule 17
+		
+		// 17.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n1", true, "n2", "Ro", "Y"));
+		premise2 = getSubClassOfAxiom("X", createPrimitiveObjMaxCard("n2", false, "0", "Ro", "Y"));
+	    conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", conclusion, premise1, premise2);
+		
+		
+		// 17.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n1", true, "n2", "Ro", "Y"));
+		RuleString rule17_2 = new RuleString("17.2", "ObjMin-ObjMax", conclusion, premise1, premise2);
+		
+		
+		
+		// Rule 18
+		
+		// 18.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "1", "Ro", "Y"));
+		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new AtomicCls("Ro"));
+	    conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule18_1 = new RuleString("18.1", "ObjMin-ObjFun", conclusion, premise1, premise2);
+
+		// 18.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "1", "Ro", "Y"));
+		RuleString rule18_2 = new RuleString("18.2", "ObjMin-ObjFun", conclusion, premise1, premise2);
+
+		
+		
+		// Rule 19
+		
+		// 19.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveDataMinCard("n", false, "1", "Ro", "Y"));
+		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new AtomicCls("Rd"));
+	    conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule19_1 = new RuleString("19.1", "DatMin-DatFun", conclusion, premise1, premise2);
+
+		// 19.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveDataExactCard("n", false, "1", "Rd", "Y"));
+		RuleString rule19_2 = new RuleString("19.2", "DatMin-DatFun", conclusion, premise1, premise2);
+
+		
+		
+		// Rule 20
+		
+		// 20.1
+		premise1 = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("Ro", "Y"));
+		premise2 = getSubClassOfAxiom("Y", "F");
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule20_1 = new RuleString("20.1", "ObjSom-Bot-1", conclusion, premise1, premise2);
+		
+		// 20.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
+		RuleString rule20_2 = new RuleString("20.2", "ObjSom-Bot-1", conclusion, premise1, premise2);
+
+		// 20.3
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "Ro", "Y"));
+		RuleString rule20_3 = new RuleString("20.3", "ObjSom-Bot-1", conclusion, premise1, premise2);
+		
+		
+		
+		
+		// Rule 23
+		premise1 = getSubClassOfAxiom("X", "Y");
+		premise2 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("Y")));
+		conclusion =  getSubClassOfAxiom("X", "F");
+		RuleString rule23 = new RuleString("23", "SubCls-ObjCom-1", conclusion, premise1, premise2);
+		
+	
+		
+		// Rule 24
+		premise1 = getSubClassOfAxiom("X", "Y");
+		premise2 = getSubClassOfAxiom(new InterUnionComp(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("X")), "Y");
+		conclusion =  getSubClassOfAxiom("T", "Y");
+		RuleString rule24 = new RuleString("24", "SubCls-ObjCom-2", conclusion, premise1, premise2);
+		
+	
+		
+		// Rule 25
+		
+		// 25.1
+		premise1 = createPrimitiveObjDomain("Ro", "X");
+		premise2 = getSubClassOfAxiom(createPrimitiveObjAllValFrom("Ro", "F"), "X");
+		conclusion =  getSubClassOfAxiom("T", "X");
+		RuleString rule25_1 = new RuleString("25.1", "ObjDom-ObjAll", conclusion, premise1, premise2);
+		
+		// 25.2
+		premise1 = getSubClassOfAxiom(getPrimitiveObjSomeValFrom("Ro", "F"), "X");		
+		RuleString rule25_2 = new RuleString("25.2", "ObjDom-ObjAll", conclusion, premise1, premise2);
+		
+		
+		// Add all of the rules.
 		rules.get(2).add(rule51);
 
 	}
 
 	
+	
+	private static OWLAxiomStr createPrimitiveObjDomain(String property, String clsExp) {	
+		return new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(clsExp));		
+	}
 	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
 		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
 	}
@@ -593,22 +691,37 @@ public class GenerateRules {
 				new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(cls));
 	}
 	
+	private static ExistsOrForAll createPrimitiveObjAllValFrom(String property, String cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
+				new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(cls));
+	}
+		
 	
-	private static OWLAxiomStr getSubClassOfAxiom(String subCls, String superCls) {
-		return getSubClassOfAxiom(new AtomicCls(subCls), new AtomicCls(subCls));
+	
+	private static CardExpStr createPrimitiveDataExactCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.DATA_EXACT_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
 	}
 	
-	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, String superCls) {
-		return getSubClassOfAxiom(subCls, new AtomicCls(superCls));
+	
+	private static CardExpStr createPrimitiveDataMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.DATA_MAX_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
 	}
 	
-	private static OWLAxiomStr getSubClassOfAxiom(String subCls, ClsExpStr superCls) {
-		return getSubClassOfAxiom(new AtomicCls(subCls), superCls);
+	private static CardExpStr createPrimitiveDataMinCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createDataCardExp(ClassExpressionType.DATA_MIN_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
 	}
 	
-	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, ClsExpStr superCls) {
-		return new OWLAxiomStr(AxiomType.SUBCLASS_OF, subCls, superCls);
+	
+	
+	private static CardExpStr createDataCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return new CardExpStr(expType, cardinality, 
+				isRelativeBound, lowerBound, new EntityStr(property, EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive(expression));
 	}
+
+	
 	
 	
 	private static CardExpStr createPrimitiveObjExactCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
@@ -632,6 +745,22 @@ public class GenerateRules {
 				isRelativeBound, lowerBound, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(expression));
 	}
 	
+	
+	private static OWLAxiomStr getSubClassOfAxiom(String subCls, String superCls) {
+		return getSubClassOfAxiom(new AtomicCls(subCls), new AtomicCls(subCls));
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, String superCls) {
+		return getSubClassOfAxiom(subCls, new AtomicCls(superCls));
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(String subCls, ClsExpStr superCls) {
+		return getSubClassOfAxiom(new AtomicCls(subCls), superCls);
+	}
+	
+	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, ClsExpStr superCls) {
+		return new OWLAxiomStr(AxiomType.SUBCLASS_OF, subCls, superCls);
+	}
 
 	
 	private static void getDomainAxiomStr() {
