@@ -5,7 +5,7 @@ import java.util.List;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.EntityType;
 
-public class EntityStr  implements GenericExpStr {
+public class EntityStr  implements TemplatePrimitive {
 	
 	private String value;
 	private EntityType entityType;
