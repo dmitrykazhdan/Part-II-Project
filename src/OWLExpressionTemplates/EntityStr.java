@@ -1,4 +1,4 @@
-package InferenceRules;
+package OWLExpressionTemplates;
 
 import java.util.List;
 

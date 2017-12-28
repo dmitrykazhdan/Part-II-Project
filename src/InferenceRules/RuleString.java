@@ -42,6 +42,13 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
+import OWLExpressionTemplates.AtomicCls;
+import OWLExpressionTemplates.CardExpStr;
+import OWLExpressionTemplates.ClsExpStr;
+import OWLExpressionTemplates.EntityStr;
+import OWLExpressionTemplates.ExistsOrForAll;
+import OWLExpressionTemplates.InterUnionComp;
+import OWLExpressionTemplates.OWLAxiomStr;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;

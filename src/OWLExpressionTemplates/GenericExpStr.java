@@ -1,4 +1,4 @@
-package InferenceRules;
+package OWLExpressionTemplates;
 
 public interface GenericExpStr {
 

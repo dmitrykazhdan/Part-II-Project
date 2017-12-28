@@ -17,6 +17,14 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+
+import OWLExpressionTemplates.AtomicCls;
+import OWLExpressionTemplates.CardExpStr;
+import OWLExpressionTemplates.EntityStr;
+import OWLExpressionTemplates.ExistsOrForAll;
+import OWLExpressionTemplates.GenericExpStr;
+import OWLExpressionTemplates.InterUnionComp;
+import OWLExpressionTemplates.OWLAxiomStr;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
 

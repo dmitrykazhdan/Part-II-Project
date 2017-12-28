@@ -1,4 +1,4 @@
-package InferenceRules;
+package OWLExpressionTemplates;
 
 import org.semanticweb.owlapi.model.ClassExpressionType;
 
