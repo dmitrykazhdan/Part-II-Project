@@ -532,6 +532,8 @@ public class GenerateRules {
 		
 		
 		// Rule 49
+		
+		// 49.1
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
 				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
 				new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
@@ -548,6 +550,20 @@ public class GenerateRules {
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule49_1 = new RuleString("49.1", "ObjSom-ObjTra", conclusion, premise1, premise2);
 
+		
+		// 49.2		
+		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
+							new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+							createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
+
+		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
+		premise2 = createPrimitiveTransObjProp("Ro");
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
+		RuleString rule49_2 = new RuleString("49.2", "ObjSom-ObjTra", conclusion, premise1, premise2);
+
+		
+		
+		
 		
 
 		// Rule 50
@@ -672,12 +688,42 @@ public class GenerateRules {
 		RuleString rule25_2 = new RuleString("25.2", "ObjDom-ObjAll", conclusion, premise1, premise2);
 		
 		
+		
+		OWLAxiomStr premise3;
+		
+		
+		
+
+		
+		// Rule 55
+		
+		// 55.1
+		premise1 = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("Ro", "Y"));
+		premise2 = getSubClassOfAxiom("Y", getPrimitiveObjSomeValFrom("Ro", "Z"));
+		premise3 = createPrimitiveTransObjProp("Ro");
+		conclusion = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("Ro", "Z"));
+		RuleString rule55_1 = new RuleString("55.1", "ObjSom-ObjSom-ObjTra", conclusion, premise1, premise2, premise3);
+		
+		// 55.2
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
+		premise2 = getSubClassOfAxiom("Y", createPrimitiveObjMinCard("n", false, "0", "Ro", "Z"));
+		premise3 = createPrimitiveTransObjProp("Ro");
+		conclusion = getSubClassOfAxiom("X", createPrimitiveObjMinCard("n", false, "0", "Ro", "Z"));
+		RuleString rule55_2 = new RuleString("55.2", "ObjSom-ObjSom-ObjTra", conclusion, premise1, premise2, premise3);
+		
+		
+		
+		
 		// Add all of the rules.
 		rules.get(2).add(rule51);
 
 	}
 
 	
+	
+	private static OWLAxiomStr createPrimitiveTransObjProp(String property) {
+		return new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new EntityStr(property, EntityType.OBJECT_PROPERTY));
+	}
 	
 	private static OWLAxiomStr createPrimitiveObjDomain(String property, String clsExp) {	
 		return new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(clsExp));		
