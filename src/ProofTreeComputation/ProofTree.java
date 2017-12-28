@@ -6,17 +6,18 @@ import java.util.List;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 import InfRuleAsAnonClass.InferenceRule;
+import InferenceRules.RuleString;
 
 
 public class ProofTree {
 	
 	
 	private OWLAxiom axiom;
-	private InferenceRule inferenceRule;
+	private RuleString inferenceRule;
 	private List<ProofTree> subTrees;
 	
 	
-	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees, InferenceRule inferenceRule) {
+	public ProofTree(OWLAxiom axiom, List<ProofTree> subTrees, RuleString inferenceRule) {
 		
 		this.axiom = axiom;
 		this.subTrees = subTrees;
@@ -59,8 +60,8 @@ public class ProofTree {
 		this.subTrees = subTrees;
 	}
 	
-	public void setInferenceRule(InferenceRule inferenceRule) {
-		this.inferenceRule = inferenceRule;
+	public void setInferenceRule(RuleString rule) {
+		this.inferenceRule = rule;
 	}
 	
 	// Return the root axioms of all direct children  as a list.

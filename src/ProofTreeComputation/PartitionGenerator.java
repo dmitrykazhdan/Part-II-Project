@@ -32,7 +32,7 @@ public class PartitionGenerator {
 			//				 ... etc.				
 			for (List<OWLAxiom> subSet : partition.getElements()) {
 				
-				InferenceRule applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
+				RuleApplication applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
 				
 				if (applicableRule != null) {
 					atLeastOneApplication = true;

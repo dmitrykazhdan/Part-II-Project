@@ -51,6 +51,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
 public class RuleString {
 
+	private String ruleID;
+	private String ruleName;
 	private OWLAxiomStr conclusion;
 	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
@@ -61,13 +63,17 @@ public class RuleString {
 
 
 
-	public RuleString(List<OWLAxiomStr> premisesStr, OWLAxiomStr conclusion, int premiseNumber) {
+	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, List<OWLAxiomStr> premisesStr) {
+		this.ruleID = ruleID;
+		this.ruleName = ruleName;
 		this.premisesStr = premisesStr;
-		this.premiseNumber = premiseNumber;
+		this.premiseNumber = premisesStr.size();
 		this.conclusion = conclusion;
 	}
 	
-	public RuleString(OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+		this.ruleID = ruleID;
+		this.ruleName = ruleName;
 		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
 		this.premiseNumber = premisesStr.size();
 		this.conclusion = conclusion;
@@ -86,6 +92,13 @@ public class RuleString {
 		}
 
 		return checkCardinalityRestrictions();
+	}
+	
+	
+	public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {		
+		List<OWLAxiom> premisesAndConclusion = new ArrayList<OWLAxiom>(premises);
+		premisesAndConclusion.add(conclusion);
+		return matchPremises(premisesAndConclusion);	
 	}
 
 
@@ -370,7 +383,7 @@ public class RuleString {
 
 
 
-	public OWLAxiom generate(List<OWLAxiom> premises) {
+	public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
 
 		/*
 		 Types of conclusion axioms:		 

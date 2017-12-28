@@ -35,10 +35,10 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import InfRuleAsAnonClass.InferenceRule;
-import InfRuleAsAnonClass.RuleApplication;
-import InfRuleAsAnonClass.RuleFinder;
 import InferenceRules.GenerateExceptions;
+import InferenceRules.InstanceOfRule;
+import InferenceRules.RuleFinder2;
+import InferenceRules.RuleString;
 
 public class ProofTreeGenerator {
 
@@ -162,7 +162,7 @@ public class ProofTreeGenerator {
 					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					InferenceRule rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
+					RuleString rule = RuleFinder2.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
 					if (rule == null) {							
 						return null;
@@ -262,7 +262,7 @@ public class ProofTreeGenerator {
 				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
 				newIncompleteProofTreeList = new ArrayList<ProofTree>();
 				
-				InferenceRule rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
+				RuleString rule = RuleFinder2.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
 				if (rule != null) {					
 					completeProofTreeList.add(incompleteProofTree);
@@ -294,10 +294,10 @@ public class ProofTreeGenerator {
 		ProofTree copiedTree = new ProofTree(incompleteTree);
 		List<ProofTree> subTrees = copiedTree.getSubTrees();
 		
-		for (RuleApplication subSet : partition.getItems()) {
+		for (InstanceOfRule subSet : partition.getItems()) {
 			
 			if (subSet.getRule() != null) {
-				RuleApplication newInference = RuleFinder.generateInference(subSet);
+				InstanceOfRule newInference = RuleFinder2.generateInference(subSet);
 				
 				if (newInference == null) {
 					return null;
