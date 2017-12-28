@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
-
-import InfRuleAsAnonClass.InferenceRule;
 import InferenceRules.RuleString;
 
 
@@ -82,3 +80,4 @@ public class ProofTree {
 	}
 
 }
+
