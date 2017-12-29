@@ -45,6 +45,8 @@ public class GenerateRules {
 	   into constructors of the classes. That way can only have a limited amount of classes
 	   and you promote type-safety and eliminate sources of bugs.
 
+	 - Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
+	 
 	 */
 	
 	private static Map<Integer, List<RuleString>> rules = null;
@@ -755,12 +757,58 @@ public class GenerateRules {
 		
 		
 		
+		// Rule 12
+		
+		// 12.1
+		premise1 = getSubClassOfAxiom("X", getPrimitiveDataSomeValFrom("Rd", "Dr0"));
+		premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule12_1 = new RuleString("12.1", "DatSom-DatRng", conclusion, premise1, premise2);
+		
+		
+		// 12.2
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), getPrimitiveDataSomeValFrom("Rd", "Dr0"));
+		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
+		RuleString rule12_2 = new RuleString("12.2", "DatSom-DatRng", conclusion, premise1, premise2);
+		
+		
+		
+		// Rule 13
+		
+		// 13.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveDataMinCard("n", false, "0", "Rd", "Dr0"));	
+		premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule13_1 = new RuleString("13.1", "DatMin-DatRng", conclusion, premise1, premise2);
+
+		
+		// 13.2
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+				createPrimitiveDataMinCard("n", false, "0", "Rd", "Dr0"));
+		
+		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
+		RuleString rule13_2 = new RuleString("13.2", "DatMin-DatRng", conclusion, premise1, premise2);
+		
+		
+		
+		
+		
+		
+		
 		// Add all of the rules.
 		rules.get(2).add(rule51);
 
 	}
 
 	
+	
+	private static OWLAxiomStr createPrimitiveDataRangeProp(String property, String dataRange) {		
+		return new OWLAxiomStr(AxiomType.DATA_PROPERTY_RANGE, 
+				new EntityStr(property, EntityType.DATA_PROPERTY), 
+				new DataRangeTemplatePrimitive(dataRange));
+	}
 	
 	private static OWLAxiomStr createPrimitiveTransObjProp(String property) {
 		return new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new EntityStr(property, EntityType.OBJECT_PROPERTY));
@@ -772,6 +820,12 @@ public class GenerateRules {
 	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
 		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
 	}
+	
+	private static ExistsOrForAll getPrimitiveDataSomeValFrom(String property, String dataRange) {
+		return new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
+				new EntityStr(property, EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive(dataRange));
+	}
+	
 	
 	private static ExistsOrForAll getPrimitiveObjSomeValFrom(String property, String cls) {
 		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
