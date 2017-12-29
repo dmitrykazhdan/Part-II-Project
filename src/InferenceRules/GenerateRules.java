@@ -21,12 +21,13 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
+import OWLExpressionTemplates.ComplementCls;
 import OWLExpressionTemplates.TemplateDataRange;
 import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.GenericExpStr;
-import OWLExpressionTemplates.InterUnionComp;
+import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplateDataProperty;
 import ProofTreeComputation.ProofTree;
@@ -312,12 +313,6 @@ public class GenerateRules {
 
 
 
-		// Rule 40
-		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Y"));
-		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
-		tmp = new InterUnionComp(ClassExpressionType.OBJECT_INTERSECTION_OF, new AtomicCls("Y"), new AtomicCls("Z"));		
-		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
-		RuleString rule40 = new RuleString("40", "SubCls-SubCls-2", conclusion, premise1, premise2);
 
 
 		
@@ -465,18 +460,6 @@ public class GenerateRules {
 		conclusion = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "So", "Y"));
 		RuleString rule44_3 = new RuleString("44.3", "ObjSom-SubObj", conclusion, premise1, premise2);
 
-		
-		
-		
-		// Rule 45
-		premise1 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_UNION_OF, 
-															new AtomicCls("Y"), new AtomicCls("Z")));
-		premise2 = getSubClassOfAxiom("Y", "Z");
-		conclusion = getSubClassOfAxiom("X", "Z");
-		RuleString rule45 = new RuleString("45", "ObjUni-SubCls", conclusion, premise1, premise2);
-
-
-		
 		
 		// Rule 46
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
@@ -665,7 +648,7 @@ public class GenerateRules {
 		
 		// Rule 23
 		premise1 = getSubClassOfAxiom("X", "Y");
-		premise2 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("Y")));
+		premise2 = getSubClassOfAxiom("X", new ComplementCls(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("Y")));
 		conclusion =  getSubClassOfAxiom("X", "F");
 		RuleString rule23 = new RuleString("23", "SubCls-ObjCom-1", conclusion, premise1, premise2);
 		
@@ -673,7 +656,7 @@ public class GenerateRules {
 		
 		// Rule 24
 		premise1 = getSubClassOfAxiom("X", "Y");
-		premise2 = getSubClassOfAxiom(new InterUnionComp(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("X")), "Y");
+		premise2 = getSubClassOfAxiom(new ComplementCls(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("X")), "Y");
 		conclusion =  getSubClassOfAxiom("T", "Y");
 		RuleString rule24 = new RuleString("24", "SubCls-ObjCom-2", conclusion, premise1, premise2);
 		
@@ -752,7 +735,7 @@ public class GenerateRules {
 		
 		
 		// Rule 10
-		premise1 = getSubClassOfAxiom("X", new InterUnionComp(ClassExpressionType.OBJECT_INTERSECTION_OF, new AtomicCls("X")));
+		premise1 = getSubClassOfAxiom("X", new ComplementCls(ClassExpressionType.OBJECT_INTERSECTION_OF, new AtomicCls("X")));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule10 = new RuleString("10", "ObjCom-1", conclusion, premise1);
 

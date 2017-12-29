@@ -47,7 +47,7 @@ import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.ExistsOrForAll;
-import OWLExpressionTemplates.InterUnionComp;
+import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
@@ -301,7 +301,7 @@ public class RuleString {
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
 				
 				OWLObjectComplementOf compObj = (OWLObjectComplementOf) classExp;
-				return match(compObj.getOperand(), ((InterUnionComp) pattern).getSubExpressions().get(0));
+				return match(compObj.getOperand(), ((InterUnion) pattern).getSubExpressions().get(0));
 					
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
