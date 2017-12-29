@@ -21,7 +21,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
-import OWLExpressionTemplates.DataRangeTemplatePrimitive;
+import OWLExpressionTemplates.TemplateDataRange;
 import OWLExpressionTemplates.EntityStr;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.GenericExpStr;
@@ -361,12 +361,12 @@ public class GenerateRules {
 		
 		// 42.1
 		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "1", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 
@@ -376,12 +376,12 @@ public class GenerateRules {
 
 		// 42.2
 		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
 	
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 
@@ -391,7 +391,7 @@ public class GenerateRules {
 
 		// 42.3
 		tmp = new CardExpStr(ClassExpressionType.DATA_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive("Dr"));
+				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule42_3 = new RuleString("42.3", "DatSom-DatMin", conclusion, premise1, premise2);
@@ -807,7 +807,7 @@ public class GenerateRules {
 	private static OWLAxiomStr createPrimitiveDataRangeProp(String property, String dataRange) {		
 		return new OWLAxiomStr(AxiomType.DATA_PROPERTY_RANGE, 
 				new EntityStr(property, EntityType.DATA_PROPERTY), 
-				new DataRangeTemplatePrimitive(dataRange));
+				new TemplateDataRange(dataRange));
 	}
 	
 	private static OWLAxiomStr createPrimitiveTransObjProp(String property) {
@@ -823,7 +823,7 @@ public class GenerateRules {
 	
 	private static ExistsOrForAll getPrimitiveDataSomeValFrom(String property, String dataRange) {
 		return new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr(property, EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive(dataRange));
+				new EntityStr(property, EntityType.DATA_PROPERTY), new TemplateDataRange(dataRange));
 	}
 	
 	
@@ -859,7 +859,7 @@ public class GenerateRules {
 	
 	private static CardExpStr createDataCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return new CardExpStr(expType, cardinality, 
-				isRelativeBound, lowerBound, new EntityStr(property, EntityType.DATA_PROPERTY), new DataRangeTemplatePrimitive(expression));
+				isRelativeBound, lowerBound, new EntityStr(property, EntityType.DATA_PROPERTY), new TemplateDataRange(expression));
 	}
 
 	
