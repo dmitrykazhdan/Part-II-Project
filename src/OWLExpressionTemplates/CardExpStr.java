@@ -6,13 +6,13 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 // Namely: minimum, maximum and exact cardinality of object and data properties. 
 public class CardExpStr extends ClsExpStr {
 	
-	private EntityStr property;
+	private TemplatePrimitive property;
 	private String cardinality;
 	private String lowerBound;
 	private GenericExpStr expression;
 	private boolean isRelativeBound;
 		
-	public CardExpStr(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, EntityStr property, GenericExpStr expression) {
+	public CardExpStr(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, TemplatePrimitive property, GenericExpStr expression) {
 		
 		super(expType);
 		this.property = property;
@@ -26,7 +26,7 @@ public class CardExpStr extends ClsExpStr {
 	
 	public String getCardinality() { return cardinality; }
 	
-	public EntityStr getProperty() { return property; }
+	public TemplatePrimitive getProperty() { return property; }
 	
 	public GenericExpStr getExpression() { return expression; }
 	

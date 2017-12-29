@@ -22,11 +22,12 @@ import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.TemplateDataRange;
-import OWLExpressionTemplates.EntityStr;
+import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnionComp;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.TemplateDataProperty;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
 
@@ -78,16 +79,16 @@ public class GenerateRules {
 
 		// Rule 26
 		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"), 
+				new TemplateObjectProperty("Ro"));
 
 		OWLAxiomStr premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), 
-				new EntityStr("To", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"), 
+				new TemplateObjectProperty("To"));
 
 		OWLAxiomStr conclusion = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
-				new EntityStr("To", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"), 
+				new TemplateObjectProperty("To"));
 
 		RuleString rule26 = new RuleString("26", "SubObj-SubObj", conclusion, premise1, premise2);
 
@@ -95,14 +96,14 @@ public class GenerateRules {
 
 		// Rule 27
 		premise1 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"));
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"), 
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"));
 
 		RuleString rule27 = new RuleString("27", "ObjTra-ObjInv", conclusion, premise1, premise2);
 
@@ -112,12 +113,12 @@ public class GenerateRules {
 
 		// Rule 28
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Y"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		RuleString rule28 = new RuleString("28", "ObjDom-SubCls", conclusion, premise1, premise2);
 
@@ -126,14 +127,14 @@ public class GenerateRules {
 
 		// Rule 29
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY),
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		RuleString rule29 = new RuleString("29", "ObjDom-SubObj", conclusion, premise1, premise2);
 
@@ -141,14 +142,14 @@ public class GenerateRules {
 		
 		// Rule 30
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY),
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		RuleString rule30 = new RuleString("30", "ObjRng-ObjInv", conclusion, premise1, premise2);
 		
@@ -157,13 +158,13 @@ public class GenerateRules {
 		
 		// Rule 31
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		RuleString rule31 = new RuleString("31", "ObjRng-ObjSym", conclusion, premise1, premise2);
 
@@ -172,12 +173,12 @@ public class GenerateRules {
 
 		// Rule 32
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Y"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		RuleString rule32 = new RuleString("32", "ObjRng-SubCls", conclusion, premise1, premise2);
 
@@ -186,14 +187,14 @@ public class GenerateRules {
 		
 		// Rule 33
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY),
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		RuleString rule33 = new RuleString("33", "ObjRng-SubObj", conclusion, premise1, premise2);
 
@@ -202,14 +203,14 @@ public class GenerateRules {
 		
 		// Rule 34
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY),
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		RuleString rule34 = new RuleString("34", "ObjDom-ObjInv", conclusion, premise1, premise2);
 		
@@ -217,13 +218,13 @@ public class GenerateRules {
 		
 		// Rule 35
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		RuleString rule35 = new RuleString("35", "ObjDom-ObjSym", conclusion, premise1, premise2);
 
@@ -232,26 +233,26 @@ public class GenerateRules {
 		
 		// Rule 36
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 				
 		premise2 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		conclusion =  new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Y"));
 		RuleString rule36_1 = new RuleString("36.1", "ObjSom-ObjDom", conclusion, premise1, premise2);
 		
 
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule36_2 = new RuleString("36.2", "ObjSom-ObjDom", conclusion, premise1, premise2);
 
 		
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);				
 		RuleString rule36_3 = new RuleString("36.3", "ObjSom-ObjDom", conclusion, premise1, premise2);
@@ -261,26 +262,26 @@ public class GenerateRules {
 		
 		// Rule 37
 		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new AtomicCls("Dr"));
+				new TemplateDataProperty("Rd"), new AtomicCls("Dr"));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 				
 		premise2 = new OWLAxiomStr(AxiomType.DATA_PROPERTY_DOMAIN, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new AtomicCls("Y"));
+				new TemplateDataProperty("Rd"), new AtomicCls("Y"));
 
 		conclusion =  new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Y"));
 		RuleString rule37_1 = new RuleString("37.1", "DatSom-DatDom", conclusion, premise1, premise2);
 		
 
 		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new AtomicCls("Dr"));
+				new TemplateDataProperty("Rd"), new AtomicCls("Dr"));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule37_2 = new RuleString("37.2", "DatSom-DatDom", conclusion, premise1, premise2);
 
 		
 		tmp = new CardExpStr(ClassExpressionType.DATA_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new AtomicCls("Dr"));
+				new TemplateDataProperty("Rd"), new AtomicCls("Dr"));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);				
 		RuleString rule37_3 = new RuleString("37.3", "DatSom-DatDom", conclusion, premise1, premise2);
@@ -321,12 +322,12 @@ public class GenerateRules {
 		
 		// Rule 41
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 	
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "1", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 
@@ -336,12 +337,12 @@ public class GenerateRules {
 		
 		
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 	
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 		RuleString rule41_2 = new RuleString("41.2", "ObjSom-ObjMin", conclusion, premise1, premise2);
@@ -349,7 +350,7 @@ public class GenerateRules {
 
 		
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 	
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule41_3 = new RuleString("41.3", "ObjSom-ObjMin", conclusion, premise1, premise2);
@@ -361,12 +362,12 @@ public class GenerateRules {
 		
 		// 42.1
 		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
+				new TemplateDataProperty("Rd"), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "1", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
+				new TemplateDataProperty("Rd"), new TemplateDataRange("Dr"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 
@@ -376,12 +377,12 @@ public class GenerateRules {
 
 		// 42.2
 		tmp = new CardExpStr(ClassExpressionType.DATA_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
+				new TemplateDataProperty("Rd"), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
+				new TemplateDataProperty("Rd"), new TemplateDataRange("Dr"));
 	
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
 
@@ -391,7 +392,7 @@ public class GenerateRules {
 
 		// 42.3
 		tmp = new CardExpStr(ClassExpressionType.DATA_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Rd", EntityType.DATA_PROPERTY), new TemplateDataRange("Dr"));
+				new TemplateDataProperty("Rd"), new TemplateDataRange("Dr"));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule42_3 = new RuleString("42.3", "DatSom-DatMin", conclusion, premise1, premise2);
@@ -403,13 +404,13 @@ public class GenerateRules {
 		
 		// 43.1
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+				new TemplateObjectProperty("Ro"), 
 				new AtomicCls("Y"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("Y"), new AtomicCls("Z"));
 
-		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, new TemplateObjectProperty("Ro"), 
 				new AtomicCls("Z"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
@@ -418,13 +419,13 @@ public class GenerateRules {
 
 		// 43.2
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("Y"), new AtomicCls("Z"));
 
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", conclusion, premise1, premise2);
@@ -432,13 +433,13 @@ public class GenerateRules {
 		
 		// 43.3
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("Y"), new AtomicCls("Z"));
 
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_EXACT_CARDINALITY, "n", false, "0", 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Z"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", conclusion, premise1, premise2);
@@ -478,16 +479,16 @@ public class GenerateRules {
 		
 		// Rule 46
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY),
-				new EntityStr("So", EntityType.OBJECT_PROPERTY));
+				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("Ro"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Y"));
 		RuleString rule46 = new RuleString("46", "ObjAll-ObjInv", conclusion, premise1, premise2);
@@ -496,17 +497,17 @@ public class GenerateRules {
 		
 		// Rule 47
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("X"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("F"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("F"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("X"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("So", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("X"));
 		RuleString rule47 = new RuleString("47", "ObjSom-ObjAll-1", conclusion, premise1, premise2);
@@ -515,17 +516,17 @@ public class GenerateRules {
 		
 		// Rule 48
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("T"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("T"));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule48 = new RuleString("48", "ObjSom-ObjAll-2", conclusion, premise1, premise2);
@@ -537,17 +538,17 @@ public class GenerateRules {
 		
 		// 49.1
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+				new TemplateObjectProperty("Ro"), 
 				new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-						new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+						new TemplateObjectProperty("Ro"), 
 						new AtomicCls("Y")));
 
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 
-		premise2 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new EntityStr("Ro", EntityType.OBJECT_PROPERTY));
+		premise2 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new TemplateObjectProperty("Ro"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("Y"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule49_1 = new RuleString("49.1", "ObjSom-ObjTra", conclusion, premise1, premise2);
@@ -555,7 +556,7 @@ public class GenerateRules {
 		
 		// 49.2		
 		tmp = new CardExpStr(ClassExpressionType.OBJECT_MIN_CARDINALITY, "n", false, "0", 
-							new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+							new TemplateObjectProperty("Ro"), 
 							createPrimitiveObjMinCard("n", false, "0", "Ro", "Y"));
 
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
@@ -570,12 +571,12 @@ public class GenerateRules {
 
 		// Rule 50
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("F"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("F"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("F"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("T"), tmp);
 		RuleString rule50 = new RuleString("50", "ObjDom-Bot", conclusion, premise1, premise2);
@@ -584,12 +585,12 @@ public class GenerateRules {
 		
 		// Rule 51
 		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("X"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("F"));
 
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), new AtomicCls("F"));
+				new TemplateObjectProperty("Ro"), new AtomicCls("F"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("T"), tmp);
 		RuleString rule51 = new RuleString("51", "ObjRng-Bot", conclusion, premise1, premise2);
@@ -768,7 +769,7 @@ public class GenerateRules {
 		
 		// 12.2
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), getPrimitiveDataSomeValFrom("Rd", "Dr0"));
+				new TemplateObjectProperty("Ro"), getPrimitiveDataSomeValFrom("Rd", "Dr0"));
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
 		RuleString rule12_2 = new RuleString("12.2", "DatSom-DatRng", conclusion, premise1, premise2);
 		
@@ -785,7 +786,7 @@ public class GenerateRules {
 		
 		// 13.2
 		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr("Ro", EntityType.OBJECT_PROPERTY), 
+				new TemplateObjectProperty("Ro"), 
 				createPrimitiveDataMinCard("n", false, "0", "Rd", "Dr0"));
 		
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
@@ -806,16 +807,16 @@ public class GenerateRules {
 	
 	private static OWLAxiomStr createPrimitiveDataRangeProp(String property, String dataRange) {		
 		return new OWLAxiomStr(AxiomType.DATA_PROPERTY_RANGE, 
-				new EntityStr(property, EntityType.DATA_PROPERTY), 
+				new TemplateDataProperty(property), 
 				new TemplateDataRange(dataRange));
 	}
 	
 	private static OWLAxiomStr createPrimitiveTransObjProp(String property) {
-		return new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new EntityStr(property, EntityType.OBJECT_PROPERTY));
+		return new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new TemplateObjectProperty(property));
 	}
 	
 	private static OWLAxiomStr createPrimitiveObjDomain(String property, String clsExp) {	
-		return new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(clsExp));		
+		return new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty(property), new AtomicCls(clsExp));		
 	}
 	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
 		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
@@ -823,18 +824,18 @@ public class GenerateRules {
 	
 	private static ExistsOrForAll getPrimitiveDataSomeValFrom(String property, String dataRange) {
 		return new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
-				new EntityStr(property, EntityType.DATA_PROPERTY), new TemplateDataRange(dataRange));
+				new TemplateDataProperty(property), new TemplateDataRange(dataRange));
 	}
 	
 	
 	private static ExistsOrForAll getPrimitiveObjSomeValFrom(String property, String cls) {
 		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
-				new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(cls));
+				new TemplateObjectProperty(property), new AtomicCls(cls));
 	}
 	
 	private static ExistsOrForAll createPrimitiveObjAllValFrom(String property, String cls) {
 		return new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
-				new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(cls));
+				new TemplateObjectProperty(property), new AtomicCls(cls));
 	}
 		
 	
@@ -859,7 +860,7 @@ public class GenerateRules {
 	
 	private static CardExpStr createDataCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return new CardExpStr(expType, cardinality, 
-				isRelativeBound, lowerBound, new EntityStr(property, EntityType.DATA_PROPERTY), new TemplateDataRange(expression));
+				isRelativeBound, lowerBound, new TemplateDataProperty(property), new TemplateDataRange(expression));
 	}
 
 	
@@ -883,7 +884,7 @@ public class GenerateRules {
 	
 	private static CardExpStr createObjCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return new CardExpStr(expType, cardinality, 
-				isRelativeBound, lowerBound, new EntityStr(property, EntityType.OBJECT_PROPERTY), new AtomicCls(expression));
+				isRelativeBound, lowerBound, new TemplateObjectProperty(property), new AtomicCls(expression));
 	}
 	
 	
