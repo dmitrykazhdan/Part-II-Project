@@ -45,7 +45,7 @@ import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
-import OWLExpressionTemplates.EntityStr;
+import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.InterUnionComp;
 import OWLExpressionTemplates.OWLAxiomStr;
@@ -166,14 +166,14 @@ public class RuleString {
 				if (axiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
 
 					OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) axiom;
-					return match(subObjPropAxiom.getSubProperty(), (EntityStr) pattern.getExpressions().get(0))
-							&& match(subObjPropAxiom.getSuperProperty(), (EntityStr) pattern.getExpressions().get(1));
+					return match(subObjPropAxiom.getSubProperty(), (TemplatePrimitive) pattern.getExpressions().get(0))
+							&& match(subObjPropAxiom.getSuperProperty(), (TemplatePrimitive) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES)) {
 
 					OWLInverseObjectPropertiesAxiom invObjPropAxiom = (OWLInverseObjectPropertiesAxiom) axiom;
-					return match(invObjPropAxiom.getFirstProperty(), (EntityStr) pattern.getExpressions().get(0))
-							&& match(invObjPropAxiom.getSecondProperty(), (EntityStr) pattern.getExpressions().get(1));
+					return match(invObjPropAxiom.getFirstProperty(), (TemplatePrimitive) pattern.getExpressions().get(0))
+							&& match(invObjPropAxiom.getSecondProperty(), (TemplatePrimitive) pattern.getExpressions().get(1));
 
 							
 				} else if (axiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) ||
@@ -183,7 +183,7 @@ public class RuleString {
 							axiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
 										
 					HasProperty<OWLProperty> axiomWithProperty = (HasProperty<OWLProperty>) axiom;
-					return match(axiomWithProperty.getProperty(), (EntityStr) pattern.getExpressions().get(0));
+					return match(axiomWithProperty.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0));
 				} 
 			}
 
@@ -200,26 +200,26 @@ public class RuleString {
 				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ) {
 
 					OWLObjectPropertyRangeAxiom objPropRngAxiom = (OWLObjectPropertyRangeAxiom) axiom;
-					return match(objPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match(objPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
+					return match(objPropRngAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
+							match(objPropRngAxiom.getRange(), (TemplatePrimitive) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
 
 					OWLObjectPropertyDomainAxiom objPropDomAxiom = (OWLObjectPropertyDomainAxiom) axiom;
-					return match(objPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match(objPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
+					return match(objPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
+							match(objPropDomAxiom.getDomain(), (TemplatePrimitive) pattern.getExpressions().get(1));
 
 				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN)) {
 
 					OWLDataPropertyDomainAxiom dataPropDomAxiom = (OWLDataPropertyDomainAxiom) axiom;
-					return match(dataPropDomAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match(dataPropDomAxiom.getDomain(), (EntityStr) pattern.getExpressions().get(1));
+					return match(dataPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
+							match(dataPropDomAxiom.getDomain(), (TemplatePrimitive) pattern.getExpressions().get(1));
 				
 				} else if (axiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
 
 					OWLDataPropertyRangeAxiom dataPropRngAxiom = (OWLDataPropertyRangeAxiom) axiom;
-					return match(dataPropRngAxiom.getProperty(), (EntityStr) pattern.getExpressions().get(0)) &&
-							match(dataPropRngAxiom.getRange(), (EntityStr) pattern.getExpressions().get(1));
+					return match(dataPropRngAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
+							match(dataPropRngAxiom.getRange(), (TemplatePrimitive) pattern.getExpressions().get(1));
 				
 				} else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 					
@@ -255,11 +255,11 @@ public class RuleString {
 				boolean matchedSecondArgument = false;
 				
 				for (OWLIndividual i : diffIndividualsAxiom.getIndividualsAsList()) {
-					if (match(i, (EntityStr) pattern.getExpressions().get(0))) {
+					if (match(i, (TemplatePrimitive) pattern.getExpressions().get(0))) {
 						matchedFirstArgument = true;
 					}
 					
-					if (match(i, (EntityStr) pattern.getExpressions().get(1))) {
+					if (match(i, (TemplatePrimitive) pattern.getExpressions().get(1))) {
 						matchedSecondArgument = true;
 					}
 				}
@@ -338,7 +338,7 @@ public class RuleString {
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
 				
 				return match(quantDataRest.getProperty(), specialisedPattern.getProperty())
-						&& match(quantDataRest.getFiller(), (EntityStr) specialisedPattern.getExpression());
+						&& match(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
 				
 			} else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
 				// STUB
@@ -352,7 +352,7 @@ public class RuleString {
 
 				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern) 
 						&& match(dataCardRest.getProperty(), specialisedPattern.getProperty())
-						&& match(dataCardRest.getFiller(), (EntityStr) specialisedPattern.getExpression());
+						&& match(dataCardRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
 			} 
 		}
 		return false;
@@ -485,7 +485,7 @@ public class RuleString {
 	}
 	
 	
-	private OWLObject generate(EntityStr conclusionExp) {
+	private OWLObject generate(TemplatePrimitive conclusionExp) {
 		return usedSymbols.get(conclusionExp.getAtomic());
 	}
 }
