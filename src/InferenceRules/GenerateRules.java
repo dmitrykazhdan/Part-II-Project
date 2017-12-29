@@ -22,6 +22,7 @@ import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpStr;
 import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.TemplateDataRange;
+import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.GenericExpStr;
@@ -793,6 +794,33 @@ public class GenerateRules {
 		RuleString rule13_2 = new RuleString("13.2", "DatMin-DatRng", conclusion, premise1, premise2);
 		
 		
+
+		
+		// Rule 14
+		
+		// 14.1
+		premise1 = getSubClassOfAxiom("X", createPrimitiveLiteralSomeValFrom("Rd", "l0"));
+		premise2 = createPrimitiveDataRangeProp("Rd", "Dr");
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule14_1 = new RuleString("14.1", "DatVal-DatRng", conclusion, premise1, premise2);
+		
+		
+		// 14.2
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty("Ro"), createPrimitiveLiteralSomeValFrom("Rd", "l0"));
+		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
+		RuleString rule14_2 = new RuleString("14.2", "DatVal-DatRng", conclusion, premise1, premise2);
+		
+		
+		
+		
+		// Rule 56
+		premise1 = getSubClassOfAxiom("X", createPrimitiveLiteralSomeValFrom("Rd", "l0"));
+		premise2 = getSubClassOfAxiom("X", createPrimitiveLiteralSomeValFrom("Rd", "l1"));
+		premise3 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new TemplateDataProperty("Rd"));
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule56 = new RuleString("56", "DatVal-DatVal-DatFun", conclusion, premise1, premise2, premise3);
+
 		
 		
 		
@@ -803,6 +831,7 @@ public class GenerateRules {
 
 	}
 
+	
 	
 	
 	private static OWLAxiomStr createPrimitiveDataRangeProp(String property, String dataRange) {		
@@ -821,6 +850,13 @@ public class GenerateRules {
 	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
 		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
 	}
+	
+	
+	private static ExistsOrForAll createPrimitiveLiteralSomeValFrom(String property, String dataLiteral) {
+		return new ExistsOrForAll(ClassExpressionType.DATA_HAS_VALUE, 
+				new TemplateDataProperty(property), new TemplateLiteral(dataLiteral));
+	}
+	
 	
 	private static ExistsOrForAll getPrimitiveDataSomeValFrom(String property, String dataRange) {
 		return new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
