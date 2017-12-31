@@ -6,4 +6,4 @@
 - In the "ProofTreeGenerator" class, in the "getLaconicJustifications" method, add a timeout step
 when computing laconic justifications.
 
-- 
+- Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.

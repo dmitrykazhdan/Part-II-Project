@@ -1,7 +1,5 @@
 package OWLExpressionTemplates;
 
-import java.util.List;
-
 public class ExpressionGroup {
 
 	private String name;

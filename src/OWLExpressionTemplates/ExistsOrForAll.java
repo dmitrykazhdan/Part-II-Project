@@ -9,7 +9,7 @@ public class ExistsOrForAll extends ClsExpStr {
 	private TemplatePrimitive property;
 	private GenericExpStr expression;
 
-	public ExistsOrForAll(ClassExpressionType expType, TemplatePrimitive property, GenericExpStr expression) {
+	private ExistsOrForAll(ClassExpressionType expType, TemplatePrimitive property, GenericExpStr expression) {
 		super(expType);
 		this.property = property;
 		this.expression = expression;
@@ -20,5 +20,42 @@ public class ExistsOrForAll extends ClsExpStr {
 	public GenericExpStr getExpression() { return expression; }
 
 	
+	// Static methods used to generate expressions:
+		
+	// Literal expressions:
+	public static ExistsOrForAll createLiteralSomeValFrom(String property, String dataLiteral) {
+		return new ExistsOrForAll(ClassExpressionType.DATA_HAS_VALUE, 
+				new TemplateDataProperty(property), new TemplateLiteral(dataLiteral));
+	}
 	
+		
+	// Data expressions
+	public static ExistsOrForAll createDataSomeValFrom(String property, String dataRange) {
+		return new ExistsOrForAll(ClassExpressionType.DATA_SOME_VALUES_FROM, 
+				new TemplateDataProperty(property), new TemplateDataRange(dataRange));
+	}
+	
+	public static ExistsOrForAll createDataAllValFrom(String property, String dataRange) {
+		return new ExistsOrForAll(ClassExpressionType.DATA_ALL_VALUES_FROM, 
+				new TemplateDataProperty(property), new TemplateDataRange(dataRange));
+	}
+	
+
+	
+	// Object expressions:
+	public static ExistsOrForAll createObjSomeValFrom(String property, String cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty(property), new AtomicCls(cls));
+	}
+		
+	public static ExistsOrForAll createObjSomeValFrom(String property, ClsExpStr cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty(property), cls);
+	}
+			
+	public static ExistsOrForAll createObjAllValFrom(String property, String cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
+				new TemplateObjectProperty(property), new AtomicCls(cls));
+	}
+
 }
