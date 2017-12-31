@@ -1076,8 +1076,41 @@ public class GenerateRules {
 		
 		
 		
+		// Rule 7
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), createPrimitiveObjAllValFrom("Ro", "Y")}, new GenericExpStr[] {});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		conclusion = getSubClassOfAxiom(createPrimitiveObjAllValFrom("Ro", "F"), "X");
+		RuleString rule7 = new RuleString("7", "ObjAll", conclusion, premise1);
 		
 		
+		
+		// Rule 4
+		
+		// 4.1
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		
+		tmp = new InterUnion(ClassExpressionType.OBJECT_UNION_OF, anonDisj1);							
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		
+		conclusion =  getSubClassOfAxiom(new InterUnion(ClassExpressionType.OBJECT_UNION_OF, anonDisj2), "X");
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));		
+		RuleString rule4_1 = new RuleString("4.1", "ObjUni-1", restrictions, conclusion, premise1);
+		
+		
+		// 4.2
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		
+		tmp = getPrimitiveObjSomeValFrom("Ro", new InterUnion(ClassExpressionType.OBJECT_UNION_OF, anonDisj1));						
+		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		
+		tmp = getPrimitiveObjSomeValFrom("Ro", new InterUnion(ClassExpressionType.OBJECT_UNION_OF, anonDisj2));						
+		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));		
+		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
 		
 		
 		// Add all of the rules.
