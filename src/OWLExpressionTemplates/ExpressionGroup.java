@@ -4,14 +4,16 @@ import java.util.List;
 
 public class ExpressionGroup {
 
-	private ClsExpStr[] namedExpressions;
-	private ClsExpStr[] anonymousExpressions;
+	private String name;
+	private GenericExpStr[] namedExpressions;
+	private GenericExpStr[] anonymousExpressions;
 	
-	public ExpressionGroup(ClsExpStr[] namedExpressions, ClsExpStr[] anonymousExpressions) {
+	public ExpressionGroup(String name, GenericExpStr[] namedExpressions, GenericExpStr[] anonymousExpressions) {
+		this.name = name;
 		this.namedExpressions = namedExpressions;
 		this.anonymousExpressions = anonymousExpressions;
 	}
 	
-	public ClsExpStr[] getNamedExpressions() { return namedExpressions; }
+	public GenericExpStr[] getNamedExpressions() { return namedExpressions; }
 	
 }
