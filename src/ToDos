@@ -7,3 +7,7 @@
 when computing laconic justifications.
 
 - Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
+
+- Fixup excessive type-casting in pattern matching.
+
+- Fixup "GroupExpression" pattern matching.
