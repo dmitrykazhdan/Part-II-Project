@@ -11,10 +11,17 @@ public class OWLAxiomStr {
 
 	private AxiomType constructor;
 	private List<GenericExpStr> children;
+	private ExpressionGroup expGroup;
 	
 	public OWLAxiomStr (AxiomType constructor, List<GenericExpStr> children) {		
 		this.constructor = constructor;
 		this.children = children;
+	}
+	
+	public OWLAxiomStr (AxiomType constructor, ExpressionGroup expGroup) {		
+		this.constructor = constructor;
+		this.children = children;
+		this.expGroup = expGroup;
 	}
 	
 	public OWLAxiomStr (AxiomType constructor, GenericExpStr... children) {		

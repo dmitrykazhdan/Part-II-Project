@@ -10,26 +10,13 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 public class InterUnion extends ClsExpStr {
 
 	private String name;
-	private List<ClsExpStr> namedExpressions;
-	private List<ClsExpStr> anonymousExpressions;
-
-	
-	public InterUnion (ClassExpressionType expType, String name, List<ClsExpStr> namedExpressions, List<ClsExpStr> anonymousExpressions)  {
+	private ExpressionGroup expressions;
+		
+	public InterUnion (ClassExpressionType expType, String name, ExpressionGroup expressions)  {
 		super(expType);
 		this.name = name;
-		this.namedExpressions = namedExpressions;
-		this.anonymousExpressions = anonymousExpressions;
+		this.expressions = expressions;
 	}
 	
-	public InterUnion (ClassExpressionType expType, String name, ClsExpStr... namedExpressions)  {
-		super(expType);
-		this.name = name;
-		this.namedExpressions = new ArrayList<ClsExpStr>(Arrays.asList(namedExpressions));
-		this.anonymousExpressions = new ArrayList<ClsExpStr>();
-	}
-	
-
-	public List<ClsExpStr> getNamedExpressions() { return namedExpressions; }
-	
-	
+	public ExpressionGroup getExpressionGroup() { return expressions; }
 }
