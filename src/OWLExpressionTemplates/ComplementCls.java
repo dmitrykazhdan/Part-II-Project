@@ -10,8 +10,8 @@ public class ComplementCls extends ClsExpStr {
 
 	private ClsExpStr expression;
 	
-	public ComplementCls (ClassExpressionType expType, ClsExpStr expression)  {
-		super(expType);
+	public ComplementCls (ClsExpStr expression)  {
+		super(ClassExpressionType.OBJECT_COMPLEMENT_OF);
 		this.expression = expression;
 	}
 

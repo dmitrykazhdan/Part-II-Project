@@ -9,19 +9,27 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 // Expression representing either a union or an intersection or a complement expression.
 public class InterUnion extends ClsExpStr {
 
-	private List<ClsExpStr> subExpressions;
+	private String name;
+	private List<ClsExpStr> namedExpressions;
+	private List<ClsExpStr> anonymousExpressions;
+
 	
-	public InterUnion (ClassExpressionType expType, List<ClsExpStr> subExpressions)  {
+	public InterUnion (ClassExpressionType expType, String name, List<ClsExpStr> namedExpressions, List<ClsExpStr> anonymousExpressions)  {
 		super(expType);
-		this.subExpressions = subExpressions;
+		this.name = name;
+		this.namedExpressions = namedExpressions;
+		this.anonymousExpressions = anonymousExpressions;
 	}
 	
-	public InterUnion (ClassExpressionType expType, ClsExpStr... subExpressions)  {
+	public InterUnion (ClassExpressionType expType, String name, ClsExpStr... namedExpressions)  {
 		super(expType);
-		this.subExpressions = new ArrayList<ClsExpStr>(Arrays.asList(subExpressions));
+		this.name = name;
+		this.namedExpressions = new ArrayList<ClsExpStr>(Arrays.asList(namedExpressions));
+		this.anonymousExpressions = new ArrayList<ClsExpStr>();
 	}
 	
-	public List<ClsExpStr> getSubExpressions() { return subExpressions; }
+
+	public List<ClsExpStr> getNamedExpressions() { return namedExpressions; }
 	
 	
 }

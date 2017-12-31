@@ -19,4 +19,6 @@ public class ExistsOrForAll extends ClsExpStr {
 	
 	public GenericExpStr getExpression() { return expression; }
 
+	
+	
 }

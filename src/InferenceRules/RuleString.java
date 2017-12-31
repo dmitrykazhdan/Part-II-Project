@@ -25,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
@@ -65,10 +66,11 @@ public class RuleString {
 	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
 
+
 	private Map<String, OWLObject> usedSymbols;
 	private Map<String, Integer> usedCardinalities;
-	private Map<String, String> lessThanMap;
-
+	private Map<String, OWLNaryBooleanClassExpression> groupOfObjects;
+	private List<NaryClassExpressionSubset> subSetRestrictions;
 
 
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, List<OWLAxiomStr> premisesStr) {
@@ -82,6 +84,15 @@ public class RuleString {
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
 		this.ruleID = ruleID;
 		this.ruleName = ruleName;
+		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
+		this.premiseNumber = premisesStr.size();
+		this.conclusion = conclusion;
+	}
+	
+	public RuleString(String ruleID, String ruleName, List<NaryClassExpressionSubset> subSetRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+		this.ruleID = ruleID;
+		this.ruleName = ruleName;
+		this.subSetRestrictions = subSetRestrictions;
 		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
 		this.premiseNumber = premisesStr.size();
 		this.conclusion = conclusion;
