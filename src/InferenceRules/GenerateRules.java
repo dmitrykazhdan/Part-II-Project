@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class GenerateRules {
 
 	 - Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
 	 
+	 - Consider making constructors private, and only having a limited number of "create" methods.
 	 */
 	
 	private static Map<Integer, List<RuleString>> rules = null;
@@ -648,7 +650,7 @@ public class GenerateRules {
 		
 		// Rule 23
 		premise1 = getSubClassOfAxiom("X", "Y");
-		premise2 = getSubClassOfAxiom("X", new ComplementCls(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("Y")));
+		premise2 = getSubClassOfAxiom("X", new ComplementCls(new AtomicCls("Y")));
 		conclusion =  getSubClassOfAxiom("X", "F");
 		RuleString rule23 = new RuleString("23", "SubCls-ObjCom-1", conclusion, premise1, premise2);
 		
@@ -656,7 +658,7 @@ public class GenerateRules {
 		
 		// Rule 24
 		premise1 = getSubClassOfAxiom("X", "Y");
-		premise2 = getSubClassOfAxiom(new ComplementCls(ClassExpressionType.OBJECT_COMPLEMENT_OF, new AtomicCls("X")), "Y");
+		premise2 = getSubClassOfAxiom(new ComplementCls(new AtomicCls("X")), "Y");
 		conclusion =  getSubClassOfAxiom("T", "Y");
 		RuleString rule24 = new RuleString("24", "SubCls-ObjCom-2", conclusion, premise1, premise2);
 		
@@ -735,7 +737,7 @@ public class GenerateRules {
 		
 		
 		// Rule 10
-		premise1 = getSubClassOfAxiom("X", new ComplementCls(ClassExpressionType.OBJECT_INTERSECTION_OF, new AtomicCls("X")));
+		premise1 = getSubClassOfAxiom("X", new ComplementCls(new AtomicCls("X")));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule10 = new RuleString("10", "ObjCom-1", conclusion, premise1);
 
@@ -807,6 +809,152 @@ public class GenerateRules {
 		
 		
 		
+		// Rule 3
+		
+		// 3.1
+		List<ClsExpStr> anonConj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Y")));
+		premise1 = getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", 
+							new ArrayList<ClsExpStr>(), anonConj));
+		
+		conclusion =  getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C2", 
+				new ArrayList<ClsExpStr>(), anonConj));
+
+		List<NaryClassExpressionSubset> restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));
+		
+		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
+		
+		
+		
+		// 3.2
+		anonConj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Y")));
+	
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty("Ro"), 
+				new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", 
+						new ArrayList<ClsExpStr>(), anonConj));
+		
+		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
+
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty("Ro"), 
+				new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C2", 
+						new ArrayList<ClsExpStr>(), anonConj));
+
+		conclusion =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
+
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));
+		
+		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
+		
+	
+		
+		
+		// Rule 5
+		
+		// 5.1
+		List<ClsExpStr> anonDisj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Y")));
+
+		premise1 = getSubClassOfAxiom(new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C1", 
+							new ArrayList<ClsExpStr>(), anonDisj), "X");
+		
+		conclusion =  getSubClassOfAxiom(new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C2", 
+				new ArrayList<ClsExpStr>(), anonDisj), "X");
+
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));
+		
+		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
+		
+		
+		
+		// 5.2
+		anonDisj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Y")));
+	
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty("Ro"), 
+				new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C1", 
+						new ArrayList<ClsExpStr>(), anonDisj));
+		
+		premise1 = getSubClassOfAxiom((ClsExpStr) tmp, "X");
+
+		tmp = new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty("Ro"), 
+				new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C2", 
+						new ArrayList<ClsExpStr>(), anonDisj));
+
+		conclusion =  getSubClassOfAxiom((ClsExpStr) tmp, "X");
+
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));
+		
+		RuleString rule5_2 = new RuleString("5.2", "ObjUni-2", restrictions, conclusion, premise1);
+		
+		
+		
+		
+		
+		// Rule 11
+		premise1 = getSubClassOfAxiom(new ComplementCls(new AtomicCls("X")), "Y");	
+		tmp = new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C1", new AtomicCls("X"), new AtomicCls("Y"));		
+		conclusion = getSubClassOfAxiom("T", (ClsExpStr) tmp);
+		RuleString rule11 = new RuleString("11", "ObjCom-2", conclusion, premise1);
+		
+		
+		
+		
+		
+		/// Rule 21
+		
+		// 21.1
+		anonConj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Z")));
+		List<ClsExpStr> namedConj = new ArrayList<ClsExpStr>(Arrays.asList(new AtomicCls("Y")));
+		tmp = new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", namedConj, anonConj);		
+
+		premise1 = getSubClassOfAxiom("X", getPrimitiveObjSomeValFrom("Ro", (ClsExpStr) tmp));
+		premise2 = getSubClassOfAxiom("Y", "F");
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule21_1 = new RuleString("21.1", "ObjSom-Bot-2", conclusion, premise1, premise2);
+
+		
+		// 21.2
+		tmp = new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", namedConj, anonConj);		
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjMaxCard("n", false, "0", "Ro",  (ClsExpStr) tmp));
+		RuleString rule21_2 = new RuleString("21.2", "ObjSom-Bot-2", conclusion, premise1, premise2);
+
+		
+		// 21.3
+		tmp = new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", namedConj, anonConj);		
+		premise1 = getSubClassOfAxiom("X", createPrimitiveObjExactCard("n", false, "0", "Ro",  (ClsExpStr) tmp));
+		RuleString rule21_3 = new RuleString("21.3", "ObjSom-Bot-2", conclusion, premise1, premise2);
+
+
+		
+		// Rule 40
+		premise1 =  getSubClassOfAxiom("X", "Y");
+		premise2 =  getSubClassOfAxiom("X", "Z");
+		conclusion = getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, "C1", new AtomicCls("Y"), new AtomicCls("Z")));
+		RuleString rule40 = new RuleString("40", "SubCls-SubCls-2", conclusion, premise1, premise2);
+		
+		
+	
+		
+		// Rule 45
+		premise1 = getSubClassOfAxiom("Y", "Z");
+		premise2 = getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C1", new AtomicCls("Y"), new AtomicCls("Z")));
+		conclusion = getSubClassOfAxiom("X", "Z");
+		RuleString rule45 = new RuleString("45", "ObjUni-SubCls", conclusion, premise1, premise2);
+		
+		
+		
+
+		
+		// Rule 54
+		premise1 = getSubClassOfAxiom("U", "Z");
+		premise2 = getSubClassOfAxiom("V", "Z");
+		premise3 = getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_UNION_OF, "C1", new AtomicCls("U"), new AtomicCls("V")));
+		conclusion = getSubClassOfAxiom("X", "Z");
+		RuleString rule54 = new RuleString("54", "ObjUni-SubCls-SubCls", conclusion, premise1, premise2, premise3);
+		
+		
+		
 		
 		
 		// Add all of the rules.
@@ -852,6 +1000,15 @@ public class GenerateRules {
 				new TemplateObjectProperty(property), new AtomicCls(cls));
 	}
 	
+	
+	private static ExistsOrForAll getPrimitiveObjSomeValFrom(String property, ClsExpStr cls) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 
+				new TemplateObjectProperty(property), cls);
+	}
+	
+	
+	
+	
 	private static ExistsOrForAll createPrimitiveObjAllValFrom(String property, String cls) {
 		return new ExistsOrForAll(ClassExpressionType.OBJECT_ALL_VALUES_FROM, 
 				new TemplateObjectProperty(property), new AtomicCls(cls));
@@ -859,6 +1016,7 @@ public class GenerateRules {
 		
 	
 	
+
 	private static CardExpStr createPrimitiveDataExactCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return createObjCardExp(ClassExpressionType.DATA_EXACT_CARDINALITY, cardinality, 
 				isRelativeBound, lowerBound, property, expression);
@@ -866,6 +1024,11 @@ public class GenerateRules {
 	
 	
 	private static CardExpStr createPrimitiveDataMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
+		return createObjCardExp(ClassExpressionType.DATA_MAX_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
+	private static CardExpStr createPrimitiveDataMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, ClsExpStr expression) {
 		return createObjCardExp(ClassExpressionType.DATA_MAX_CARDINALITY, cardinality, 
 				isRelativeBound, lowerBound, property, expression);
 	}
@@ -891,10 +1054,23 @@ public class GenerateRules {
 	}
 	
 	
+	private static CardExpStr createPrimitiveObjExactCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, ClsExpStr expression) {
+		return createObjCardExp(ClassExpressionType.OBJECT_EXACT_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
+	
 	private static CardExpStr createPrimitiveObjMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return createObjCardExp(ClassExpressionType.OBJECT_MAX_CARDINALITY, cardinality, 
 				isRelativeBound, lowerBound, property, expression);
 	}
+	
+	
+	private static CardExpStr createPrimitiveObjMaxCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, ClsExpStr expression) {
+		return createObjCardExp(ClassExpressionType.OBJECT_MAX_CARDINALITY, cardinality, 
+				isRelativeBound, lowerBound, property, expression);
+	}
+	
 	
 	private static CardExpStr createPrimitiveObjMinCard(String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return createObjCardExp(ClassExpressionType.OBJECT_MIN_CARDINALITY, cardinality, 
@@ -904,6 +1080,11 @@ public class GenerateRules {
 	private static CardExpStr createObjCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, String expression) {
 		return new CardExpStr(expType, cardinality, 
 				isRelativeBound, lowerBound, new TemplateObjectProperty(property), new AtomicCls(expression));
+	}
+	
+	private static CardExpStr createObjCardExp(ClassExpressionType expType, String cardinality, boolean isRelativeBound, String lowerBound, String property, ClsExpStr expression) {
+		return new CardExpStr(expType, cardinality, 
+				isRelativeBound, lowerBound, new TemplateObjectProperty(property), expression);
 	}
 	
 	
