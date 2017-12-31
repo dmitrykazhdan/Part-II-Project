@@ -71,7 +71,7 @@ public class RuleString {
 	private Map<String, OWLObject> usedSymbols;
 	private Map<String, Integer> usedCardinalities;
 	private Map<String, OWLNaryBooleanClassExpression> groupOfObjects;
-	private List<RuleRestriction> ruleRestrictions;
+	private RuleRestriction[] ruleRestrictions;
 
 
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, List<OWLAxiomStr> premisesStr) {
@@ -90,7 +90,7 @@ public class RuleString {
 		this.conclusion = conclusion;
 	}
 	
-	public RuleString(String ruleID, String ruleName, List<RuleRestriction> ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+	public RuleString(String ruleID, String ruleName, RuleRestriction[] ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
 		this.ruleID = ruleID;
 		this.ruleName = ruleName;
 		this.ruleRestrictions = ruleRestrictions;
@@ -151,7 +151,7 @@ public class RuleString {
 	}
 	
 	public boolean compare(Integer largerInt, Integer smallerInt, boolean strictInequalty) {
-		if (strictInequality) {
+		if (strictInequalty) {
 			return largerInt > smallerInt;
 		} else {
 			return largerInt >= smallerInt;
