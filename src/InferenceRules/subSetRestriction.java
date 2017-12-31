@@ -2,12 +2,12 @@ package InferenceRules;
 
 import OWLExpressionTemplates.InterUnion;
 
-public class NaryClassExpressionSubset {
+public class subSetRestriction implements RuleRestriction{
 	
 	private String subClass;
 	private String superClass;
 	
-	public NaryClassExpressionSubset(String subClass, String superClass) {
+	public subSetRestriction(String subClass, String superClass) {
 		this.subClass = subClass;
 		this.superClass = superClass;
 	}

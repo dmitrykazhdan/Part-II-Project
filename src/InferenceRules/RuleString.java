@@ -71,7 +71,7 @@ public class RuleString {
 	private Map<String, OWLObject> usedSymbols;
 	private Map<String, Integer> usedCardinalities;
 	private Map<String, OWLNaryBooleanClassExpression> groupOfObjects;
-	private List<NaryClassExpressionSubset> subSetRestrictions;
+	private List<RuleRestriction> ruleRestrictions;
 
 
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, List<OWLAxiomStr> premisesStr) {
@@ -90,10 +90,10 @@ public class RuleString {
 		this.conclusion = conclusion;
 	}
 	
-	public RuleString(String ruleID, String ruleName, List<NaryClassExpressionSubset> subSetRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+	public RuleString(String ruleID, String ruleName, List<RuleRestriction> ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
 		this.ruleID = ruleID;
 		this.ruleName = ruleName;
-		this.subSetRestrictions = subSetRestrictions;
+		this.ruleRestrictions = ruleRestrictions;
 		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
 		this.premiseNumber = premisesStr.size();
 		this.conclusion = conclusion;
@@ -111,7 +111,7 @@ public class RuleString {
 			}
 		}
 
-		return checkCardinalityRestrictions();
+		return false;
 	}
 	
 	
@@ -123,21 +123,42 @@ public class RuleString {
 
 
 
-
-	private boolean checkCardinalityRestrictions() {
+	
+	public boolean checkConstraints() {
 		
-		for (String smallerCardinality : lessThanMap.keySet()) {
+		for (RuleRestriction restriction : ruleRestrictions) {
 			
-			Integer smallerCardinalityVal = usedCardinalities.get(smallerCardinality);
-			Integer largerCardinalityVal = usedCardinalities.get(lessThanMap.get(smallerCardinality));
-			
-			if (smallerCardinalityVal > largerCardinalityVal) {
-				return false;
+			if (restriction instanceof AbsCardinalityRestriction) {
+				
+				AbsCardinalityRestriction absCardRest = (AbsCardinalityRestriction) restriction;
+				Integer lowerBound = absCardRest.getSmallerCardinality();
+				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
+				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
+									
+			} else if (restriction instanceof RelCardinalityRestriction) {
+				
+				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
+				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
+				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
+				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
+													
+			} else if (restriction instanceof subSetRestriction) {
+				// Implement
 			}
-			
+				
 		}
-		return true;
+		return false;
 	}
+	
+	public boolean compare(Integer largerInt, Integer smallerInt, boolean strictInequalty) {
+		if (strictInequality) {
+			return largerInt > smallerInt;
+		} else {
+			return largerInt >= smallerInt;
+		}
+	}
+	
+
 
 
 	
@@ -319,8 +340,7 @@ public class RuleString {
 				OWLObjectCardinalityRestriction objCardRest = (OWLObjectCardinalityRestriction) classExp;				
 				CardExpGen specialisedPattern = (CardExpGen) pattern;
 
-				return matchCardinality(objCardRest.getCardinality(), specialisedPattern) 
-						&& matchPrimitive(objCardRest.getProperty(), specialisedPattern.getProperty())
+				return matchPrimitive(objCardRest.getProperty(), specialisedPattern.getProperty())
 						&& match(objCardRest.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
 	
 				
@@ -342,8 +362,7 @@ public class RuleString {
 				OWLObjectCardinalityRestriction dataCardRest = (OWLObjectCardinalityRestriction) classExp;				
 				CardExpGen specialisedPattern = (CardExpGen) pattern;
 
-				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern) 
-						&& matchPrimitive(dataCardRest.getProperty(), specialisedPattern.getProperty())
+				return matchPrimitive(dataCardRest.getProperty(), specialisedPattern.getProperty())
 						&& matchPrimitive(dataCardRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
 			} 
 		}
@@ -356,20 +375,6 @@ public class RuleString {
 		return addToMap(entity, pattern.getAtomic());
 	}
 	
-
-	private boolean matchCardinality(Integer givenCardinality, CardExpGen specialisedPattern) {
-		
-		usedCardinalities.put(specialisedPattern.getCardinality(), givenCardinality);
-	
-		if (specialisedPattern.isRelativeBound()) {						
-			lessThanMap.put(specialisedPattern.getLowerBound(), specialisedPattern.getCardinality());
-			return true;
-			
-		} else {
-			return givenCardinality >= Integer.parseInt(specialisedPattern.getLowerBound());
-		}
-	}
-
 
 	private boolean addToMap(OWLObject owlObj, String key) {
 
