@@ -1111,6 +1111,53 @@ public class GenerateRules {
 		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
 		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));		
 		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
+
+	
+		
+		
+		
+		
+		// Rule 2
+		
+		// 2.1
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Z") });	
+		
+		tmp = new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, anonDisj1);							
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		
+		conclusion =  getSubClassOfAxiom("X", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, anonDisj2));
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));		
+		RuleString rule2_1 = new RuleString("2.1", "ObjInt-1", restrictions, conclusion, premise1);
+		
+
+		
+		// 2.2
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Z") });	
+		
+		tmp = getPrimitiveObjSomeValFrom("Ro", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, anonDisj1));						
+		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		
+		tmp = getPrimitiveObjSomeValFrom("Ro", new InterUnion(ClassExpressionType.OBJECT_INTERSECTION_OF, anonDisj2));						
+		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
+		restrictions = new ArrayList<NaryClassExpressionSubset>(Arrays.asList(new NaryClassExpressionSubset("C2", "C1")));		
+		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
+
+		
+	
+		// Rule 1
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, new GenericExpStr[] {new AtomicCls("Z")});
+		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
+		conclusion = getSubClassOfAxiom("X", "Y");
+		RuleString rule1 = new RuleString("1", "EquCls", conclusion, premise1);
+	
+		
+		
+		
+		
 		
 		
 		// Add all of the rules.
