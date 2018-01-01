@@ -36,6 +36,10 @@ public class OWLAxiomStr {
 	public List<GenericExpStr> getExpressions() {
 		return children;
 	}
+	
+	public ExpressionGroup getExpressionGroup() {
+		return expGroup;
+	}
 
 }
 

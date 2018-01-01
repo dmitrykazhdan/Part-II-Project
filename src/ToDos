@@ -10,4 +10,10 @@ when computing laconic justifications.
 
 - Fixup excessive type-casting in pattern matching.
 
-- Fixup "GroupExpression" pattern matching.
+- Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
+
+- Implement exception rules.
+
+- Implement generating rules.
+
+- Implement restriction checking.

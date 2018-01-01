@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
@@ -18,6 +19,7 @@ import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
@@ -31,6 +33,7 @@ import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
@@ -49,6 +52,7 @@ import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.ComplementCls;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.ExistsOrForAll;
+import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplatePrimitive;
@@ -56,8 +60,12 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyDomainAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyRangeAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLSubObjectPropertyOfAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLTransitiveObjectPropertyAxiomImpl;
 
 public class RuleString {
 
@@ -111,7 +119,7 @@ public class RuleString {
 			}
 		}
 
-		return false;
+		return checkConstraints();
 	}
 	
 	
@@ -124,7 +132,7 @@ public class RuleString {
 
 
 	
-	public boolean checkConstraints() {
+	private boolean checkConstraints() {
 		
 		for (RuleRestriction restriction : ruleRestrictions) {
 			
@@ -150,7 +158,8 @@ public class RuleString {
 		return false;
 	}
 	
-	public boolean compare(Integer largerInt, Integer smallerInt, boolean strictInequalty) {
+	
+	private boolean compare(Integer largerInt, Integer smallerInt, boolean strictInequalty) {
 		if (strictInequalty) {
 			return largerInt > smallerInt;
 		} else {
@@ -248,23 +257,15 @@ public class RuleString {
 					matchPrimitive(dataPropRngAxiom.getRange(), (TemplatePrimitive) pattern.getExpressions().get(1));
 		
 		} else if (tBoxAxiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
-			
+		
 			OWLEquivalentClassesAxiom eqvClassesAxiom = (OWLEquivalentClassesAxiom) tBoxAxiom;
-			ClsExpStr firstPatternClsExp = (ClsExpStr) pattern.getExpressions().get(0);
-			ClsExpStr secondPatternClsExp = (ClsExpStr) pattern.getExpressions().get(1);
+			return match(eqvClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
+
+		} else if (tBoxAxiom.isOfType(AxiomType.DISJOINT_CLASSES)){
 			
-			for (OWLEquivalentClassesAxiom pairwiseAxiom : eqvClassesAxiom.asPairwiseAxioms()) {
-				
-				OWLClassExpression firstClsExp = pairwiseAxiom.getClassExpressionsAsList().get(0);
-				OWLClassExpression secondClsExp = pairwiseAxiom.getClassExpressionsAsList().get(1);
-				
-				if ((match(firstClsExp, firstPatternClsExp) && match(secondClsExp, secondPatternClsExp)) ||
-					(match(firstClsExp, secondPatternClsExp) && match(secondClsExp, firstPatternClsExp))){
-					return true;
-				}					
-			}
-			
-			return false;
+			OWLDisjointClassesAxiom disjClassesAxiom = (OWLDisjointClassesAxiom) tBoxAxiom;
+			return match(disjClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
+
 		} else {
 			return false;
 		}
@@ -299,6 +300,11 @@ public class RuleString {
 	}
 
 	
+	private boolean match(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
+		
+		// ToDo
+		return false;
+	}
 	
 
 	private boolean match(OWLClassExpression classExp, ClsExpStr pattern) {
@@ -311,10 +317,11 @@ public class RuleString {
 		
 		if (classExpType.equals(pattern.getExpressionType())) {
 
-			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
-				// Need some exception handling.
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
-				// Need some exception handling.
+			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF) || 
+					classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
+				
+				OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
+				return match(groupExpression.getOperands(), ((InterUnion) pattern).getExpressionGroup());
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
 				
@@ -391,47 +398,51 @@ public class RuleString {
 
 	public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
 
-		/*
-		 Types of conclusion axioms:		 
-		 X <= Y
-		 Ro <= So
-		 Tra(So)
-		 Dom(Ro, Y)
-		 Rng(Ro, Y)
-		 Dis(U, V)
- 
-		 */
-		
-		
 		if (matchPremises(premises)) {
 
 			OWLAxiom conclusionAxiom;
-
-			if (conclusion.getConstructor().equals(AxiomType.SUBCLASS_OF)) {
+			AxiomType  conclusionType = conclusion.getConstructor();
+			
+			if (conclusionType.equals(AxiomType.SUBCLASS_OF)) {
 				OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(0));
 				OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
 				conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
 				return conclusionAxiom;
+				
+			} else if (conclusionType.equals(AxiomType.SUB_OBJECT_PROPERTY)) {
+				OWLObjectProperty subProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+				OWLObjectProperty superProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(1));
+				conclusionAxiom = new OWLSubObjectPropertyOfAxiomImpl(subProperty, superProperty, new ArrayList<OWLAnnotation>());
+				return 	conclusionAxiom;	
+				
+			} else if (conclusionType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
+				
+				OWLObjectProperty transProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+				conclusionAxiom = new OWLTransitiveObjectPropertyAxiomImpl(transProperty, new ArrayList<OWLAnnotation>());
+	
+			} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
+				
+				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+				conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, null);
+				
+			
+				
+			} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
+
+				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+				conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
+			 
+			} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
+				
 			}
 		}		
 		return null;	
 	}
 
-	
-	/*
-	 Types of conclusion expressions:
-	 	 
-	 Need to be implemented:
-	 
-	 1)  Conjunction.
-	 2)  Exists Ro
-	 3)  Union
-	 4)  Object-min-cardinality
-	 5)  Object-max-cardinality
-	 6)  Object-all-values-from
-	 7)  Object-exact-cardinality	 
-	 */
 
+	
 	private OWLObject generate(ClsExpStr conclusionExp) {
 		
 		if (conclusionExp.getExpressionType() == null) {
