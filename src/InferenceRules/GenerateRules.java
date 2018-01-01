@@ -43,16 +43,6 @@ public class GenerateRules {
 	 - Implement exception Case1, subCase1.
 	 - Implement rule application for the string rules.
 	 
-	 - Need to fixup the way cardinality is currently implemented.
-	   Strings are too ugly to use as integer representation.
-	   
-	 - Methods at the bottom are indeed convenient, but instead integrate them
-	   into constructors of the classes. That way can only have a limited amount of classes
-	   and you promote type-safety and eliminate sources of bugs.
-
-	 - Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
-	 
-	 - Consider making constructors private, and only having a limited number of "create" methods.
 	 */
 	
 	private static Map<Integer, List<RuleString>> rules = null;

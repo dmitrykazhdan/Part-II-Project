@@ -17,3 +17,5 @@ when computing laconic justifications.
 - Implement generating rules.
 
 - Implement restriction checking.
+
+- Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)

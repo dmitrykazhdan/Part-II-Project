@@ -167,9 +167,6 @@ public class RuleString {
 		}
 	}
 	
-
-
-
 	
 	private boolean match(OWLAxiom axiom, OWLAxiomStr pattern) {
 
@@ -398,23 +395,22 @@ public class RuleString {
 
 	public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
 
+		OWLAxiom conclusionAxiom = null;
+		
 		if (matchPremises(premises)) {
-
-			OWLAxiom conclusionAxiom;
+		
 			AxiomType  conclusionType = conclusion.getConstructor();
 			
 			if (conclusionType.equals(AxiomType.SUBCLASS_OF)) {
 				OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(0));
 				OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
 				conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
-				return conclusionAxiom;
 				
 			} else if (conclusionType.equals(AxiomType.SUB_OBJECT_PROPERTY)) {
 				OWLObjectProperty subProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
 				OWLObjectProperty superProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(1));
 				conclusionAxiom = new OWLSubObjectPropertyOfAxiomImpl(subProperty, superProperty, new ArrayList<OWLAnnotation>());
-				return 	conclusionAxiom;	
-				
+									
 			} else if (conclusionType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
 				
 				OWLObjectProperty transProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
@@ -425,9 +421,7 @@ public class RuleString {
 				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
 				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
 				conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, null);
-				
-			
-				
+											
 			} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
 
 				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
@@ -435,10 +429,10 @@ public class RuleString {
 				conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
 			 
 			} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
-				
+				// ToDo
 			}
 		}		
-		return null;	
+		return conclusionAxiom;
 	}
 
 
