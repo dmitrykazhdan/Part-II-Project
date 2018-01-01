@@ -6,11 +6,14 @@
 - In the "ProofTreeGenerator" class, in the "getLaconicJustifications" method, add a timeout step
 when computing laconic justifications.
 
+
 - Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
 
 - Fixup excessive type-casting in pattern matching.
 
 - Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
+
+- Add restrictions to rules.
 
 - Implement exception rules.
 
