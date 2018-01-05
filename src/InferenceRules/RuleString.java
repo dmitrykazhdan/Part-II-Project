@@ -174,20 +174,22 @@ public class RuleString {
 	}
 
 
-	private void match(OWLAxiom axiom, OWLAxiomStr pattern) {
+	private boolean match(OWLAxiom axiom, OWLAxiomStr pattern) {
 
 		if (axiom.isOfType(pattern.getConstructor())) {
 
 			if (axiom.isOfType(AxiomType.RBoxAxiomTypes)) {
-				matchRBoxAxiom(axiom, pattern);
+				return matchRBoxAxiom(axiom, pattern);
 
 			} else if (axiom.isOfType(AxiomType.TBoxAxiomTypes)) {
-				matchTBoxAxiom(axiom, pattern);
+				return matchTBoxAxiom(axiom, pattern);
 
 			} else if (axiom.isOfType(AxiomType.ABoxAxiomTypes)) {				
-				matchABoxAxiom(axiom, pattern);
+				return matchABoxAxiom(axiom, pattern);
 			}		
 		}
+		
+		return false;
 	}
 
 
@@ -326,6 +328,7 @@ public class RuleString {
 		if (aBoxAxiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
 
 			OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) aBoxAxiom;				
+			
 			boolean matchedFirstArgument = false;
 			boolean matchedSecondArgument = false;
 
@@ -352,7 +355,6 @@ public class RuleString {
 		if (!pattern.hasAnonymousExpressions() && (classExpressions.size() != pattern.getNamedExpressions().length)) {
 			return false;
 		}
-
 
 		// throw an exception in the appropriate place
 		for (GenericExpStr exp : pattern.getNamedExpressions()) {

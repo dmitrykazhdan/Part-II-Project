@@ -27,6 +27,8 @@ when computing laconic justifications.
 
 - Throw exception if class expression is non-deterministic.
 
+- Group "current variable" and "current group" instantiations into one object.
+
 
 
 
