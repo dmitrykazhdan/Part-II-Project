@@ -22,3 +22,51 @@ when computing laconic justifications.
 - Implement restriction checking.
 
 - Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
+
+
+
+
+
+For Today:
+
+- A rule has several free variables that need to be instantiated.
+Need to change matching so that it returns all possible variable instantiations, instead of trying out one.
+For this, need to iterate over all possible combinations of such rules.
+
+
+- Have a "Matcher" interface, with "RuleString" and "Exception" implementing it.
+
+- For rules, all "group expressions" are only atomic ones, with no inner patterns.
+Thus, have simple groups for rules, and more complex groups for exceptions, with inner patterns.
+However, keep in mind that for exceptions you only need to pattern match, not generate.
+
+
+- Perhaps have two types of "group expression" - flat and complex.
+
+- Potential thought: have multiple types of "group expressions", including "subset-superset", and also
+"previous - new" with a defined transformation mapping "previous" to "new"
+
+
+
+
+
+
+Group is:
+
+- Name
+- boolean hasBaggage
+- ClsExp[] namedPattern
+
+
+0) If has no baggage, check that number of patterns = number of items in instance.
+1) Generate all possible orderings of the group.
+2) Attempt to match the given ordering to the pattern.
+
+MATCH:
+
+3) Check subset constraints (if any)
+
+
+GENERATE:
+
+3) Generate all possible variants matching the constraint.
