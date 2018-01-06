@@ -267,7 +267,8 @@ public class ProofTreeGenerator {
 				
 				RuleString rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
-				if (rule != null) {					
+				if (rule != null) {	
+					incompleteProofTree.setInferenceRule(rule);
 					completeProofTreeList.add(incompleteProofTree);
 				} else {
 					

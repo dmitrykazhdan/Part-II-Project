@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import InferenceRules.GenerateRules;
 import InferenceRules.RuleFinder;
 import InferenceRules.RuleString;
 import ProofTreeComputation.ProofTree;
@@ -40,6 +41,12 @@ public class TestingClass {
 			InputStream fileInputStream = new FileInputStream(explanationFilename);
 
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
+			
+//			List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
+//			RuleString rule39 = GenerateRules.getRule("39");
+//			
+//			boolean m = rule39.matchPremises(premises);
+			
 			ProofTree proofTree = ProofTreeGenerator.GenerateProofTree(explanation);
 			
 			System.out.println("Proof Tree computed successfully.");

@@ -48,6 +48,21 @@ public class GenerateRules {
 		return rules;
 	}
 	
+	
+	public static RuleString getRule(String ruleID) {
+		
+		getRules();
+		
+		for (Integer i : rules.keySet()) {
+			for (RuleString rule : rules.get(i)) {
+				if (rule.getRuleID().equals(ruleID)) {
+					return rule;
+				}
+			}
+		}
+		
+		return null;
+	}
 
 
 	private static void generateRules() {
@@ -87,7 +102,7 @@ public class GenerateRules {
 	
 
 	private static OWLAxiomStr getSubClassOfAxiom(String subCls, String superCls) {
-		return getSubClassOfAxiom(new AtomicCls(subCls), new AtomicCls(subCls));
+		return getSubClassOfAxiom(new AtomicCls(subCls), new AtomicCls(superCls));
 	}
 	
 	private static OWLAxiomStr getSubClassOfAxiom(ClsExpStr subCls, String superCls) {
@@ -295,8 +310,8 @@ public class GenerateRules {
 		rules.get(1).add(rule6_2);
 		rules.get(1).add(rule6_3);
 		rules.get(1).add(rule7);
-		rules.get(1).add(rule8);
-		rules.get(1).add(rule9);
+	//	rules.get(1).add(rule8);
+	//	rules.get(1).add(rule9);
 		rules.get(1).add(rule10);
 		rules.get(1).add(rule11);
 
