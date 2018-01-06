@@ -767,23 +767,23 @@ public class GenerateRules {
 		// Rule 3
 		
 		// 3.1
-		ExpressionGroup anonConj = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		ExpressionGroup anonConj = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
 		premise1 = getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));							
 
-		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });				
+		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");				
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));
 		RuleRestriction[] restrictions = new RuleRestriction[] { new subSetRestriction("C2", "C1") };		
 		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
 		
 
 		// 3.2
-		anonConj = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });
+		anonConj = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");
 	
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 		
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
 
-		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });
+		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 
@@ -799,8 +799,8 @@ public class GenerateRules {
 		// Rule 5
 		
 		// 5.1
-		ExpressionGroup anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });
-		ExpressionGroup anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });
+		ExpressionGroup anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");
+		ExpressionGroup anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 
 		premise1 = getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj1), "X");			
 		conclusion =  getSubClassOfAxiom(InterUnion.createIntersectionExpression( anonDisj2), "X");
@@ -829,7 +829,7 @@ public class GenerateRules {
 		// Rule 11
 		premise1 = getSubClassOfAxiom(new ComplementCls(new AtomicCls("X")), "Y");	
 		tmp = InterUnion.createUnionExpression(
-				new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, new ClsExpStr[] {}));	
+				new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}));	
 		
 		conclusion = getSubClassOfAxiom("T", (ClsExpStr) tmp);
 		RuleString rule11 = new RuleString("11", "ObjCom-2", conclusion, premise1);
@@ -841,7 +841,7 @@ public class GenerateRules {
 		/// Rule 21
 		
 		// 21.1
-		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y") }, new ClsExpStr[] { new AtomicCls("Z") });
+		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y") }, "Z");
 		tmp = InterUnion.createIntersectionExpression( tmpGroup1);		
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("Ro", (ClsExpStr) tmp));
 		premise2 = getSubClassOfAxiom("Y", "F");
@@ -862,7 +862,7 @@ public class GenerateRules {
 
 		
 		// Rule 40
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") });
 		premise1 =  getSubClassOfAxiom("X", "Y");
 		premise2 =  getSubClassOfAxiom("X", "Z");
 		conclusion = getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( tmpGroup1));
@@ -872,7 +872,7 @@ public class GenerateRules {
 	
 		
 		// Rule 45
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") });
 		premise1 = getSubClassOfAxiom("Y", "Z");
 		premise2 = getSubClassOfAxiom("X", InterUnion.createUnionExpression( tmpGroup1));
 		conclusion = getSubClassOfAxiom("X", "Z");
@@ -883,7 +883,7 @@ public class GenerateRules {
 
 		
 		// Rule 54
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("U"), new AtomicCls("V") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("U"), new AtomicCls("V") });
 		premise1 = getSubClassOfAxiom("U", "Z");
 		premise2 = getSubClassOfAxiom("V", "Z");
 		premise3 = getSubClassOfAxiom("X", InterUnion.createUnionExpression( tmpGroup1));
@@ -895,7 +895,7 @@ public class GenerateRules {
 		
 		
 		// Rule 15
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") }, new ClsExpStr[] {new AtomicCls("Z")});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") }, "Z");
 		premise1 = getSubClassOfAxiom("X", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
 		conclusion = getSubClassOfAxiom("X", "F");
@@ -906,7 +906,7 @@ public class GenerateRules {
 		
 		
 		// Rule 16
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") }, new ClsExpStr[] {new AtomicCls("Z")});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") }, "Z");
 		premise1 = getSubClassOfAxiom("T", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
 		conclusion = getSubClassOfAxiom("X", "F");
@@ -918,9 +918,9 @@ public class GenerateRules {
 		// Rule 22
 		
 		// 22.1
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[] { new AtomicCls("Y") });
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( tmpGroup1)));
-		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[] { new AtomicCls("Z") });
+		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		conclusion = getSubClassOfAxiom("X", "F");
 		restrictions = new RuleRestriction[] {new subSetRestriction("C1", "C2") };	
@@ -950,7 +950,7 @@ public class GenerateRules {
 		// Rule 38
 		
 		// 38.1
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") });
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Y"));
 		premise2 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("Z"));
 		conclusion = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( tmpGroup1)));
@@ -980,11 +980,11 @@ public class GenerateRules {
 		
 		
 		// Rule 52
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y") });
 		premise1 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
 		premise2 = getSubClassOfAxiom("U", "X");
 		premise3 = getSubClassOfAxiom("V", "Y");
-		tmpGroup2 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("U"), new AtomicCls("V") }, new ClsExpStr[] {});
+		tmpGroup2 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("U"), new AtomicCls("V") });
 		conclusion = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		RuleString rule52 = new RuleString("52", "DisCls-SubCls-SubCls", conclusion, premise1, premise2, premise3);
 
@@ -993,7 +993,7 @@ public class GenerateRules {
 
 		
 		// Rule 53
-		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") }, new ClsExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") });
 		premise1 = getSubClassOfAxiom("X", "Y");
 		premise2 = getSubClassOfAxiom("X", "Z");
 		premise3 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
@@ -1010,7 +1010,7 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createLiteralSomeValFrom( "Ro", "j");
 		premise2 =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
 	
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new TemplateLiteral("i"), new TemplateLiteral("j") }, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new TemplateLiteral("i"), new TemplateLiteral("j") });
 		premise3 = new OWLAxiomStr(AxiomType.DIFFERENT_INDIVIDUALS, tmpGroup1);
 		
 		OWLAxiomStr premise4 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new AtomicCls("Ro"));
@@ -1021,7 +1021,7 @@ public class GenerateRules {
 		
 		
 		// Rule 7
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), ExistsOrForAll.createObjAllValFrom("Ro", "Y")}, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), ExistsOrForAll.createObjAllValFrom("Ro", "Y")});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		conclusion = getSubClassOfAxiom(ExistsOrForAll.createObjAllValFrom("Ro", "F"), "X");
 		RuleString rule7 = new RuleString("7", "ObjAll", conclusion, premise1);
@@ -1031,11 +1031,11 @@ public class GenerateRules {
 		// Rule 4
 		
 		// 4.1
-		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
-		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = InterUnion.createUnionExpression( anonDisj1);							
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
@@ -1044,11 +1044,11 @@ public class GenerateRules {
 		
 		
 		// 4.2
-		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
-		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj1));						
-		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
@@ -1064,11 +1064,11 @@ public class GenerateRules {
 		// Rule 2
 		
 		// 2.1
-		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
-		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Z") });	
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = InterUnion.createIntersectionExpression( anonDisj1);							
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
@@ -1078,11 +1078,11 @@ public class GenerateRules {
 
 		
 		// 2.2
-		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Y") });	
-		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, new ClsExpStr[]{ new AtomicCls("Z") });	
+		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
+		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj1));						
-		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp}, new GenericExpStr[] {});
+		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
@@ -1094,7 +1094,7 @@ public class GenerateRules {
 
 		
 		// Rule 1
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, new GenericExpStr[] {new AtomicCls("Z")});
+		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, "Z");
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		conclusion = getSubClassOfAxiom("X", "Y");
 		RuleString rule1 = new RuleString("1", "EquCls", conclusion, premise1);
