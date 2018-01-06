@@ -172,6 +172,9 @@ public class ProofTreeGenerator {
 						appliedTrees.add(appliedTree);
 					}
 				}
+			} else {
+				
+				appliedTrees.add(tree);
 			}
 		}			
 		return appliedTrees;
