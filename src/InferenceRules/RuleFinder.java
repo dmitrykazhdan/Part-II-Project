@@ -53,7 +53,7 @@ public class RuleFinder {
 	
 	// Given an incomplete rule application (premises with a rule), attempt
 	// to generate a conclusion.
-	public static InstanceOfRule generateInference(InstanceOfRule incompleteRuleApplication) {
+	public static List<InstanceOfRule> generateInference(InstanceOfRule incompleteRuleApplication) {
 		
 		List<OWLAxiom> premises = incompleteRuleApplication.getPremises();
 		List<List<OWLAxiom>> premisePermutations = getPremisePermutations(premises);
@@ -61,12 +61,16 @@ public class RuleFinder {
 
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
 
-			OWLAxiom conclusion = rule.generateConclusion(premisePermutation);	
+			List<OWLAxiom> conclusions = rule.generateConclusions(premisePermutation);	
 
-			if (conclusion != null) {
+			if (conclusions != null) {
 
-				InstanceOfRule appliedRule = new InstanceOfRule(premisePermutation, conclusion, rule);
-				return appliedRule;
+				List<InstanceOfRule> appliedRules = new ArrayList<InstanceOfRule>();
+				
+				for (OWLAxiom conclusion : conclusions) {
+					appliedRules.add(new InstanceOfRule(premisePermutation, conclusion, rule));
+					return appliedRules;
+				}
 			}
 		}
 		return null;	

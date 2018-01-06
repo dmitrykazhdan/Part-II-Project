@@ -113,14 +113,17 @@ public class RuleString {
 
 	public boolean matchPremises(List<OWLAxiom> premises) {
 
+		// Create an empty array of possible free variable instantiations.
 		allInstantiations = new ArrayList<Map<String, OWLObject>>();
 		allInstantiations.add(new HashMap<String, OWLObject>());
 
 		for (int i = 0; i < premises.size(); i++) {
+
+			// For every premise, attempt to match it to every current instantiation.
 			for (Map<String, OWLObject> instantiation : allInstantiations) {
 
 				currentVariableInstantiation = new HashMap<String, OWLObject>(instantiation);
-				match(premises.get(i), premisesStr.get(i));
+				matchAxiom(premises.get(i), premisesStr.get(i));
 			}
 
 		}
@@ -129,7 +132,10 @@ public class RuleString {
 	}
 
 
-	public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {		
+	// When matching both premises and a conclusion, simply treat the conclusion as an extra premise
+	// and use the premise-matching algorithm.
+	public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {	
+
 		List<OWLAxiom> premisesAndConclusion = new ArrayList<OWLAxiom>(premises);
 		premisesAndConclusion.add(conclusion);
 		return matchPremises(premisesAndConclusion);	
@@ -174,7 +180,7 @@ public class RuleString {
 	}
 
 
-	private boolean match(OWLAxiom axiom, OWLAxiomStr pattern) {
+	private boolean matchAxiom(OWLAxiom axiom, OWLAxiomStr pattern) {
 
 		if (axiom.isOfType(pattern.getConstructor())) {
 
@@ -188,7 +194,7 @@ public class RuleString {
 				return matchABoxAxiom(axiom, pattern);
 			}		
 		}
-		
+
 		return false;
 	}
 
@@ -277,6 +283,28 @@ public class RuleString {
 
 
 
+	private boolean matchABoxAxiom(OWLAxiom aBoxAxiom, OWLAxiomStr pattern) {
+
+		// Currently only a "Different Individuals" axiom that has only two individuals is matched.
+		if (aBoxAxiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
+
+			OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) aBoxAxiom;				
+			List<OWLIndividual> individuals = diffIndividualsAxiom.getIndividualsAsList();
+			OWLIndividual i = individuals.get(0);
+			OWLIndividual j = individuals.get(1);
+			TemplatePrimitive iStr  = (TemplatePrimitive) pattern.getExpressions().get(0);
+			TemplatePrimitive jStr  = (TemplatePrimitive) pattern.getExpressions().get(1);
+
+			return (individuals.size() == 2) && (
+					(matchPrimitive(individuals.get(0), iStr) && matchPrimitive(individuals.get(1), jStr)) ||
+					(matchPrimitive(individuals.get(1), iStr) && matchPrimitive(individuals.get(0), jStr)));
+		}	
+
+		return false;
+	}
+
+
+
 
 	private boolean matchGroupAxiom(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
 
@@ -286,9 +314,9 @@ public class RuleString {
 
 		Map<String, OWLObject> oldInstantiation = currentVariableInstantiation;
 		allInstantiations.remove(currentVariableInstantiation);
-		
+
 		boolean atLeastOneMatch = false;
-		
+
 		for (List<OWLClassExpression> permutation : allPermutations) {
 
 			currentVariableInstantiation = new HashMap<String, OWLObject>(oldInstantiation);
@@ -298,7 +326,7 @@ public class RuleString {
 				atLeastOneMatch= true;
 			}				
 		}
-		
+
 		allInstantiations.addAll(newInstantiations);
 		return atLeastOneMatch;
 	}
@@ -323,34 +351,11 @@ public class RuleString {
 	}
 
 
-	private boolean matchABoxAxiom(OWLAxiom aBoxAxiom, OWLAxiomStr pattern) {
-
-		if (aBoxAxiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
-
-			OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) aBoxAxiom;				
-			
-			boolean matchedFirstArgument = false;
-			boolean matchedSecondArgument = false;
-
-			for (OWLIndividual i : diffIndividualsAxiom.getIndividualsAsList()) {
-				if (matchPrimitive(i, (TemplatePrimitive) pattern.getExpressions().get(0))) {
-					matchedFirstArgument = true;
-				}
-
-				if (matchPrimitive(i, (TemplatePrimitive) pattern.getExpressions().get(1))) {
-					matchedSecondArgument = true;
-				}
-			}
-
-			return matchedFirstArgument && matchedSecondArgument;
-		}	else {
-			return false;
-		}
-	}
 
 
 
-	private boolean match(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
+	// Assumption: all of the named expressions in "pattern" are already instantiated.
+	private boolean matchFullyInstantiatedGroup(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
 
 		if (!pattern.hasAnonymousExpressions() && (classExpressions.size() != pattern.getNamedExpressions().length)) {
 			return false;
@@ -369,6 +374,7 @@ public class RuleString {
 
 					if (classExpressions.contains(obj)) {
 						classExpressions.remove(obj);
+
 					} else {
 						return false;
 					}
@@ -389,10 +395,12 @@ public class RuleString {
 	}
 
 
+
+	// Currently all class expression pattern matching is assumed to be producing at most one instantiation.
 	private boolean match(OWLClassExpression classExp, ClsExpStr pattern) {
 
 		if (pattern.getExpressionType() == null) {
-			return addToMap((OWLObject) classExp, ((AtomicCls) pattern).getPlaceholder());
+			return addToMap(classExp, ((AtomicCls) pattern).getPlaceholder());
 		}
 
 		ClassExpressionType classExpType = classExp.getClassExpressionType();
@@ -403,7 +411,7 @@ public class RuleString {
 					classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
 
 				OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
-				return match(groupExpression.getOperands(), ((InterUnion) pattern).getExpressionGroup());
+				return matchFullyInstantiatedGroup(groupExpression.getOperands(), ((InterUnion) pattern).getExpressionGroup());
 
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
 
@@ -477,47 +485,70 @@ public class RuleString {
 
 
 
+	// Return all possible conclusions that can be generated.
+	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
 
-	public OWLAxiom generateConclusion(List<OWLAxiom> premises) {
+		List<OWLAxiom> conclusion = new ArrayList<OWLAxiom>();
 
-		OWLAxiom conclusionAxiom = null;
-
+		// Attempt to match premises.
 		if (matchPremises(premises)) {
 
-			AxiomType  conclusionType = conclusion.getConstructor();
-
-			if (conclusionType.equals(AxiomType.SUBCLASS_OF)) {
-				OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(0));
-				OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
-				conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
-
-			} else if (conclusionType.equals(AxiomType.SUB_OBJECT_PROPERTY)) {
-				OWLObjectProperty subProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
-				OWLObjectProperty superProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(1));
-				conclusionAxiom = new OWLSubObjectPropertyOfAxiomImpl(subProperty, superProperty, new ArrayList<OWLAnnotation>());
-
-			} else if (conclusionType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
-
-				OWLObjectProperty transProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
-				conclusionAxiom = new OWLTransitiveObjectPropertyAxiomImpl(transProperty, new ArrayList<OWLAnnotation>());
-
-			} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
-
-				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
-				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
-				conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, null);
-
-			} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
-
-				OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
-				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
-				conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
-
-			} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
-				// ToDo
+			// Iterate over all possible instantiations and attempt to generate a conclusion
+			// from each one.
+			for (Map<String, OWLObject> instantiation : allInstantiations) {
+				currentVariableInstantiation = instantiation;
+				conclusion.addAll(generateConclusion(premises));				
 			}
-		}		
-		return conclusionAxiom;
+		}
+
+		return conclusion;
+	}
+
+
+	private List<OWLAxiom> generateConclusion(List<OWLAxiom> premises) {
+
+		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
+		OWLAxiom conclusionAxiom = null;
+		AxiomType  conclusionType = conclusion.getConstructor();
+
+		if (conclusionType.equals(AxiomType.SUBCLASS_OF)) {
+			OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(0));
+			OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+			conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
+			conclusions.add(conclusionAxiom);
+			
+		} else if (conclusionType.equals(AxiomType.SUB_OBJECT_PROPERTY)) {
+			OWLObjectProperty subProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+			OWLObjectProperty superProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(1));
+			conclusionAxiom = new OWLSubObjectPropertyOfAxiomImpl(subProperty, superProperty, new ArrayList<OWLAnnotation>());
+			conclusions.add(conclusionAxiom);
+
+		} else if (conclusionType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
+
+			OWLObjectProperty transProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+			conclusionAxiom = new OWLTransitiveObjectPropertyAxiomImpl(transProperty, new ArrayList<OWLAnnotation>());
+			conclusions.add(conclusionAxiom);
+
+		} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
+
+			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+			conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, null);
+			conclusions.add(conclusionAxiom);
+
+		} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
+
+			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusion.getExpressions().get(0));
+			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusion.getExpressions().get(1));
+			conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
+			conclusions.add(conclusionAxiom);
+
+		} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
+			// ToDo
+		}
+
+		return 	conclusions;
+
 	}
 
 
