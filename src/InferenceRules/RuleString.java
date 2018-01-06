@@ -122,9 +122,11 @@ public class RuleString {
 		allInstantiations.add(new HashMap<String, OWLObject>());
 
 		for (int i = 0; i < premises.size(); i++) {
+			
+			List<Map<String, OWLObject>> oldInstantiations = new ArrayList<Map<String, OWLObject>>(allInstantiations);
 
 			// For every premise, attempt to match it to every current instantiation.
-			for (Map<String, OWLObject> instantiation : allInstantiations) {
+			for (Map<String, OWLObject> instantiation : oldInstantiations) {
 
 				currentVariableInstantiation = new HashMap<String, OWLObject>(instantiation);
 				matchAxiom(premises.get(i), premisesStr.get(i));
