@@ -271,10 +271,10 @@ public class ProofTreeGenerator {
 					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);
 					
 					for (PartitionWithRules partition : partitionList) {
-						ProofTree newProofTree = ComputeProofByApplyingPartition(incompleteProofTree, partition);	
+						List<ProofTree> newProofTrees = ComputeProofByApplyingPartition(incompleteProofTree, partition);	
 						
-						if (newProofTree != null) {
-							newIncompleteProofTreeList.add(newProofTree);
+						if (newProofTrees != null) {
+							newIncompleteProofTreeList.addAll(newProofTrees);
 						}					
 					}
 				}				
@@ -289,39 +289,54 @@ public class ProofTreeGenerator {
 	 */
 	
 	
-	private static ProofTree ComputeProofByApplyingPartition(ProofTree incompleteTree, PartitionWithRules partition) {
-			
-		ProofTree copiedTree = new ProofTree(incompleteTree);
-		List<ProofTree> subTrees = copiedTree.getSubTrees();
-		
+	private static List<ProofTree> ComputeProofByApplyingPartition(ProofTree oldTree, PartitionWithRules partition) {
+
+		List<ProofTree> newTrees = new ArrayList<ProofTree>();
+		newTrees.add(new ProofTree(oldTree));
+
 		for (InstanceOfRule subSet : partition.getItems()) {
-			
+
 			if (subSet.getRule() != null) {
-				InstanceOfRule newInference = RuleFinder.generateInference(subSet);
 				
-				if (newInference == null) {
+				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(subSet);
+
+				if (newInferences == null) {
 					return null;
 				}
-							
-				ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
-				
-				// Consider using a map ***
-				for (ProofTree subTree : subTrees) {
-					if (newInference.getPremises().contains(subTree.getAxiom())) {
-						newInference.getPremises().remove(subTree.getAxiom());
-						newSubTree.getSubTrees().add(subTree);
-					}
+
+				List<ProofTree> newNewTrees = new ArrayList<ProofTree>();
+
+				for (ProofTree incompleteTree : newTrees) { 
+			
+					for (InstanceOfRule newInference : newInferences) {
+
+						ProofTree copiedTree = new ProofTree(incompleteTree);
+						List<ProofTree> subTrees = copiedTree.getSubTrees();
+
+						ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
+
+						// Consider using a map ***
+						for (ProofTree subTree : subTrees) {
+							if (newInference.getPremises().contains(subTree.getAxiom())) {
+								newInference.getPremises().remove(subTree.getAxiom());
+								newSubTree.getSubTrees().add(subTree);
+							}
+						}
+
+						for (ProofTree subTree : newSubTree.getSubTrees()) {
+							subTrees.remove(subTree);
+						}
+
+						copiedTree.getSubTrees().add(newSubTree);							
+						newNewTrees.add(copiedTree);
+					}	
 				}
 				
-				for (ProofTree subTree : newSubTree.getSubTrees()) {
-					subTrees.remove(subTree);
-				}
-				
-				copiedTree.getSubTrees().add(newSubTree);			
-			}		
+				newTrees = newNewTrees;
+			}
 		}
-		
-		return copiedTree;
+
+		return newTrees;
 	}
 	
 
