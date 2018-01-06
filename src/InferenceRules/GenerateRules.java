@@ -37,14 +37,6 @@ import ProofTreeComputation.ProofTreeGenerator;
 
 public class GenerateRules {
 
-	/*
-	 ToDo:
-
-	 - Implement exception Case1, subCase1.
-	 - Implement rule application for the string rules.
-	 
-	 */
-	
 	private static Map<Integer, List<RuleString>> rules = null;
 
 	public static Map<Integer, List<RuleString>> getRules() {
@@ -59,7 +51,6 @@ public class GenerateRules {
 
 
 	private static void generateRules() {
-
 		
 		rules = new HashMap<Integer, List<RuleString>>();
 
@@ -112,17 +103,11 @@ public class GenerateRules {
 	}
 
 	
-	private static void getDomainAxiomStr() {
-		// Fill in and change return type
-	}
-	
-	
-
 	
 	private static void generateOnePremiseRules() {
 		
 		// Rule 1
-		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, "Z");
+		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("Y")}, "Z");
 		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		OWLAxiomStr conclusion = getSubClassOfAxiom("X", "Y");
 		RuleString rule1 = new RuleString("1", "EquCls", conclusion, premise1);
@@ -136,7 +121,7 @@ public class GenerateRules {
 		ExpressionGroup anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		ClsExpStr tmp = InterUnion.createIntersectionExpression( anonDisj1);							
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
@@ -149,7 +134,7 @@ public class GenerateRules {
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj1));						
-		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp});
+		tmpGroup1 = new ExpressionGroup("C3", new ClsExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
@@ -194,7 +179,7 @@ public class GenerateRules {
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = InterUnion.createUnionExpression( anonDisj1);							
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), tmp});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
@@ -207,7 +192,7 @@ public class GenerateRules {
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj1));						
-		tmpGroup1 = new ExpressionGroup("C3", new GenericExpStr[] { new AtomicCls("X"), tmp});
+		tmpGroup1 = new ExpressionGroup("C3", new ClsExpStr[] { new AtomicCls("X"), tmp});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
@@ -259,7 +244,7 @@ public class GenerateRules {
 
 		
 		// Rule 7
-		tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new AtomicCls("X"), ExistsOrForAll.createObjAllValFrom("Ro", "Y")});
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), ExistsOrForAll.createObjAllValFrom("Ro", "Y")});
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		conclusion = getSubClassOfAxiom(ExistsOrForAll.createObjAllValFrom("Ro", "F"), "X");
 		RuleString rule7 = new RuleString("7", "ObjAll", conclusion, premise1);
@@ -1167,8 +1152,7 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createLiteralSomeValFrom( "Ro", "j");
 		OWLAxiomStr premise2 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
 	
-		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new GenericExpStr[] { new TemplateLiteral("i"), new TemplateLiteral("j") });
-		OWLAxiomStr premise3 = new OWLAxiomStr(AxiomType.DIFFERENT_INDIVIDUALS, tmpGroup1);
+		OWLAxiomStr premise3 = new OWLAxiomStr(AxiomType.DIFFERENT_INDIVIDUALS, new TemplateLiteral("i"), new TemplateLiteral("j"));
 		
 		OWLAxiomStr premise4 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new AtomicCls("Ro"));
 		OWLAxiomStr conclusion = getSubClassOfAxiom("X", "F");

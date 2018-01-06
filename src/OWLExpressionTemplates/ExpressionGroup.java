@@ -4,24 +4,24 @@ public class ExpressionGroup {
 
 	private String groupName;
 	private String anonymousGroupName = "";
-	private GenericExpStr[] namedExpressions;
+	private ClsExpStr[] namedExpressions;
 	private boolean hasAnonymousExpressions;
 	
-	public ExpressionGroup(String groupName, GenericExpStr[] namedExpressions) {
+	public ExpressionGroup(String groupName, ClsExpStr[] namedExpressions) {
 		this.groupName = groupName;
 		this.namedExpressions = namedExpressions;
 		this.hasAnonymousExpressions = false;
 		this.anonymousGroupName = "";
 	}
 	
-	public ExpressionGroup(String groupName, GenericExpStr[] namedExpressions, String anonymousGroupName) {
+	public ExpressionGroup(String groupName, ClsExpStr[] namedExpressions, String anonymousGroupName) {
 		this.groupName = groupName;
 		this.namedExpressions = namedExpressions;
 		this.hasAnonymousExpressions = true;
 		this.anonymousGroupName = anonymousGroupName;
 	}
 	
-	public GenericExpStr[] getNamedExpressions() { return namedExpressions; }
+	public ClsExpStr[] getNamedExpressions() { return namedExpressions; }
 	
 	public boolean hasAnonymousExpressions() {return hasAnonymousExpressions; }
 	

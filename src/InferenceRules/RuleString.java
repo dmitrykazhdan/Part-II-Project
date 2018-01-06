@@ -3,6 +3,7 @@ package InferenceRules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,13 +58,16 @@ import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplatePrimitive;
+import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyDomainAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyRangeAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectSomeValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLSubObjectPropertyOfAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLTransitiveObjectPropertyAxiomImpl;
@@ -543,8 +547,12 @@ public class RuleString {
 			conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
 			conclusions.add(conclusionAxiom);
 
+			
+		// Assumption: all free variables in the template have been instantiated
 		} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
-			// ToDo
+						
+			conclusionAxiom = new OWLDisjointClassesAxiomImpl(generateGroup(conclusion.getExpressionGroup()), null);			
+			conclusions.add(conclusionAxiom);
 		}
 
 		return 	conclusions;
@@ -553,10 +561,15 @@ public class RuleString {
 
 
 
-	private OWLObject generate(ClsExpStr conclusionExp) {
+	private List<OWLObject> generate(ClsExpStr conclusionExp) {
 
+		List<OWLObject> expressions = new ArrayList<OWLObject>();
+		OWLObject expression = null;
+
+		
 		if (conclusionExp.getExpressionType() == null) {
-			return currentVariableInstantiation.get(((AtomicCls) conclusionExp).getPlaceholder());
+			expression = currentVariableInstantiation.get(((AtomicCls) conclusionExp).getPlaceholder());
+			expressions.add(expression);
 		}
 
 		ClassExpressionType classExpType = conclusionExp.getExpressionType();
@@ -570,10 +583,12 @@ public class RuleString {
 			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression());			
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ) {
-				return new OWLObjectSomeValuesFromImpl(objPropExp, classExp);
+				expression =  new OWLObjectSomeValuesFromImpl(objPropExp, classExp);
 			} else {
-				return new OWLObjectAllValuesFromImpl(objPropExp, classExp);			
+				expression =  new OWLObjectAllValuesFromImpl(objPropExp, classExp);			
 			}
+			expressions.add(expression);
+
 
 		} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY) ||
 				classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
@@ -586,24 +601,92 @@ public class RuleString {
 			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression());			
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
-				return new OWLObjectMinCardinalityImpl(objPropExp, cardinality, classExp );				
+				expression =  new OWLObjectMinCardinalityImpl(objPropExp, cardinality, classExp );				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
-				return new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );				
+				expression =  new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );				
 			} else {
-				return new OWLObjectExactCardinalityImpl(objPropExp, cardinality, classExp );				
+				expression =  new OWLObjectExactCardinalityImpl(objPropExp, cardinality, classExp );				
 			}
+			expressions.add(expression);
 
-		} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
-			// STUB
-		} else if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
-			// STUB
-		}
+			
+		} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF) ||
+					classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
+			
+			Set<Set<OWLClassExpression>> possibleSets = new HashSet<Set<OWLClassExpression>>();
+			
+			Set<OWLClassExpression> expressionSet = new HashSet<OWLClassExpression>();
+			ExpressionGroup expGroup = conclusion.getExpressionGroup();
+			ClsExpStr[] namedExpressions = conclusion.getExpressionGroup().getNamedExpressions();
+			boolean noNamedExpressions = (namedExpressions == null) || (namedExpressions.length == 0);
+			
 
-		return null;
+			// Assumption: for now, either the group is fully named, or fully anonymous.
+			if (expGroup.hasAnonymousExpressions() && noNamedExpressions)  {
+				
+				String anonGroupName = expGroup.getAnonymousGroupName();
+				String superSetName = "";
+				
+				for (RuleRestriction restriction : ruleRestrictions) {
+					if (restriction instanceof subSetRestriction) {
+						subSetRestriction subSetRest = (subSetRestriction) restriction;
+						
+						if (subSetRest.getSubClass().equals(anonGroupName)) {
+							superSetName = subSetRest.getSuperClass();
+							break;
+						}					
+					}						
+				}
+				
+				Set<OWLClassExpression> superSet = currentGroupInstantiation.get(superSetName);
+				PermutationGenerator permGen = new PermutationGenerator();
+
+				possibleSets = permGen.generatePowerSet(superSet);
+				Set<OWLClassExpression> emptySet = new HashSet<OWLClassExpression>();
+				possibleSets.remove(superSet);
+				possibleSets.remove(emptySet);
+								
+			} else if (!expGroup.hasAnonymousExpressions() && !noNamedExpressions) {
+				
+				for (ClsExpStr namedExpression : namedExpressions) {
+					expressionSet.add((OWLClassExpression) generate(namedExpression)); 
+				}
+
+				possibleSets.add(expressionSet);
+			}
+			
+			
+			for (Set<OWLClassExpression> group : possibleSets) {
+				
+				if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
+					OWLObjectUnionOfImpl union = new OWLObjectUnionOfImpl(group);
+					expressions.add(union);			
+					
+				} else {
+					OWLObjectIntersectionOfImpl intersection = new OWLObjectIntersectionOfImpl(group);
+					expressions.add(intersection);
+				}
+				
+			}
+		} 
+
+		return expressions;
 	}
 
 
 	private OWLObject generate(TemplatePrimitive conclusionExp) {
 		return currentVariableInstantiation.get(conclusionExp.getAtomic());
+	}
+	
+	
+	private Set<OWLClassExpression> generateGroup(ExpressionGroup expGroupStr) {
+		
+		Set<OWLClassExpression> expGroup = new HashSet<OWLClassExpression>();
+		
+		for (GenericExpStr namedExpression : expGroupStr.getNamedExpressions()) {		
+			expGroup.add((OWLClassExpression) currentVariableInstantiation.get(((AtomicCls) namedExpression).getPlaceholder()));
+		}
+
+		return expGroup;
 	}
 }
