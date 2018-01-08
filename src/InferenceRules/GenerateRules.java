@@ -140,7 +140,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
-		RuleRestriction[] restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };		
+		RuleRestriction[] restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
 		RuleString rule2_1 = new RuleString("2.1", "ObjInt-1", restrictions, conclusion, premise1);
 		
 
@@ -154,7 +154,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };		
+		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
 		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
 
 		
@@ -168,7 +168,7 @@ public class GenerateRules {
 
 		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");				
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));
-		restrictions = new RuleRestriction[] { new subSetRestriction("C2", "C1") };		
+		restrictions = new RuleRestriction[] { new subSetRestriction("Y2", "Y1") };		
 		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
 		
 
@@ -181,7 +181,7 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 
 		conclusion =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };		
+		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
 		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
 
 		
@@ -198,7 +198,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] { new subSetRestriction("C2", "C1") };		
+		restrictions = new RuleRestriction[] { new subSetRestriction("Y2", "Y1") };		
 		RuleString rule4_1 = new RuleString("4.1", "ObjUni-1", restrictions, conclusion, premise1);
 		
 		
@@ -212,7 +212,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };		
+		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
 		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
 
 
@@ -225,7 +225,7 @@ public class GenerateRules {
 
 		premise1 = getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj1), "X");			
 		conclusion =  getSubClassOfAxiom(InterUnion.createIntersectionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };	
+		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };	
 		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
 		
 			
@@ -235,7 +235,7 @@ public class GenerateRules {
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));
 		conclusion =  getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("C2", "C1") };
+		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };
 		RuleString rule5_2 = new RuleString("5.2", "ObjUni-2", restrictions, conclusion, premise1);
 		
 
@@ -297,23 +297,23 @@ public class GenerateRules {
 		
 		
 	
-		rules.get(1).add(rule1);
-		rules.get(1).add(rule2_1);
-		rules.get(1).add(rule2_2);
-		rules.get(1).add(rule3_1);
-		rules.get(1).add(rule3_2);		
-		rules.get(1).add(rule4_1);
-		rules.get(1).add(rule4_2);
-		rules.get(1).add(rule5_1);
-		rules.get(1).add(rule5_2);
-		rules.get(1).add(rule6_1);
-		rules.get(1).add(rule6_2);
-		rules.get(1).add(rule6_3);
-		rules.get(1).add(rule7);
+//		rules.get(1).add(rule1);
+//		rules.get(1).add(rule2_1);
+//		rules.get(1).add(rule2_2);
+//		rules.get(1).add(rule3_1);
+//		rules.get(1).add(rule3_2);		
+//		rules.get(1).add(rule4_1);
+//		rules.get(1).add(rule4_2);
+//		rules.get(1).add(rule5_1);
+//		rules.get(1).add(rule5_2);
+//		rules.get(1).add(rule6_1);
+//		rules.get(1).add(rule6_2);
+//		rules.get(1).add(rule6_3);
+//		rules.get(1).add(rule7);
 	//	rules.get(1).add(rule8);
 	//	rules.get(1).add(rule9);
-		rules.get(1).add(rule10);
-		rules.get(1).add(rule11);
+//		rules.get(1).add(rule10);
+//		rules.get(1).add(rule11);
 
 	}
 	

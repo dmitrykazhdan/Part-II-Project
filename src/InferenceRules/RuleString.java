@@ -509,7 +509,7 @@ public class RuleString {
 			// from each one.
 			for (Map<String, OWLObject> instantiation : allInstantiations) {
 				currentVariableInstantiation = instantiation;
-				conclusion.addAll(generateConclusion(premises));				
+				conclusion.addAll(generateConclusion());				
 			}
 		}
 
@@ -517,7 +517,7 @@ public class RuleString {
 	}
 
 
-	private List<OWLAxiom> generateConclusion(List<OWLAxiom> premises) {
+	private List<OWLAxiom> generateConclusion() {
 
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		OWLAxiom conclusionAxiom = null;
@@ -634,6 +634,7 @@ public class RuleString {
 
 					String anonGroupName = expGroup.getAnonymousGroupName();
 					String superSetName = "";
+					boolean groupFound = false;
 
 					for (RuleRestriction restriction : ruleRestrictions) {
 						if (restriction instanceof subSetRestriction) {
@@ -641,18 +642,21 @@ public class RuleString {
 
 							if (subSetRest.getSubClass().equals(anonGroupName)) {
 								superSetName = subSetRest.getSuperClass();
+								groupFound = true;
 								break;
 							}					
 						}						
 					}
 
-					Set<OWLClassExpression> superSet = currentGroupInstantiation.get(superSetName);
-					PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
+					if (groupFound) {
+						Set<OWLClassExpression> superSet = currentGroupInstantiation.get(superSetName);
+						PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
 
-					possibleSets = permGen.generatePowerSet(superSet);
-					Set<OWLClassExpression> emptySet = new HashSet<OWLClassExpression>();
-					possibleSets.remove(superSet);
-					possibleSets.remove(emptySet);
+						possibleSets = permGen.generatePowerSet(superSet);
+						Set<OWLClassExpression> emptySet = new HashSet<OWLClassExpression>();
+						possibleSets.remove(superSet);
+						possibleSets.remove(emptySet);
+					}
 
 				} else if (!expGroup.hasAnonymousExpressions() && !noNamedExpressions) {
 
