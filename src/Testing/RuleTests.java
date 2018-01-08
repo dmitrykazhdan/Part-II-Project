@@ -43,18 +43,66 @@ public class RuleTests {
 	
 	
 	@Test
-	public void testRule44_1() throws IOException {
+	public void testRule43_1() throws IOException {
 		
-		String explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
+		String explanationFilename = "src/TestOntology/Test2/Test2_P1.xml";		
 		InputStream fileInputStream = new FileInputStream(explanationFilename);
-		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
-		
+		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);				
 		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
-		RuleString rule39 = GenerateRules.getRule("44.1");
+
+		explanationFilename = "src/TestOntology/Test2/Test2_P2.xml";		
+		fileInputStream = new FileInputStream(explanationFilename);
+		explanation = Explanation.load(fileInputStream);				
+		premises.addAll(explanation.getAxioms());
 		
-		boolean match = rule39.matchPremises(premises);
+		RuleString rule43_1 = GenerateRules.getRule("43.1");
 		
+		boolean match = rule43_1.matchPremises(premises);
 		assertTrue(match);
+		
+		List<OWLAxiom> generatedConclusions = rule43_1.generateConclusions(premises);		
+		assertTrue(generatedConclusions.size() == 1);
+		
+		
+		explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
+		fileInputStream = new FileInputStream(explanationFilename);
+		explanation = Explanation.load(fileInputStream);				
+		OWLAxiom conclusion = explanation.getEntailment();		
+		assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));
+		
+	}
+	
+	
+	
+	
+	@Test
+	public void testRule40() throws IOException {
+		
+		String explanationFilename = "src/TestOntology/Test2/Test2_P1.xml";		
+		InputStream fileInputStream = new FileInputStream(explanationFilename);
+		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);				
+		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
+
+		explanationFilename = "src/TestOntology/Test2/Test2_P2.xml";		
+		fileInputStream = new FileInputStream(explanationFilename);
+		explanation = Explanation.load(fileInputStream);				
+		premises.addAll(explanation.getAxioms());
+		
+		RuleString rule43_1 = GenerateRules.getRule("43.1");
+		
+		boolean match = rule43_1.matchPremises(premises);
+		assertTrue(match);
+		
+		List<OWLAxiom> generatedConclusions = rule43_1.generateConclusions(premises);		
+		assertTrue(generatedConclusions.size() == 1);
+		
+		
+		explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
+		fileInputStream = new FileInputStream(explanationFilename);
+		explanation = Explanation.load(fileInputStream);				
+		OWLAxiom conclusion = explanation.getEntailment();		
+		assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));
+		
 	}
 
 }

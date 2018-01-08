@@ -33,7 +33,10 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
         <Class IRI="urn:absolute:N/A#SohoPizza"/>
-        <Class IRI="urn:absolute:N/A#CheesyPizza"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="urn:absolute:N/A#hasTopping"/>
+            <Class IRI="urn:absolute:N/A#CheeseTopping"/>
+        </ObjectSomeValuesFrom>
     </SubClassOf>
 
 </Ontology>
