@@ -78,26 +78,26 @@ public class RuleTests {
 	@Test
 	public void testRule40() throws IOException {
 		
-		String explanationFilename = "src/TestOntology/Test2/Test2_P1.xml";		
+		String explanationFilename = "src/TestOntology/Test3/Test3_P1.xml";		
 		InputStream fileInputStream = new FileInputStream(explanationFilename);
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);				
 		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
 
-		explanationFilename = "src/TestOntology/Test2/Test2_P2.xml";		
+		explanationFilename = "src/TestOntology/Test3/Test3_P2.xml";		
 		fileInputStream = new FileInputStream(explanationFilename);
 		explanation = Explanation.load(fileInputStream);				
 		premises.addAll(explanation.getAxioms());
 		
-		RuleString rule43_1 = GenerateRules.getRule("43.1");
+		RuleString rule40 = GenerateRules.getRule("40");
 		
-		boolean match = rule43_1.matchPremises(premises);
+		boolean match = rule40.matchPremises(premises);
 		assertTrue(match);
 		
-		List<OWLAxiom> generatedConclusions = rule43_1.generateConclusions(premises);		
+		List<OWLAxiom> generatedConclusions = rule40.generateConclusions(premises);		
 		assertTrue(generatedConclusions.size() == 1);
 		
 		
-		explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
+		explanationFilename = "src/TestOntology/Test3/Test3_C.xml";		
 		fileInputStream = new FileInputStream(explanationFilename);
 		explanation = Explanation.load(fileInputStream);				
 		OWLAxiom conclusion = explanation.getEntailment();		
