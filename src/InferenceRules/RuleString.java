@@ -111,6 +111,7 @@ public class RuleString {
 
 		// Create an empty array of possible free variable instantiations.
 		allInstantiations = new ArrayList<Map<String, OWLObject>>();
+		allInstantiations.add(new HashMap<String, OWLObject>());
 		currentGroupInstantiation = new HashMap<String, Set<OWLClassExpression>>();
 		
 		for (int i = 0; i < expressions.size(); i++) {

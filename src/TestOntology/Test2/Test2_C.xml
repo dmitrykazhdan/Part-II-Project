@@ -13,17 +13,19 @@
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
 
 
+
+<SubClassOf>
+    <Class IRI="urn:absolute:N/A#ParmezanTopping"/>
+    <Class IRI="urn:absolute:N/A#CheeseTopping"/>
+</SubClassOf>
+
     <SubClassOf>
         <Class IRI="urn:absolute:N/A#SohoPizza"/>
-        <Class IRI="urn:absolute:N/A#NamedPizza"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="urn:absolute:N/A#hasTopping"/>
+            <Class IRI="urn:absolute:N/A#ParmezanTopping"/>
+        </ObjectSomeValuesFrom>
     </SubClassOf>
-
-    <SubClassOf>
-        <Class IRI="urn:absolute:N/A#NamedPizza"/>
-        <Class IRI="urn:absolute:N/A#Pizza"/>
-    </SubClassOf>
-    
-
     
     <SubClassOf>
         <Annotation>
@@ -31,9 +33,8 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
         <Class IRI="urn:absolute:N/A#SohoPizza"/>
-        <Class IRI="urn:absolute:N/A#Pizza"/>
+        <Class IRI="urn:absolute:N/A#CheesyPizza"/>
     </SubClassOf>
-
 
 </Ontology>
 

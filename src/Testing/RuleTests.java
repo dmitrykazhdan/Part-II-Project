@@ -27,18 +27,34 @@ public class RuleTests {
 	@Test
 	public void testRule39() throws IOException {
 		
-		String explanationFilename = "./TestOntology/Test1.xml";		
+		String explanationFilename = "src/TestOntology/Test1.xml";		
 		InputStream fileInputStream = new FileInputStream(explanationFilename);
-
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
 		
 		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
 		RuleString rule39 = GenerateRules.getRule("39");
 		
-		boolean m = rule39.matchPremises(premises);
-				
-
-		fail("Not yet implemented");
+		boolean match = rule39.matchPremises(premises);
+		
+		assertTrue(match);
+	}
+	
+	
+	
+	
+	@Test
+	public void testRule44_1() throws IOException {
+		
+		String explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
+		InputStream fileInputStream = new FileInputStream(explanationFilename);
+		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
+		
+		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
+		RuleString rule39 = GenerateRules.getRule("44.1");
+		
+		boolean match = rule39.matchPremises(premises);
+		
+		assertTrue(match);
 	}
 
 }
