@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.HasProperty;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
@@ -44,6 +45,7 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
@@ -109,10 +111,15 @@ public class RuleString {
 	
 	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr) {
 
-		// Create an empty array of possible free variable instantiations.
-		allInstantiations = new ArrayList<Map<String, OWLObject>>();
-		allInstantiations.add(new HashMap<String, OWLObject>());
-		currentGroupInstantiation = new HashMap<String, Set<OWLClassExpression>>();
+		// Create the initial default instantiation of the True and False values.
+		allInstantiations = new ArrayList<Map<String, OWLObject>>();		
+		Map<String, OWLObject> defaultInstantiation = new HashMap<String, OWLObject>();
+		
+		OWLDataFactory dataFact = new OWLDataFactoryImpl();
+		defaultInstantiation.put("F", dataFact.getOWLNothing());
+		defaultInstantiation.put("T", dataFact.getOWLThing());
+		
+		allInstantiations.add(defaultInstantiation);
 		
 		for (int i = 0; i < expressions.size(); i++) {
 
