@@ -12,18 +12,6 @@
     <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
     <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
 
-
-    <SubClassOf>
-        <Class IRI="urn:absolute:N/A#SohoPizza"/>
-        <Class IRI="urn:absolute:N/A#NamedPizza"/>
-    </SubClassOf>
-
-    <SubClassOf>
-        <Class IRI="urn:absolute:N/A#NamedPizza"/>
-        <Class IRI="urn:absolute:N/A#Pizza"/>
-    </SubClassOf>
-    
-
     
     <SubClassOf>
         <Annotation>
@@ -31,9 +19,11 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
         <Class IRI="urn:absolute:N/A#SohoPizza"/>
-        <Class IRI="urn:absolute:N/A#Pizza"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="urn:absolute:N/A#hasTopping"/>
+            <Class IRI="urn:absolute:N/A#CheeseTopping"/>
+        </ObjectSomeValuesFrom>
     </SubClassOf>
-
 
 </Ontology>
 

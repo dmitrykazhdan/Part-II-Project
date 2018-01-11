@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.semanticweb.owl.explanation.api.Explanation;
@@ -23,86 +24,72 @@ import ProofTreeComputation.ProofTreeGenerator;
 public class RuleTests {
 
 	
-	
-	@Test
-	public void testRule39() throws IOException {
+	@Test 
+	public void testCorrectRuleApplication() throws IOException {
 		
-		String explanationFilename = "src/TestOntology/Test1.xml";		
-		InputStream fileInputStream = new FileInputStream(explanationFilename);
-		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
+		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
+		String testsPath = "src/TestOntology/CorrectApplicationTests/";
 		
-		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
-		RuleString rule39 = GenerateRules.getRule("39");
 		
-		boolean match = rule39.matchPremises(premises);
+		// Temporary Code
+		List<String> tmp = new ArrayList<String>();
+		tmp.add("39");
+		tmp.add("40");
+		tmp.add("43.1");		
+		// End of Temporary Code
 		
-		assertTrue(match);
+		
+		// Iterate over all of the rules
+		for (int premiseNumber : rules.keySet()) {
+			for (RuleString rule : rules.get(premiseNumber)) {
+				
+				// Temporary Code
+				if (!tmp.contains(rule.getRuleID())) {
+					continue;
+				}
+				// End of Temporary Code
+				
+				
+				// Compute the path to the rule test data
+				String ruleTestFolderName = testsPath + rule.getRuleID() + "/";
+				List<OWLAxiom> premises = new ArrayList<OWLAxiom>();
+				
+				// Add all premises
+				for (int i = 1; i <= premiseNumber; i++) {
+					String premiseFilename = ruleTestFolderName + "Premise" + i + ".xml";
+					premises.addAll(loadPremises(premiseFilename));
+				}
+							
+				List<OWLAxiom> generatedConclusions = rule.generateConclusions(premises);		
+				
+				// Add checking for multiple conclusions as well
+				assertTrue(generatedConclusions.size() == 1);
+												
+				OWLAxiom conclusion = loadConclusion(ruleTestFolderName + "Conclusion.xml");
+				assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));						
+			}
+		}	
 	}
 	
 	
 	
-	
-	@Test
-	public void testRule43_1() throws IOException {
-		
-		String explanationFilename = "src/TestOntology/Test2/Test2_P1.xml";		
-		InputStream fileInputStream = new FileInputStream(explanationFilename);
-		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);				
+	private List<OWLAxiom> loadPremises(String explanationFilename) throws IOException {
+		Explanation<OWLAxiom> explanation = loadExplanation(explanationFilename);
 		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
-
-		explanationFilename = "src/TestOntology/Test2/Test2_P2.xml";		
-		fileInputStream = new FileInputStream(explanationFilename);
-		explanation = Explanation.load(fileInputStream);				
-		premises.addAll(explanation.getAxioms());
-		
-		RuleString rule43_1 = GenerateRules.getRule("43.1");
-		
-		boolean match = rule43_1.matchPremises(premises);
-		assertTrue(match);
-		
-		List<OWLAxiom> generatedConclusions = rule43_1.generateConclusions(premises);		
-		assertTrue(generatedConclusions.size() == 1);
-		
-		
-		explanationFilename = "src/TestOntology/Test2/Test2_C.xml";		
-		fileInputStream = new FileInputStream(explanationFilename);
-		explanation = Explanation.load(fileInputStream);				
-		OWLAxiom conclusion = explanation.getEntailment();		
-		assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));
-		
+		return premises;
 	}
 	
+	private OWLAxiom loadConclusion(String explanationFilename) throws IOException {
+		Explanation<OWLAxiom> explanation = loadExplanation(explanationFilename);
+		return explanation.getEntailment();
+	}
 	
-	
-	
-	@Test
-	public void testRule40() throws IOException {
+	private Explanation<OWLAxiom> loadExplanation(String explanationFilename) throws IOException {
 		
-		String explanationFilename = "src/TestOntology/Test3/Test3_P1.xml";		
 		InputStream fileInputStream = new FileInputStream(explanationFilename);
-		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);				
-		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
-
-		explanationFilename = "src/TestOntology/Test3/Test3_P2.xml";		
-		fileInputStream = new FileInputStream(explanationFilename);
-		explanation = Explanation.load(fileInputStream);				
-		premises.addAll(explanation.getAxioms());
-		
-		RuleString rule40 = GenerateRules.getRule("40");
-		
-		boolean match = rule40.matchPremises(premises);
-		assertTrue(match);
-		
-		List<OWLAxiom> generatedConclusions = rule40.generateConclusions(premises);		
-		assertTrue(generatedConclusions.size() == 1);
-		
-		
-		explanationFilename = "src/TestOntology/Test3/Test3_C.xml";		
-		fileInputStream = new FileInputStream(explanationFilename);
-		explanation = Explanation.load(fileInputStream);				
-		OWLAxiom conclusion = explanation.getEntailment();		
-		assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));
-		
+		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
+		fileInputStream.close();
+		return explanation;
 	}
 
 }
