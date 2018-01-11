@@ -112,6 +112,7 @@ public class RuleString {
 	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr) {
 
 		// Create the initial default instantiation of the True and False values.
+		usedCardinalities = new HashMap<String, Integer>();
 		allInstantiations = new ArrayList<Map<String, OWLObject>>();		
 		Map<String, OWLObject> defaultInstantiation = new HashMap<String, OWLObject>();
 		
@@ -618,7 +619,7 @@ public class RuleString {
 
 				CardExpGen specialisedPattern = (CardExpGen) conclusionExp;
 
-				int cardinality = Integer.parseInt(specialisedPattern.getCardinality());
+				int cardinality = generateCardinality(specialisedPattern.getCardinality());
 				OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate(specialisedPattern.getProperty());
 				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression()).get(0);			
 
@@ -703,6 +704,16 @@ public class RuleString {
 
 	private OWLObject generate(TemplatePrimitive conclusionExp) {
 		return currentVariableInstantiation.get(conclusionExp.getAtomic());
+	}
+	
+	private int generateCardinality(String pattern) {
+		if (usedCardinalities.containsKey(pattern)) {
+			return usedCardinalities.get(pattern);
+		} else {
+			
+			// Need to decide on how to generate non-defined cardinalities
+			return -1;
+		}
 	}
 
 
