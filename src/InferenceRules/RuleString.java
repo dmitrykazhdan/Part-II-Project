@@ -451,7 +451,8 @@ public class RuleString {
 				OWLObjectCardinalityRestriction objCardRest = (OWLObjectCardinalityRestriction) classExp;				
 				CardExpGen specialisedPattern = (CardExpGen) pattern;
 
-				return matchPrimitive(objCardRest.getProperty(), specialisedPattern.getProperty())
+				return  matchCardinality(objCardRest.getCardinality(), specialisedPattern.getCardinality())
+						&& matchPrimitive(objCardRest.getProperty(), specialisedPattern.getProperty())
 						&& match(objCardRest.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
 
 
@@ -473,7 +474,8 @@ public class RuleString {
 				OWLObjectCardinalityRestriction dataCardRest = (OWLObjectCardinalityRestriction) classExp;				
 				CardExpGen specialisedPattern = (CardExpGen) pattern;
 
-				return matchPrimitive(dataCardRest.getProperty(), specialisedPattern.getProperty())
+				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern.getCardinality())
+						&& matchPrimitive(dataCardRest.getProperty(), specialisedPattern.getProperty())
 						&& matchPrimitive(dataCardRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
 			} 
 		}
@@ -486,7 +488,15 @@ public class RuleString {
 		return addToMap(entity, pattern.getAtomic());
 	}
 	
-	
+	private boolean matchCardinality(int cardinality, String pattern) {
+				
+		if (!usedCardinalities.keySet().contains(pattern)) {
+			usedCardinalities.put(pattern, cardinality);
+			return true;
+		} else {
+			return usedCardinalities.get(pattern).equals(cardinality);
+		}
+	}
 
 
 	private boolean addToMap(OWLObject owlObj, String key) {
