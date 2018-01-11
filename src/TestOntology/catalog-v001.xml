@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/26/Conclusion.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/26/Premise1.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/26/Premise2.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/27/Conclusion.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/27/Premise1.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/27/Premise2.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/28/Conclusion.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/28/Premise1.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/28/Premise2.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/39/Conclusion.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/39/Premise1.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/39/Premise2.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/29/Conclusion.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/29/Premise1.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="shadowed:urn:absolute:testingOntology" uri="CorrectApplicationTests/29/Premise2.xml"/>
+        <uri id="Automatically generated entry, Timestamp=1515692761730" name="urn:absolute:testingOntology" uri="testingOntology.owl"/>
+    </group>
+</catalog>

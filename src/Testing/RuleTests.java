@@ -14,7 +14,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import InferenceRules.GenerateRules;
 import InferenceRules.RuleString;
@@ -23,7 +25,7 @@ import ProofTreeComputation.ProofTreeGenerator;
 
 public class RuleTests {
 
-	
+
 	@Test 
 	public void testCorrectRuleApplication() throws IOException {
 		
@@ -33,9 +35,12 @@ public class RuleTests {
 		
 		// Temporary Code
 		List<String> tmp = new ArrayList<String>();
+		tmp.add("26");
+		tmp.add("27");
+		tmp.add("28");
+		tmp.add("29");
 		tmp.add("39");
-		tmp.add("40");
-		tmp.add("43.1");		
+	
 		// End of Temporary Code
 		
 		
@@ -59,6 +64,8 @@ public class RuleTests {
 					String premiseFilename = ruleTestFolderName + "Premise" + i + ".xml";
 					premises.addAll(loadPremises(premiseFilename));
 				}
+				
+				assertTrue(rule.matchPremises(premises));
 							
 				List<OWLAxiom> generatedConclusions = rule.generateConclusions(premises);		
 				

@@ -536,10 +536,10 @@ public class GenerateRules {
 		// Rule 26
 		premise1 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
 				new TemplateObjectProperty("Ro"), 
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"), 
+				new TemplateObjectProperty("So"), 
 				new TemplateObjectProperty("To"));
 
 		conclusion = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
@@ -556,10 +556,10 @@ public class GenerateRules {
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
 				new TemplateObjectProperty("Ro"), 
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		conclusion = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		RuleString rule27 = new RuleString("27", "ObjTra-ObjInv", conclusion, premise1, premise2);
 
@@ -587,10 +587,10 @@ public class GenerateRules {
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
 				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
+				new TemplateObjectProperty("So"), new AtomicCls("X"));
 
 		RuleString rule29 = new RuleString("29", "ObjDom-SubObj", conclusion, premise1, premise2);
 

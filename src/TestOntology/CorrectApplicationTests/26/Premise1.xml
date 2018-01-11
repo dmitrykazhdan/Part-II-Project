@@ -8,19 +8,18 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     ontologyIRI="urn:absolute:testingOntology">
     
-    <SubClassOf>
-        <Class IRI="urn:absolute:testingOntology#ClassY"/>
-        <Class IRI="urn:absolute:testingOntology#ClassZ"/>
-    </SubClassOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+        <ObjectProperty IRI="urn:absolute:testingOntology#PropertySo"/>
+    </SubObjectPropertyOf>
     
     <SubClassOf>
         <Annotation>
             <AnnotationProperty IRI="http://owl.cs.manchester.ac.uk/explanation/vocabulary#entailment"/>
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
-        
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
-        <Class IRI="urn:absolute:testingOntology#ClassZ"/>
+        <Class IRI="urn:absolute:testingOntology#ClassY"/>
     </SubClassOf>
     
     

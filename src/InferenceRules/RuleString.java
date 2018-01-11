@@ -202,17 +202,12 @@ public class RuleString {
 
 		if (axiom.isOfType(pattern.getConstructor())) {
 
-			if (axiom.isOfType(AxiomType.RBoxAxiomTypes)) {
-				return matchRBoxAxiom(axiom, pattern);
-
-			} else if (axiom.isOfType(AxiomType.TBoxAxiomTypes)) {
-				return matchTBoxAxiom(axiom, pattern);
-
-			} else if (axiom.isOfType(AxiomType.ABoxAxiomTypes)) {				
-				return matchABoxAxiom(axiom, pattern);
-			}		
+			// Different definitions of "RBox", "TBox" and "ABox" axioms exist, hence
+			// even though this implementation assumes the definition given in the thesis,
+			// all other types will be checked.
+			return matchRBoxAxiom(axiom, pattern) || matchTBoxAxiom(axiom, pattern)
+						|| matchABoxAxiom(axiom, pattern);
 		}
-
 		return false;
 	}
 
@@ -270,7 +265,7 @@ public class RuleString {
 
 			OWLObjectPropertyDomainAxiom objPropDomAxiom = (OWLObjectPropertyDomainAxiom) tBoxAxiom;
 			return matchPrimitive(objPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					matchPrimitive(objPropDomAxiom.getDomain(), (TemplatePrimitive) pattern.getExpressions().get(1));
+					match(objPropDomAxiom.getDomain(), (ClsExpStr) pattern.getExpressions().get(1));
 
 		} else if (tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN)) {
 
@@ -552,14 +547,14 @@ public class RuleString {
 
 			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
 			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(1)).get(0);
-			conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, null);
+			conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, new HashSet<OWLAnnotation>());
 			conclusions.add(conclusionAxiom);
 
 		} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
 
 			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
 			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(1)).get(0);
-			conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, null);
+			conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, new HashSet<OWLAnnotation>());
 			conclusions.add(conclusionAxiom);
 
 
