@@ -586,8 +586,8 @@ public class GenerateRules {
 				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("So"));
+				new TemplateObjectProperty("So"),
+				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
 				new TemplateObjectProperty("So"), new AtomicCls("X"));
@@ -602,10 +602,10 @@ public class GenerateRules {
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
 				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+				new TemplateObjectProperty("So"), new AtomicCls("X"));
 
 		RuleString rule30 = new RuleString("30", "ObjRng-ObjInv", conclusion, premise1, premise2);
 		
@@ -646,11 +646,11 @@ public class GenerateRules {
 				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 
 		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"),
+				new TemplateObjectProperty("So"),
 				new TemplateObjectProperty("Ro"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+				new TemplateObjectProperty("So"), new AtomicCls("X"));
 
 		RuleString rule33 = new RuleString("33", "ObjRng-SubObj", conclusion, premise1, premise2);
 

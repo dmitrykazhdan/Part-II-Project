@@ -8,10 +8,10 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     ontologyIRI="urn:absolute:testingOntology">
  
-    <SubObjectPropertyOf>
-        <ObjectProperty IRI="urn:absolute:testingOntology#PropertySo"/>
-        <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
-    </SubObjectPropertyOf>
+ <SubClassOf>
+     <Class IRI="urn:absolute:testingOntology#ClassX"/>
+     <Class IRI="urn:absolute:testingOntology#ClassY"/>
+ </SubClassOf>
 
     <SubClassOf>
         <Annotation>

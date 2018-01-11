@@ -259,7 +259,7 @@ public class RuleString {
 
 			OWLObjectPropertyRangeAxiom objPropRngAxiom = (OWLObjectPropertyRangeAxiom) tBoxAxiom;
 			return matchPrimitive(objPropRngAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					matchPrimitive(objPropRngAxiom.getRange(), (TemplatePrimitive) pattern.getExpressions().get(1));
+					match(objPropRngAxiom.getRange(), (ClsExpStr) pattern.getExpressions().get(1));
 
 		} else if (tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
 
@@ -271,7 +271,7 @@ public class RuleString {
 
 			OWLDataPropertyDomainAxiom dataPropDomAxiom = (OWLDataPropertyDomainAxiom) tBoxAxiom;
 			return matchPrimitive(dataPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					matchPrimitive(dataPropDomAxiom.getDomain(), (TemplatePrimitive) pattern.getExpressions().get(1));
+					match(dataPropDomAxiom.getDomain(), (ClsExpStr) pattern.getExpressions().get(1));
 
 		} else if (tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
 

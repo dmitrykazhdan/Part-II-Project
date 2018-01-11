@@ -35,11 +35,20 @@ public class RuleTests {
 		
 		// Temporary Code
 		List<String> tmp = new ArrayList<String>();
-		tmp.add("26");
-		tmp.add("27");
-		tmp.add("28");
-		tmp.add("29");
-		tmp.add("39");
+//		tmp.add("26");
+//		tmp.add("27");
+//		tmp.add("28");
+//		tmp.add("29");
+//		tmp.add("30");
+//		tmp.add("31");
+//		tmp.add("32");
+//		tmp.add("33");
+		
+		
+		
+		
+		
+//		tmp.add("39");
 	
 		// End of Temporary Code
 		
