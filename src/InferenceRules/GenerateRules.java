@@ -663,10 +663,10 @@ public class GenerateRules {
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
 				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
 		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+				new TemplateObjectProperty("So"), new AtomicCls("X"));
 
 		RuleString rule34 = new RuleString("34", "ObjDom-ObjInv", conclusion, premise1, premise2);
 		

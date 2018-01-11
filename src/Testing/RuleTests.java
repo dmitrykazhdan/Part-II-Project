@@ -43,12 +43,16 @@ public class RuleTests {
 //		tmp.add("31");
 //		tmp.add("32");
 //		tmp.add("33");
-		
-		
-		
-		
+//		tmp.add("34");
+//		tmp.add("35");
+//		tmp.add("36.1");
+//		tmp.add("36.2");
+//		tmp.add("36.3");		
 		
 //		tmp.add("39");
+		
+//		tmp.add("43.1");
+		tmp.add("43.2");
 	
 		// End of Temporary Code
 		

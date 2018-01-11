@@ -485,6 +485,8 @@ public class RuleString {
 	private boolean matchPrimitive(OWLObject entity, TemplatePrimitive pattern) {
 		return addToMap(entity, pattern.getAtomic());
 	}
+	
+	
 
 
 	private boolean addToMap(OWLObject owlObj, String key) {
