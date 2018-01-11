@@ -52,7 +52,8 @@ public class RuleTests {
 //		tmp.add("39");	
 		
 //		tmp.add("43.1");	
-		tmp.add("43.2");
+//		tmp.add("43.2");
+//		tmp.add("43.3");
 	
 		// End of Temporary Code
 		
