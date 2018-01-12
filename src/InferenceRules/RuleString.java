@@ -113,6 +113,7 @@ public class RuleString {
 	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr) {
 
 		// Create the initial default instantiation of the True and False values.
+		currentGroupInstantiation = new HashMap<String, Set<OWLClassExpression>>();
 		usedCardinalities = new HashMap<String, Integer>();
 		allInstantiations = new ArrayList<Map<String, OWLObject>>();		
 		Map<String, OWLObject> defaultInstantiation = new HashMap<String, OWLObject>();

@@ -461,17 +461,17 @@ public class GenerateRules {
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("Ro", (ClsExpStr) tmp));
 		premise2 = getSubClassOfAxiom("Y", "F");
 		conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule21_1 = new RuleString("21.1", "ObjSom-Bot-2", conclusion, premise1, premise2);
+		RuleString rule21_1 = new RuleString("21.1", "ObjSom-Bot-2", conclusion, premise2, premise1);
 
 		
 		// 21.2
-		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n", "Ro", (ClsExpStr) tmp));
-		RuleString rule21_2 = new RuleString("21.2", "ObjSom-Bot-2", conclusion, premise1, premise2);
+		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n", "Ro", (ClsExpStr) tmp));
+		RuleString rule21_2 = new RuleString("21.2", "ObjSom-Bot-2", conclusion, premise2, premise1);
 
 		
 		// 21.3
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "Ro", (ClsExpStr) tmp));
-		RuleString rule21_3 = new RuleString("21.3", "ObjSom-Bot-2", conclusion, premise1, premise2);
+		RuleString rule21_3 = new RuleString("21.3", "ObjSom-Bot-2", conclusion, premise2, premise1);
 
 		
 		
