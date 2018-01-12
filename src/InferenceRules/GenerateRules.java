@@ -411,7 +411,7 @@ public class GenerateRules {
 		
 		// 18.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new AtomicCls("Ro"));
+		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new TemplateObjectProperty("Ro"));
 	    conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule18_1 = new RuleString("18.1", "ObjMin-ObjFun", conclusion, premise1, premise2);
 
@@ -425,7 +425,7 @@ public class GenerateRules {
 		
 		// 19.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createDataMinCard("n", "Rd", "Dr"));
-		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new AtomicCls("Rd"));
+		premise2 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new TemplateDataRange("Rd"));
 	    conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule19_1 = new RuleString("19.1", "DatMin-DatFun", conclusion, premise1, premise2);
 

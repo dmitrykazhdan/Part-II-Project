@@ -35,8 +35,20 @@ public class RuleTests {
 		
 		// Temporary Code
 		List<String> tmp = new ArrayList<String>();
+
 		
 		
+//		tmp.add("18.1");
+//		tmp.add("18.2");
+//		tmp.add("19.1");
+//		tmp.add("19.2");		
+//		tmp.add("20.1");
+//		tmp.add("20.2");
+//		tmp.add("20.3");
+		
+		
+//		tmp.add("23");
+//		tmp.add("24");
 //		tmp.add("25.1");
 //		tmp.add("25.2");
 //		tmp.add("26");
@@ -52,7 +64,9 @@ public class RuleTests {
 //		tmp.add("36.1");
 //		tmp.add("36.2");
 //		tmp.add("36.3");	
-		
+//		tmp.add("37.1");
+//		tmp.add("37.2");
+//		tmp.add("37.3");
 //		tmp.add("38.1");
 //		tmp.add("38.2");
 //		tmp.add("38.3");

@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.HasProperty;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
@@ -472,7 +473,7 @@ public class RuleString {
 					classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
 					classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
 
-				OWLObjectCardinalityRestriction dataCardRest = (OWLObjectCardinalityRestriction) classExp;				
+				OWLDataCardinalityRestriction dataCardRest = (OWLDataCardinalityRestriction) classExp;				
 				CardExpGen specialisedPattern = (CardExpGen) pattern;
 
 				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern.getCardinality())
