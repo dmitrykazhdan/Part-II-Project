@@ -97,7 +97,7 @@ public class GenerateRules {
 		return new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty(property), new AtomicCls(clsExp));		
 	}
 	private static OWLAxiomStr getSubObjectPropertyOf(String property1, String property2) {		
-		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new AtomicCls(property1), new AtomicCls(property2));	
+		return new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new TemplateObjectProperty(property1), new TemplateObjectProperty(property2));	
 	}
 	
 
@@ -528,7 +528,7 @@ public class GenerateRules {
 		RuleString rule25_1 = new RuleString("25.1", "ObjDom-ObjAll", conclusion, premise1, premise2);
 		
 		// 25.2
-		premise1 = getSubClassOfAxiom(ExistsOrForAll.createObjSomeValFrom("Ro", "F"), "X");		
+		premise1 = getSubClassOfAxiom(ExistsOrForAll.createObjSomeValFrom("Ro", "T"), "X");		
 		RuleString rule25_2 = new RuleString("25.2", "ObjDom-ObjAll", conclusion, premise1, premise2);
 
 	
@@ -809,16 +809,17 @@ public class GenerateRules {
 		// 41.2
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
+		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", 0, true)};
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
-		RuleString rule41_2 = new RuleString("41.2", "ObjSom-ObjMin", conclusion, premise1, premise2);
+		RuleString rule41_2 = new RuleString("41.2", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
 
 		
 		// 41.3
 		tmp = CardExpGen.createObjExactCard("n", "Ro", "Y");	
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
-		RuleString rule41_3 = new RuleString("41.3", "ObjSom-ObjMin", conclusion, premise1, premise2);
+		RuleString rule41_3 = new RuleString("41.3", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
 
 		
 		
@@ -898,11 +899,13 @@ public class GenerateRules {
 		premise2 = getSubObjectPropertyOf("Ro", "So");
 		conclusion = getSubClassOfAxiom("X", ExistsOrForAll.createObjSomeValFrom("So", "Y"));
 		RuleString rule44_1 = new RuleString("44.1", "ObjSom-SubObj", conclusion, premise1, premise2);
-				
+		
+		// 44.2
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n", "So", "Y"));
 		RuleString rule44_2 = new RuleString("44.2", "ObjSom-SubObj", conclusion, premise1, premise2);
 
+		// 44.3
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "So", "Y"));
 		RuleString rule44_3 = new RuleString("44.3", "ObjSom-SubObj", conclusion, premise1, premise2);
@@ -922,9 +925,9 @@ public class GenerateRules {
 
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
 				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("Ro"));
+				new TemplateObjectProperty("So"));
 
-		tmp = ExistsOrForAll.createObjAllValFrom("Ro", "X");
+		tmp = ExistsOrForAll.createObjSomeValFrom("So", "X");
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Y"));
 		RuleString rule46 = new RuleString("46", "ObjAll-ObjInv", conclusion, premise1, premise2);
 		
@@ -1095,7 +1098,7 @@ public class GenerateRules {
 		OWLAxiomStr premise3 = getSubClassOfAxiom("V", "Y");
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("U"), new AtomicCls("V") });
 		OWLAxiomStr conclusion = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
-		RuleString rule52 = new RuleString("52", "DisCls-SubCls-SubCls", conclusion, premise1, premise2, premise3);
+		RuleString rule52 = new RuleString("52", "DisCls-SubCls-SubCls", conclusion, premise2, premise3, premise1);
 
 		
 		

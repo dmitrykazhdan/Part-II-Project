@@ -574,7 +574,7 @@ public class RuleString {
 			// Assumption: all free variables in the template have been instantiated
 		} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
 
-			conclusionAxiom = new OWLDisjointClassesAxiomImpl(generateGroup(conclusionStr.getExpressionGroup()), null);			
+			conclusionAxiom = new OWLDisjointClassesAxiomImpl(generateGroup(conclusionStr.getExpressionGroup()), new HashSet<OWLAnnotation>());			
 			conclusions.add(conclusionAxiom);
 		}
 
