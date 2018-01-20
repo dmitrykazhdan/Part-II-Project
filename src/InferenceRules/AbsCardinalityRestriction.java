@@ -2,12 +2,12 @@ package InferenceRules;
 
 public class AbsCardinalityRestriction extends CardinalityRestriction {
 
-	private Integer smallerCardinality;
+	private Integer absoluteBound;
 	
-	public AbsCardinalityRestriction(String largerCardinality, Integer smallerCardinality, boolean strictInequality) {
-		super(largerCardinality, strictInequality);
-		this.smallerCardinality = smallerCardinality;
+	public AbsCardinalityRestriction(String cardinalityName, CardinalitySign type, Integer absoluteBound) {
+		super(cardinalityName, type);
+		this.absoluteBound = absoluteBound;
 	}
 		
-	public Integer getSmallerCardinality() { return smallerCardinality; }
+	public Integer getSmallerCardinality() { return absoluteBound; }
 }

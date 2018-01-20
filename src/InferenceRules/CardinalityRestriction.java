@@ -1,17 +1,20 @@
 package InferenceRules;
 
+// Abstract cardinality restriction class.
 public abstract class CardinalityRestriction implements RuleRestriction {
 	
-	private String largerCardinality;
-	private boolean strictInequality;
+	// Cardinality identifier.
+	private String cardinality;
+	
+	// Specify which type of cardinality this is.
+	private CardinalitySign type;
 
-	public CardinalityRestriction(String largerCardinality, boolean strictInequality) {
-		this.largerCardinality = largerCardinality;
-		this.strictInequality = strictInequality;
+	public CardinalityRestriction(String cardinality, CardinalitySign type) {
+		this.cardinality = cardinality;
+		this.type = type;
 	}
 	
-	public String getLargerCardinality() { return largerCardinality; }
+	public String getCardinality() { return cardinality; }
 	
-	public boolean isStrictInequality() { return strictInequality; }
-
+	public CardinalitySign getCardinalityType() { return type; }
 }

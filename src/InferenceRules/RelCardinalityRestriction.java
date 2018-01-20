@@ -2,12 +2,12 @@ package InferenceRules;
 
 public class RelCardinalityRestriction extends CardinalityRestriction {
 
-	private String smallerCardinality;
+	private String relativeBound;
 	
-	public RelCardinalityRestriction(String largerCardinality, String smallerCardinality, boolean strictInequality) {
-		super(largerCardinality, strictInequality);
-		this.smallerCardinality = smallerCardinality;
+	public RelCardinalityRestriction(String largerCardinality, CardinalitySign type, String relativeBound) {
+		super(largerCardinality, type);
+		this.relativeBound = relativeBound;
 	}
 		
-	public String getSmallerCardinality() { return smallerCardinality; }
+	public String getSmallerCardinality() { return relativeBound; }
 }

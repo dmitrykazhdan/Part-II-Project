@@ -173,17 +173,17 @@ public class RuleString {
 
 			if (restriction instanceof AbsCardinalityRestriction) {
 
-				AbsCardinalityRestriction absCardRest = (AbsCardinalityRestriction) restriction;
-				Integer lowerBound = absCardRest.getSmallerCardinality();
-				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
-				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
+//				AbsCardinalityRestriction absCardRest = (AbsCardinalityRestriction) restriction;
+//				Integer lowerBound = absCardRest.getSmallerCardinality();
+//				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
+//				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
 
 			} else if (restriction instanceof RelCardinalityRestriction) {
 
-				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
-				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
-				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
-				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
+//				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
+//				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
+//				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
+//				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
 
 			} else if (restriction instanceof subSetRestriction) {
 				// Implement

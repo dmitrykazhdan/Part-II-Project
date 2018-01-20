@@ -6,7 +6,7 @@
 - Group "current variable" and "current group" instantiations into one object.
 
 - Implement restriction checking.
-
+	
 - Implement exception rules.
 
 - Implement generating rules.
