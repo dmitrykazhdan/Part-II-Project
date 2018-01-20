@@ -1,4 +1,26 @@
 
+- Fixup cardinality generation 
+
+- Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
+
+- Group "current variable" and "current group" instantiations into one object.
+
+- Implement restriction checking.
+
+- Implement exception rules.
+
+- Implement generating rules.
+
+- Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
+
+
+- Fixup excessive type-casting in pattern matching.
+
+- Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
+
+- Add restrictions to rules.
+
+
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.
 
 - In "GenerateTrees" add a timeout for the tree generator.
@@ -7,31 +29,10 @@
 when computing laconic justifications.
 
 
-- Fixup cardinality generation 
-
-- Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
-
-- Fixup excessive type-casting in pattern matching.
-
-- Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
-
-- Add restrictions to rules.
-
-- Implement exception rules.
-
-- Implement generating rules.
-
-- Implement restriction checking.
-
-- Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
 
 - Potentially: add restrictions between free variables, contained in the ruleString constructor.
 
 - Throw exception if class expression is non-deterministic.
-
-- Group "current variable" and "current group" instantiations into one object.
-
-
 
 - Have a "Matcher" interface, with "RuleString" and "Exception" implementing it.
 
