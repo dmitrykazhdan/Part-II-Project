@@ -19,11 +19,14 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
@@ -71,7 +74,6 @@ public class RuleString {
 	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
 
-	
 	private Instantiation currentInstantiation;
 	private List<Instantiation> allInstantiations;
 	private RuleRestriction[] ruleRestrictions;
@@ -87,23 +89,16 @@ public class RuleString {
 		this.premisesStr = premisesStr;
 		this.premiseNumber = premisesStr.size();
 		this.conclusionStr = conclusion;
+		this.ruleRestrictions = new RuleRestriction[]{};
 	}
 
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
-		this.ruleID = ruleID;
-		this.ruleName = ruleName;
-		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
-		this.premiseNumber = premisesStr.size();
-		this.conclusionStr = conclusion;
+		this(ruleID, ruleName, conclusion, new ArrayList<OWLAxiomStr>(Arrays.asList(premises)));
 	}
 
 	public RuleString(String ruleID, String ruleName, RuleRestriction[] ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
-		this.ruleID = ruleID;
-		this.ruleName = ruleName;
+		this(ruleID, ruleName, conclusion, premises);
 		this.ruleRestrictions = ruleRestrictions;
-		this.premisesStr = new ArrayList<OWLAxiomStr>(Arrays.asList(premises));		
-		this.premiseNumber = premisesStr.size();
-		this.conclusionStr = conclusion;
 	}
 
 
@@ -128,11 +123,11 @@ public class RuleString {
 		
 		for (int i = 0; i < expressions.size(); i++) {
 
-			List<Instantiation> oldInstantiations = new ArrayList<Instantiation>(allInstantiations);
+			List<Instantiation> prevInstantiations = new ArrayList<Instantiation>(allInstantiations);
 			allInstantiations = new ArrayList<Instantiation>();
 			
 			// For every premise, attempt to match it to every current instantiation.
-			for (Instantiation instantiation : oldInstantiations) {
+			for (Instantiation instantiation : prevInstantiations) {
 				
 				currentInstantiation = instantiation;
 			
@@ -141,64 +136,179 @@ public class RuleString {
 				}
 			}
 		}
-
+		
+		cleanupInstantiations();
+		
 		return !(allInstantiations.size() == 0);
 	}
-
 	
+	
+
 	public boolean matchPremises(List<OWLAxiom> premises) {
 		List<OWLAxiomStr> expressions = new ArrayList<OWLAxiomStr>(premisesStr);
 		return matchExpressions(premises, expressions);
 	}
 	
 
-	
 	// When matching both premises and a conclusion, simply treat the conclusion as an extra premise
 	// and use the premise-matching algorithm.
 	public boolean matchPremisesAndConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {	
 
 		List<OWLAxiom> premisesAndConclusion = new ArrayList<OWLAxiom>(premises);
 		premisesAndConclusion.add(conclusion);
+		
 		List<OWLAxiomStr> expressions = new ArrayList<OWLAxiomStr>(premisesStr);
 		expressions.add(conclusionStr);
+		
 		return matchExpressions(premisesAndConclusion, expressions);
 	}
 
+	
+	private void cleanupInstantiations() {
+		
+		List<Instantiation> prevInstantiations = new ArrayList<Instantiation>(allInstantiations);
+		allInstantiations = new ArrayList<Instantiation>();
 
-
-
-	private boolean checkConstraints() {
-
-		for (RuleRestriction restriction : ruleRestrictions) {
-
-			if (restriction instanceof AbsCardinalityRestriction) {
-
-//				AbsCardinalityRestriction absCardRest = (AbsCardinalityRestriction) restriction;
-//				Integer lowerBound = absCardRest.getSmallerCardinality();
-//				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
-//				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
-
-			} else if (restriction instanceof RelCardinalityRestriction) {
-
-//				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
-//				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
-//				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
-//				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
-
-			} else if (restriction instanceof subSetRestriction) {
-				// Implement
-			}
-
+		for (Instantiation instantiation : prevInstantiations) {
+			currentInstantiation = instantiation;
+			
+			if (checkRestrictionsForCurrentInstantiation()) {
+				allInstantiations.add(instantiation);
+			}			
 		}
-		return false;
+	}
+	
+	
+	
+	private boolean checkRestrictionsForCurrentInstantiation() {
+		
+		for (RuleRestriction restriction : ruleRestrictions) {
+			if (!checkRestriction(restriction)) {
+				return false;
+			}		
+		}
+		
+		return true;
 	}
 
+	// Method for checking the various constraints that can be imposed on a rule.
+	private boolean checkRestriction(RuleRestriction restriction) {
 
-	private boolean compare(Integer largerInt, Integer smallerInt, boolean strictInequalty) {
-		if (strictInequalty) {
-			return largerInt > smallerInt;
+		if (restriction instanceof AbsCardinalityRestriction) {			
+			return checkAbsoluteCardinalityRestriction((AbsCardinalityRestriction) restriction);
+
+		} else if (restriction instanceof RelCardinalityRestriction) {
+			return checkRelativeCardinalityRestriction((RelCardinalityRestriction) restriction);				
+
+		} else if (restriction instanceof SubSetRestriction) {
+			return checkSubSetRestriction((SubSetRestriction) restriction);
+
+		} else if (restriction instanceof DisjointDatatypesRestriction) {
+			return checkDisjointDatatypesRestriction((DisjointDatatypesRestriction) restriction);
+
 		} else {
-			return largerInt >= smallerInt;
+			return false;
+		}
+	}
+	
+	
+	private boolean checkDisjointDatatypesRestriction(DisjointDatatypesRestriction restriction) {
+		
+		OWLDataRange dataRange1 = getDataRange(restriction.getFirstDataProperty());
+		OWLDataRange dataRange2 = getDataRange(restriction.getSecondDataProperty());
+		// Complete checking:
+		return true;
+		
+	}
+	
+	// Attempt to retrieve an object given a name.
+	// The name can either be a datatype identifier, or a literal identifier.
+	private OWLDataRange getDataRange(String name) {
+		
+		OWLObject object = currentInstantiation.getVariableInstantiation().get(name);
+		
+		if (object instanceof OWLLiteral) {
+			return ((OWLLiteral) object).getDatatype();
+		} else if (object instanceof OWLDatatype) {
+			return (OWLDataRange) object;
+		} else {
+			return null;
+		}
+	}
+	
+	
+	private boolean checkSubSetRestriction(SubSetRestriction restriction) {
+		
+		String subClassName = restriction.getSubClass();
+		String superClassName = restriction.getSuperClass();
+		
+		// If the subclass or the superclass were unmatched, then the check fails.
+		if (!currentInstantiation.getGroupInstantiation().containsKey(subClassName) ||
+				!currentInstantiation.getGroupInstantiation().containsKey(superClassName)) {
+			
+			return false;
+		}
+		
+		Set<OWLClassExpression> subClass = currentInstantiation.getGroupInstantiation().get(subClassName);
+		Set<OWLClassExpression> superClass = currentInstantiation.getGroupInstantiation().get(superClassName);
+		
+		return superClass.containsAll(subClass);
+	}
+	
+	
+	private boolean checkRelativeCardinalityRestriction(RelCardinalityRestriction restriction) {
+
+		String relativeBound = restriction.getRelativeBound();
+		
+		// If this name has not been matched, then the check fails.
+		if (!currentInstantiation.getCardinalityInstantiation().containsKey(relativeBound)) {
+			return false;
+		}
+		
+		// Otherwise retrieve the value of the relative bound and perform exact matching.
+		Integer absoluteBound = currentInstantiation.getCardinalityInstantiation().get(relativeBound);
+		
+		// Convert to an absolute cardinality restriction.
+		AbsCardinalityRestriction abssoluteCardinalityRestriction = new AbsCardinalityRestriction(restriction.getCardinality(), restriction.getCardinalityType(), absoluteBound);
+		
+		return checkAbsoluteCardinalityRestriction(abssoluteCardinalityRestriction);
+	}	
+	
+	
+	private boolean checkAbsoluteCardinalityRestriction(AbsCardinalityRestriction restriction) {
+		
+		// Retrieve the absolute bound and the cardinality identifier.
+		Integer absoluteBound = restriction.getAbsoluteBound();
+		String cardinalityName = restriction.getCardinality();
+		
+		// If this name has not been matched, then the check fails.
+		if (!currentInstantiation.getCardinalityInstantiation().containsKey(cardinalityName)) {
+			return false;
+		}
+		
+		Integer cardinality = currentInstantiation.getCardinalityInstantiation().get(cardinalityName);
+		
+		return evaluateInequality(cardinality, restriction.getCardinalityType(), absoluteBound);
+
+	}
+	
+	
+	// Evaluate a given inequality based on its type.
+	private boolean evaluateInequality(Integer cardinality, CardinalitySign type, Integer bound) {
+		
+		switch(type) {
+			case L:
+				return cardinality < bound;
+			case G:
+				return cardinality > bound;
+			case EQ:
+				return cardinality == bound;
+			case LEQ:
+				return cardinality <= bound;
+			case GEQ:
+				return cardinality >= bound;
+			default:
+				return false;			
 		}
 	}
 
@@ -219,7 +329,7 @@ public class RuleString {
 
 
 	private boolean matchRBoxAxiom(OWLAxiom rBoxAxiom, OWLAxiomStr pattern) {
-
+		
 		if (rBoxAxiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
 
 			OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) rBoxAxiom;
@@ -539,6 +649,7 @@ public class RuleString {
 	}
 
 
+	
 
 	// Return all possible conclusions that can be generated.
 	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
@@ -680,8 +791,8 @@ public class RuleString {
 					boolean groupFound = false;
 
 					for (RuleRestriction restriction : ruleRestrictions) {
-						if (restriction instanceof subSetRestriction) {
-							subSetRestriction subSetRest = (subSetRestriction) restriction;
+						if (restriction instanceof SubSetRestriction) {
+							SubSetRestriction subSetRest = (SubSetRestriction) restriction;
 
 							if (subSetRest.getSubClass().equals(anonGroupName)) {
 								superSetName = subSetRest.getSuperClass();

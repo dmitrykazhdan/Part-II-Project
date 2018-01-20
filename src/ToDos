@@ -1,14 +1,9 @@
-- Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
-
-- Group "current variable" and "current group" instantiations into one object.
-
 - Implement restriction checking.
 	
 - Implement exception rules.
 
 - Implement generating rules.
 
-- Add a check for disjointness of data ranges, as given in the rules (e.g. Dr0 & Dr1 are disjoint)
 
 
 - Fixup excessive type-casting in pattern matching.
@@ -16,6 +11,9 @@
 - Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
 
 - Add restrictions to rules.
+
+- Implement disjoint data range checking.
+
 
 
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.

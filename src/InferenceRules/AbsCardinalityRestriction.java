@@ -9,5 +9,5 @@ public class AbsCardinalityRestriction extends CardinalityRestriction {
 		this.absoluteBound = absoluteBound;
 	}
 		
-	public Integer getSmallerCardinality() { return absoluteBound; }
+	public Integer getAbsoluteBound() { return absoluteBound; }
 }

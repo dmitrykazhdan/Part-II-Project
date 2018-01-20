@@ -145,6 +145,7 @@ public class RuleTests {
 					premises.addAll(loadPremises(premiseFilename));
 				}
 				
+				System.out.println(rule.getRuleID());
 				assertTrue(rule.matchPremises(premises));
 							
 				List<OWLAxiom> generatedConclusions = rule.generateConclusions(premises);		

@@ -140,7 +140,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
-		RuleRestriction[] restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
+		RuleRestriction[] restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule2_1 = new RuleString("2.1", "ObjInt-1", restrictions, conclusion, premise1);
 		
 
@@ -154,7 +154,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
 
 		
@@ -168,7 +168,7 @@ public class GenerateRules {
 
 		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");				
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));
-		restrictions = new RuleRestriction[] { new subSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestriction[] { new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
 		
 
@@ -181,7 +181,7 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 
 		conclusion =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
 
 		
@@ -198,7 +198,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] { new subSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestriction[] { new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule4_1 = new RuleString("4.1", "ObjUni-1", restrictions, conclusion, premise1);
 		
 		
@@ -212,7 +212,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
 		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
 
 
@@ -225,7 +225,7 @@ public class GenerateRules {
 
 		premise1 = getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj1), "X");			
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };	
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };	
 		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
 		
 			
@@ -235,7 +235,7 @@ public class GenerateRules {
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));
 		conclusion =  getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };
 		RuleString rule5_2 = new RuleString("5.2", "ObjUni-2", restrictions, conclusion, premise1);
 		
 
@@ -331,14 +331,16 @@ public class GenerateRules {
 		// 12.1
 		OWLAxiomStr premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createDataSomeValFrom("Rd", "Dr0"));
 		OWLAxiomStr premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
+		RuleRestriction[] restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
 		OWLAxiomStr conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule12_1 = new RuleString("12.1", "DatSom-DatRng", conclusion, premise1, premise2);
+		RuleString rule12_1 = new RuleString("12.1", "DatSom-DatRng", restrictions, conclusion, premise1, premise2);
 		
 		
 		// 12.2
 		ClsExpStr tmp = ExistsOrForAll.createObjSomeValFrom("Ro", ExistsOrForAll.createDataSomeValFrom("Rd", "Dr0"));
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
-		RuleString rule12_2 = new RuleString("12.2", "DatSom-DatRng", conclusion, premise1, premise2);
+		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
+		RuleString rule12_2 = new RuleString("12.2", "DatSom-DatRng", restrictions, conclusion, premise1, premise2);
 		
 		
 		
@@ -347,15 +349,16 @@ public class GenerateRules {
 		// 13.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createDataMinCard("n", "Rd", "Dr0"));	
 		premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
+		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
 		conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule13_1 = new RuleString("13.1", "DatMin-DatRng", conclusion, premise1, premise2);
+		RuleString rule13_1 = new RuleString("13.1", "DatMin-DatRng", restrictions, conclusion, premise1, premise2);
 
 		
 		// 13.2
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", CardExpGen.createDataMinCard("n", "Rd", "Dr0"));
 		
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
-		RuleString rule13_2 = new RuleString("13.2", "DatMin-DatRng", conclusion, premise1, premise2);
+		RuleString rule13_2 = new RuleString("13.2", "DatMin-DatRng", restrictions, conclusion, premise1, premise2);
 		
 		
 		
@@ -364,14 +367,15 @@ public class GenerateRules {
 		// 14.1
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise2 = createPrimitiveDataRangeProp("Rd", "Dr");
+		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("l0", "Dr") };
 		conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule14_1 = new RuleString("14.1", "DatVal-DatRng", conclusion, premise1, premise2);
+		RuleString rule14_1 = new RuleString("14.1", "DatVal-DatRng", restrictions, conclusion, premise1, premise2);
 		
 		
 		// 14.2
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
-		RuleString rule14_2 = new RuleString("14.2", "DatVal-DatRng", conclusion, premise1, premise2);
+		RuleString rule14_2 = new RuleString("14.2", "DatVal-DatRng", restrictions, conclusion, premise1, premise2);
 
 
 		
@@ -401,7 +405,7 @@ public class GenerateRules {
 		// 17.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
 		premise2 = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n2", "Ro", "Y"));
-		RuleRestriction[] restrictions = new RuleRestriction[] { 
+		restrictions = new RuleRestriction[] { 
 				new RelCardinalityRestriction("n1", CardinalitySign.G, "n2"), new AbsCardinalityRestriction("n2", CardinalitySign.GEQ,  0) };
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", restrictions, conclusion, premise1, premise2);
@@ -489,7 +493,7 @@ public class GenerateRules {
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		conclusion = getSubClassOfAxiom("X", "F");
-		restrictions = new RuleRestriction[] {new subSetRestriction("C1", "C2") };	
+		restrictions = new RuleRestriction[] {new SubSetRestriction("Y1", "Y2") };	
 		RuleString rule22_1 = new RuleString("22.1", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 		
 		
@@ -1149,8 +1153,9 @@ public class GenerateRules {
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise2 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l1"));
 		premise3 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new TemplateDataProperty("Rd"));
+		RuleRestriction[] restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("l0", "l1") };
 		conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule56 = new RuleString("56", "DatVal-DatVal-DatFun", conclusion, premise1, premise2, premise3);
+		RuleString rule56 = new RuleString("56", "DatVal-DatVal-DatFun", restrictions, conclusion, premise1, premise2, premise3);
 
 		
 		
