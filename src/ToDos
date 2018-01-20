@@ -1,6 +1,3 @@
-
-- Fixup cardinality generation 
-
 - Fixup cardinality lower bound handling. Avoid using string conversion. Incorporate within rule.
 
 - Group "current variable" and "current group" instantiations into one object.

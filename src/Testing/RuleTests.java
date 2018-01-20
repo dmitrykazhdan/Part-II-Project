@@ -40,8 +40,6 @@ public class RuleTests {
 //		tmp.add("6.2");
 //		tmp.add("6.3");
 // Rules 8 and 9 cannot be generated yet.
-// 41.1
-// 42.1
 		
 //		tmp.add("7");
 //		tmp.add("10");
@@ -93,9 +91,11 @@ public class RuleTests {
 //		tmp.add("38.2");
 //		tmp.add("38.3");
 //		tmp.add("39");	
-//		tmp.add("40");		
+//		tmp.add("40");
+//		tmp.add("41.1");	
 //		tmp.add("41.2");	
 //		tmp.add("41.3");	
+//		tmp.add("42.1");
 //		tmp.add("42.2");	
 //		tmp.add("42.3");
 //		tmp.add("43.1");	

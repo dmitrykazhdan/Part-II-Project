@@ -807,9 +807,9 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
-
+		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1) };
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
-		RuleString rule41_1 = new RuleString("41.1", "ObjSom-ObjMin", conclusion, premise1, premise2);
+		RuleString rule41_1 = new RuleString("41.1", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
 
 		
 		// 41.2
@@ -838,9 +838,9 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
-
+		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1) };
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
-		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", conclusion, premise1, premise2);
+		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", ruleRestrictions, conclusion, premise1, premise2);
 
 
 		// 42.2
