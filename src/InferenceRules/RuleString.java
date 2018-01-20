@@ -176,9 +176,9 @@ public class RuleString {
 				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
 				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
 
-			} else if (restriction instanceof RelCardinalityRestriction) {
+			} else if (restriction instanceof RelLowerBound) {
 
-				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
+				RelLowerBound relCardRest = (RelLowerBound) restriction;
 				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
 				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
 				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
@@ -322,6 +322,13 @@ public class RuleString {
 
 	private boolean matchGroupAxiom(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
 
+		// If the pattern only has an anonymous group, match the entire class expression set to it and return.
+		if (pattern.hasAnonymousExpressions() && pattern.getNamedExpressions().length == 0) {
+			currentGroupInstantiation.put(pattern.getAnonymousGroupName(), classExpressions);
+			return true;
+		}
+		
+		
 		List<Map<String, OWLObject>> newInstantiations = new ArrayList<Map<String, OWLObject>>();		
 		PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
 		List<List<OWLClassExpression>> allPermutations = permGen.generatePermutations(new ArrayList<OWLClassExpression> (classExpressions));
