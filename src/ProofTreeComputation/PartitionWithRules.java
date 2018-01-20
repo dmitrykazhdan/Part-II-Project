@@ -1,19 +1,21 @@
 package ProofTreeComputation;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import InfRuleAsAnonClass.RuleApplication;
+import InferenceRules.InstanceOfRule;
+
 
 // Partition with rules that can be applied to the subsets.
 public class PartitionWithRules {
 
-	private List<RuleApplication> elements;
+	private List<InstanceOfRule> elements;
 	
-	public PartitionWithRules(List<RuleApplication> elements) {
+	public PartitionWithRules(List<InstanceOfRule> elements) {
 		this.elements = elements;
 	}
 	
-	public List<RuleApplication> getItems() {
+	public List<InstanceOfRule> getItems() {
 		return elements;
 	}	
 }

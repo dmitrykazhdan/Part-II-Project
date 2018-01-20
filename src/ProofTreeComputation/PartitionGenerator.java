@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 
-import InfRuleAsAnonClass.InferenceRule;
-import InfRuleAsAnonClass.RuleApplication;
-import InfRuleAsAnonClass.RuleFinder;
+import InferenceRules.InstanceOfRule;
+import InferenceRules.RuleFinder;
+import InferenceRules.RuleString;
+
 
 public class PartitionGenerator {
 	
@@ -20,7 +21,7 @@ public class PartitionGenerator {
 			
 		for (Partition partition : partitions) {
 			
-			PartitionWithRules newPartitionWithRules = new PartitionWithRules(new ArrayList<RuleApplication>());
+			PartitionWithRules newPartitionWithRules = new PartitionWithRules(new ArrayList<InstanceOfRule>());
 			atLeastOneApplication = false;
 			
 			// For now, we apply as much rules as we can to a partition.
@@ -32,13 +33,13 @@ public class PartitionGenerator {
 			//				 ... etc.				
 			for (List<OWLAxiom> subSet : partition.getElements()) {
 				
-				InferenceRule applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
+				RuleString applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
 				
 				if (applicableRule != null) {
 					atLeastOneApplication = true;
 				}
 				
-				RuleApplication ruleApplication = new RuleApplication(subSet, null, applicableRule);
+				InstanceOfRule ruleApplication = new InstanceOfRule(subSet, null, applicableRule);
 				newPartitionWithRules.getItems().add(ruleApplication);
 			}	
 			

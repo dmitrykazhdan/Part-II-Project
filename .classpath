@@ -59,5 +59,6 @@
 	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/automaton-1.11-8.jar"/>
 	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/telemetry-2.0.0.jar"/>
 	<classpathentry kind="lib" path="/Users/AdminDK/Documents/GitHub/Part_II_Project/src/libs/owlexplanation-2.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
