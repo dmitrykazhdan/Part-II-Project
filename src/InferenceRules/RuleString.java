@@ -71,11 +71,9 @@ public class RuleString {
 	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
 
-
-	private List<Map<String, OWLObject>> allInstantiations;
-	private Map<String, OWLObject> currentVariableInstantiation;
-	private Map<String, Integer> usedCardinalities;
-	private Map<String, Set<OWLClassExpression>> currentGroupInstantiation;
+	
+	private Instantiation currentInstantiation;
+	private List<Instantiation> allInstantiations;
 	private RuleRestriction[] ruleRestrictions;
 
 
@@ -110,34 +108,36 @@ public class RuleString {
 
 
 
-
+	private void initializeInstantiations() {
+		
+		// Create the initial default instantiation of the True and False values.
+		allInstantiations = new ArrayList<Instantiation>();		
+		Instantiation defaultInstantiation = new Instantiation();
+		
+		OWLDataFactory dataFact = new OWLDataFactoryImpl();
+		defaultInstantiation.getVariableInstantiation().put("F", dataFact.getOWLNothing());
+		defaultInstantiation.getVariableInstantiation().put("T", dataFact.getOWLThing());
+		
+		allInstantiations.add(defaultInstantiation);
+	}
+	
 	
 	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr) {
 
-		// Create the initial default instantiation of the True and False values.
-		currentGroupInstantiation = new HashMap<String, Set<OWLClassExpression>>();
-		usedCardinalities = new HashMap<String, Integer>();
-		allInstantiations = new ArrayList<Map<String, OWLObject>>();		
-		Map<String, OWLObject> defaultInstantiation = new HashMap<String, OWLObject>();
-		
-		OWLDataFactory dataFact = new OWLDataFactoryImpl();
-		defaultInstantiation.put("F", dataFact.getOWLNothing());
-		defaultInstantiation.put("T", dataFact.getOWLThing());
-		
-		allInstantiations.add(defaultInstantiation);
+		initializeInstantiations();
 		
 		for (int i = 0; i < expressions.size(); i++) {
 
-			List<Map<String, OWLObject>> oldInstantiations = new ArrayList<Map<String, OWLObject>>(allInstantiations);
-			allInstantiations = new ArrayList<Map<String, OWLObject>>();
+			List<Instantiation> oldInstantiations = new ArrayList<Instantiation>(allInstantiations);
+			allInstantiations = new ArrayList<Instantiation>();
 			
 			// For every premise, attempt to match it to every current instantiation.
-			for (Map<String, OWLObject> instantiation : oldInstantiations) {
-
-				currentVariableInstantiation = new HashMap<String, OWLObject>(instantiation);
+			for (Instantiation instantiation : oldInstantiations) {
 				
-				if (matchAxiom(expressions.get(i), expressionStr.get(i)) && currentVariableInstantiation != null) {
-					allInstantiations.add(currentVariableInstantiation);
+				currentInstantiation = instantiation;
+			
+				if (matchAxiom(expressions.get(i), expressionStr.get(i)) && currentInstantiation != null) {
+					allInstantiations.add(currentInstantiation);
 				}
 			}
 		}
@@ -326,24 +326,24 @@ public class RuleString {
 
 		// If the pattern only has an anonymous group, match the entire class expression set to it and return.
 		if (pattern.hasAnonymousExpressions() && pattern.getNamedExpressions().length == 0) {
-			currentGroupInstantiation.put(pattern.getAnonymousGroupName(), classExpressions);
+			currentInstantiation.getGroupInstantiation().put(pattern.getAnonymousGroupName(), classExpressions);
 			return true;
 		}
 		
 		
-		List<Map<String, OWLObject>> newInstantiations = new ArrayList<Map<String, OWLObject>>();		
+		List<Instantiation> newInstantiations = new ArrayList<Instantiation>();		
 		PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
 		List<List<OWLClassExpression>> allPermutations = permGen.generatePermutations(new ArrayList<OWLClassExpression> (classExpressions));
 
-		Map<String, OWLObject> oldInstantiation = currentVariableInstantiation;
+		Instantiation oldInstantiation = currentInstantiation;
 		boolean atLeastOneMatch = false;
 
 		for (List<OWLClassExpression> permutation : allPermutations) {
 
-			currentVariableInstantiation = new HashMap<String, OWLObject>(oldInstantiation);
+			currentInstantiation = new Instantiation(oldInstantiation);
 
 			if (matchOrderedList(permutation, pattern)) {
-				newInstantiations.add(currentVariableInstantiation);
+				newInstantiations.add(currentInstantiation);
 				atLeastOneMatch= true;
 			}				
 		}
@@ -352,7 +352,7 @@ public class RuleString {
 			allInstantiations.addAll(newInstantiations);
 		}
 		
-		currentVariableInstantiation = null;
+		currentInstantiation = null;
 		
 		return atLeastOneMatch;
 	}
@@ -394,9 +394,9 @@ public class RuleString {
 
 				String placeholder = ((AtomicCls) exp).getPlaceholder();
 
-				if (currentVariableInstantiation.containsKey(placeholder)) {
+				if (currentInstantiation.getVariableInstantiation().containsKey(placeholder)) {
 
-					OWLObject obj = currentVariableInstantiation.get(placeholder);
+					OWLObject obj = currentInstantiation.getVariableInstantiation().get(placeholder);
 
 					if (classExpressions.contains(obj)) {
 						classExpressions.remove(obj);
@@ -414,7 +414,7 @@ public class RuleString {
 		}
 
 		if (pattern.hasAnonymousExpressions()) {
-			currentGroupInstantiation.put(pattern.getAnonymousGroupName(), classExpressions);
+			currentInstantiation.getGroupInstantiation().put(pattern.getAnonymousGroupName(), classExpressions);
 		}
 
 		return true;
@@ -519,22 +519,22 @@ public class RuleString {
 	
 	private boolean matchCardinality(int cardinality, String pattern) {
 				
-		if (!usedCardinalities.keySet().contains(pattern)) {
-			usedCardinalities.put(pattern, cardinality);
+		if (!currentInstantiation.getCardinalityInstantiation().keySet().contains(pattern)) {
+			currentInstantiation.getCardinalityInstantiation().put(pattern, cardinality);
 			return true;
 		} else {
-			return usedCardinalities.get(pattern).equals(cardinality);
+			return currentInstantiation.getCardinalityInstantiation().get(pattern).equals(cardinality);
 		}
 	}
 
 
 	private boolean addToMap(OWLObject owlObj, String key) {
 
-		if (!currentVariableInstantiation.keySet().contains(key)) {
-			currentVariableInstantiation.put(key, owlObj);
+		if (!currentInstantiation.getVariableInstantiation().keySet().contains(key)) {
+			currentInstantiation.getVariableInstantiation().put(key, owlObj);
 			return true;			
 		} else {
-			return currentVariableInstantiation.get(key).equals(owlObj);			
+			return currentInstantiation.getVariableInstantiation().get(key).equals(owlObj);			
 		}		
 	}
 
@@ -550,8 +550,8 @@ public class RuleString {
 
 			// Iterate over all possible instantiations and attempt to generate a conclusion
 			// from each one.
-			for (Map<String, OWLObject> instantiation : allInstantiations) {
-				currentVariableInstantiation = instantiation;
+			for (Instantiation instantiation : allInstantiations) {
+				currentInstantiation = instantiation;
 				conclusion.addAll(generateConclusion());				
 			}
 		}
@@ -619,7 +619,7 @@ public class RuleString {
 
 
 		if (conclusionExp.getExpressionType() == null) {
-			expression = currentVariableInstantiation.get(((AtomicCls) conclusionExp).getPlaceholder());
+			expression = currentInstantiation.getVariableInstantiation().get(((AtomicCls) conclusionExp).getPlaceholder());
 			expressions.add(expression);
 		} else {
 
@@ -692,7 +692,7 @@ public class RuleString {
 					}
 
 					if (groupFound) {
-						Set<OWLClassExpression> superSet = currentGroupInstantiation.get(superSetName);
+						Set<OWLClassExpression> superSet = currentInstantiation.getGroupInstantiation().get(superSetName);
 						PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
 
 						possibleSets = permGen.generatePowerSet(superSet);
@@ -731,12 +731,12 @@ public class RuleString {
 
 
 	private OWLObject generate(TemplatePrimitive conclusionExp) {
-		return currentVariableInstantiation.get(conclusionExp.getAtomic());
+		return currentInstantiation.getVariableInstantiation().get(conclusionExp.getAtomic());
 	}
 	
 	private int generateCardinality(String pattern) {
-		if (usedCardinalities.containsKey(pattern)) {
-			return usedCardinalities.get(pattern);
+		if (currentInstantiation.getCardinalityInstantiation().containsKey(pattern)) {
+			return currentInstantiation.getCardinalityInstantiation().get(pattern);
 		} else {
 			
 			// Need to decide on how to generate non-defined cardinalities
@@ -750,7 +750,7 @@ public class RuleString {
 		Set<OWLClassExpression> expGroup = new HashSet<OWLClassExpression>();
 
 		for (GenericExpStr namedExpression : expGroupStr.getNamedExpressions()) {		
-			expGroup.add((OWLClassExpression) currentVariableInstantiation.get(((AtomicCls) namedExpression).getPlaceholder()));
+			expGroup.add((OWLClassExpression) currentInstantiation.getVariableInstantiation().get(((AtomicCls) namedExpression).getPlaceholder()));
 		}
 
 		return expGroup;
