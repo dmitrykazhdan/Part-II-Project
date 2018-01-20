@@ -36,9 +36,13 @@ public class RuleTests {
 		// Temporary Code
 		List<String> tmp = new ArrayList<String>();
 
-
 		
 		
+//		tmp.add("10");
+//		tmp.add("11");
+		
+//		tmp.add("15");
+//		tmp.add("16");
 //		tmp.add("17.1");
 //		tmp.add("17.2");		
 //		tmp.add("18.1");
@@ -102,6 +106,8 @@ public class RuleTests {
 //		tmp.add("54");
 //		tmp.add("55.1");
 //		tmp.add("55.2");
+//		tmp.add("56");
+		tmp.add("57");
 		
 		
 		// End of Temporary Code

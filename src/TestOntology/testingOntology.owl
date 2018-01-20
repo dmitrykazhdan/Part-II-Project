@@ -27,6 +27,18 @@
     
 
 
+    <!-- urn:absolute:testingOntology#DatatypeDt0 -->
+
+    <rdfs:Datatype rdf:about="urn:absolute:testingOntology#DatatypeDt0"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#DatatypeDt1 -->
+
+    <rdfs:Datatype rdf:about="urn:absolute:testingOntology#DatatypeDt1"/>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -129,6 +141,29 @@
     <!-- urn:absolute:testingOntology#ClassZ -->
 
     <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- urn:absolute:testingOntology#Individual_i1 -->
+
+    <owl:NamedIndividual rdf:about="urn:absolute:testingOntology#Individual_i1"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#Individual_i2 -->
+
+    <owl:NamedIndividual rdf:about="urn:absolute:testingOntology#Individual_i2"/>
 </rdf:RDF>
 
 

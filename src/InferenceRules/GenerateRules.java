@@ -245,16 +245,20 @@ public class GenerateRules {
 		// 6.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n1", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-		RuleString rule6_1 = new RuleString("6.1", "ObjExt", conclusion, premise1);
+		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", 0, false), new RelCardinalityRestriction("n1", "n2", false) };
+		RuleString rule6_1 = new RuleString("6.1", "ObjExt", restrictions, conclusion, premise1);
 
 		// 6.2
-		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
-		RuleString rule6_2 = new RuleString("6.2", "ObjExt", conclusion, premise1);
-		
-		// 6.3
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n", "Ro", "Y"));
-		RuleString rule6_3 = new RuleString("6.3", "ObjExt", conclusion, premise1);
+		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n", 0, false)};
+		RuleString rule6_2 = new RuleString("6.2", "ObjExt", restrictions, conclusion, premise1);
+		
+		// 6.3
+		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
+		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
+		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", 0, false), new RelCardinalityRestriction("n1", "n2", false) };
+		RuleString rule6_3 = new RuleString("6.3", "ObjExt", restrictions, conclusion, premise1);
 	
 
 		
@@ -297,23 +301,23 @@ public class GenerateRules {
 		
 		
 	
-//		rules.get(1).add(rule1);
-//		rules.get(1).add(rule2_1);
-//		rules.get(1).add(rule2_2);
-//		rules.get(1).add(rule3_1);
-//		rules.get(1).add(rule3_2);		
-//		rules.get(1).add(rule4_1);
-//		rules.get(1).add(rule4_2);
-//		rules.get(1).add(rule5_1);
-//		rules.get(1).add(rule5_2);
-//		rules.get(1).add(rule6_1);
-//		rules.get(1).add(rule6_2);
-//		rules.get(1).add(rule6_3);
-//		rules.get(1).add(rule7);
+		rules.get(1).add(rule1);
+		rules.get(1).add(rule2_1);
+		rules.get(1).add(rule2_2);
+		rules.get(1).add(rule3_1);
+		rules.get(1).add(rule3_2);		
+		rules.get(1).add(rule4_1);
+		rules.get(1).add(rule4_2);
+		rules.get(1).add(rule5_1);
+		rules.get(1).add(rule5_2);
+		rules.get(1).add(rule6_1);
+		rules.get(1).add(rule6_2);
+		rules.get(1).add(rule6_3);
+		rules.get(1).add(rule7);
 	//	rules.get(1).add(rule8);
 	//	rules.get(1).add(rule9);
-//		rules.get(1).add(rule10);
-//		rules.get(1).add(rule11);
+		rules.get(1).add(rule10);
+		rules.get(1).add(rule11);
 
 	}
 	
@@ -398,7 +402,7 @@ public class GenerateRules {
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
 		premise2 = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n2", "Ro", "Y"));
 		RuleRestriction[] restrictions = new RuleRestriction[] { 
-				new RelLowerBound("n1", "n2", true), new AbsCardinalityRestriction("n2", 0, false) };
+				new RelCardinalityRestriction("n1", "n2", true), new AbsCardinalityRestriction("n2", 0, false) };
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", restrictions, conclusion, premise1, premise2);
 		
@@ -1166,15 +1170,15 @@ public class GenerateRules {
 	private static void generateFourPremiseRules() {
 		
 		// Rule 57
-		ClsExpStr tmp = ExistsOrForAll.createLiteralSomeValFrom("Ro", "i");
+		ClsExpStr tmp = ExistsOrForAll.createIndividualSomeValFrom("Ro", "i");
 		OWLAxiomStr premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
 
-		tmp = ExistsOrForAll.createLiteralSomeValFrom( "Ro", "j");
+		tmp = ExistsOrForAll.createIndividualSomeValFrom( "Ro", "j");
 		OWLAxiomStr premise2 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
 	
 		OWLAxiomStr premise3 = new OWLAxiomStr(AxiomType.DIFFERENT_INDIVIDUALS, new TemplateLiteral("i"), new TemplateLiteral("j"));
 		
-		OWLAxiomStr premise4 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new AtomicCls("Ro"));
+		OWLAxiomStr premise4 = new OWLAxiomStr(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, new TemplateObjectProperty("Ro"));
 		OWLAxiomStr conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule57 = new RuleString("57", "ObjVal-ObjVal-DifInd-ObjFun", conclusion, premise1, premise2, premise3, premise4);
 
