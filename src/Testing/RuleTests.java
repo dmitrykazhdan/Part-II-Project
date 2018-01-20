@@ -2,10 +2,7 @@ package Testing;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,14 +11,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.semanticweb.owl.explanation.api.Explanation;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-
 import InferenceRules.GenerateRules;
 import InferenceRules.RuleString;
-import ProofTreeComputation.ProofTree;
-import ProofTreeComputation.ProofTreeGenerator;
 
 public class RuleTests {
 
@@ -36,8 +28,22 @@ public class RuleTests {
 		// Temporary Code
 		List<String> tmp = new ArrayList<String>();
 
+
+// TBC:
 		
+		// 1, 2, 4
+//		tmp.add("3.1");
+//		tmp.add("3.2");		
+//		tmp.add("5.1");
+//		tmp.add("5.2");
+//		tmp.add("6.1");
+//		tmp.add("6.2");
+//		tmp.add("6.3");
+// Rules 8 and 9 cannot be generated yet.
+// 41.1
+// 42.1
 		
+//		tmp.add("7");
 //		tmp.add("10");
 //		tmp.add("11");		
 //		tmp.add("12.1");
@@ -87,11 +93,11 @@ public class RuleTests {
 //		tmp.add("38.2");
 //		tmp.add("38.3");
 //		tmp.add("39");	
-//		tmp.add("40");
-		
+//		tmp.add("40");		
 //		tmp.add("41.2");	
 //		tmp.add("41.3");	
-		
+//		tmp.add("42.2");	
+//		tmp.add("42.3");
 //		tmp.add("43.1");	
 //		tmp.add("43.2");
 //		tmp.add("43.3");	

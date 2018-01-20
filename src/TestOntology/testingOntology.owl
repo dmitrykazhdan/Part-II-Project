@@ -144,6 +144,18 @@
     
 
 
+    <!-- urn:absolute:testingOntology#ClassZ1 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ1"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassZ2 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ2"/>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //

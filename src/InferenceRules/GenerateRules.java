@@ -224,7 +224,7 @@ public class GenerateRules {
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 
 		premise1 = getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj1), "X");			
-		conclusion =  getSubClassOfAxiom(InterUnion.createIntersectionExpression( anonDisj2), "X");
+		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
 		restrictions = new RuleRestriction[] {new subSetRestriction("Y2", "Y1") };	
 		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
 		
