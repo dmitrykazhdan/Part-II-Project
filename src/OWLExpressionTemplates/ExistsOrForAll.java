@@ -28,6 +28,11 @@ public class ExistsOrForAll extends ClsExpStr {
 				new TemplateDataProperty(property), new TemplateLiteral(dataLiteral));
 	}
 	
+	public static ExistsOrForAll createIndividualSomeValFrom(String property, String individual) {
+		return new ExistsOrForAll(ClassExpressionType.OBJECT_HAS_VALUE, 
+				new TemplateObjectProperty(property), new TemplateIndividual(individual));
+	}
+	
 		
 	// Data expressions
 	public static ExistsOrForAll createDataSomeValFrom(String property, String dataRange) {

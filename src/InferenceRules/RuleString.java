@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
@@ -27,6 +28,7 @@ import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -176,9 +178,9 @@ public class RuleString {
 				Integer cardinality = usedCardinalities.get(absCardRest.getLargerCardinality());
 				return compare(cardinality, lowerBound, absCardRest.isStrictInequality());
 
-			} else if (restriction instanceof RelLowerBound) {
+			} else if (restriction instanceof RelCardinalityRestriction) {
 
-				RelLowerBound relCardRest = (RelLowerBound) restriction;
+				RelCardinalityRestriction relCardRest = (RelCardinalityRestriction) restriction;
 				Integer lowerBound = usedCardinalities.get(relCardRest.getSmallerCardinality());
 				Integer cardinality = usedCardinalities.get(relCardRest.getLargerCardinality());
 				return compare(cardinality, lowerBound, relCardRest.isStrictInequality());
@@ -444,8 +446,7 @@ public class RuleString {
 
 
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+					classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
 
 				OWLQuantifiedObjectRestriction objSomeValFrom = (OWLQuantifiedObjectRestriction) classExp;
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
@@ -453,7 +454,15 @@ public class RuleString {
 				return matchPrimitive(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
 						&& match(objSomeValFrom.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
 
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+				
+				OWLObjectHasValue objSomeValFrom = (OWLObjectHasValue) classExp;
+				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
 
+				return matchPrimitive(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
+						&& matchPrimitive(objSomeValFrom.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
+							
+			
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
 					classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
 					classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
@@ -467,8 +476,7 @@ public class RuleString {
 
 
 			}  else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
+					classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
 
 				OWLQuantifiedDataRestriction quantDataRest = (OWLQuantifiedDataRestriction) classExp;
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
@@ -477,7 +485,18 @@ public class RuleString {
 						&& matchPrimitive(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
 
 
+			}  else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE))  {
+				
+				OWLDataHasValue quantDataRest = (OWLDataHasValue) classExp;
+				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
+
+				return matchPrimitive(quantDataRest.getProperty(), specialisedPattern.getProperty())
+						&& matchPrimitive(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
+				
+				
+				
 			}  else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY) ||
+			
 					classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
 					classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
 
