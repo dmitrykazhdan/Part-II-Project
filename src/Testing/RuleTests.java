@@ -38,6 +38,9 @@ public class RuleTests {
 
 
 		
+		
+//		tmp.add("17.1");
+//		tmp.add("17.2");		
 //		tmp.add("18.1");
 //		tmp.add("18.2");
 //		tmp.add("19.1");
@@ -48,7 +51,9 @@ public class RuleTests {
 //	    tmp.add("21.1");
 //		tmp.add("21.2");
 //		tmp.add("21.3");
-		
+//		tmp.add("22.1");
+//		tmp.add("22.2");
+//		tmp.add("22.3");		
 //		tmp.add("23");
 //		tmp.add("24");
 //		tmp.add("25.1");

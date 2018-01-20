@@ -13,6 +13,23 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- urn:absolute:testingOntology#DatatypeDt -->
+
+    <rdfs:Datatype rdf:about="urn:absolute:testingOntology#DatatypeDt"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Object Properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +59,23 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- urn:absolute:testingOntology#PropertyRd -->
+
+    <owl:DatatypeProperty rdf:about="urn:absolute:testingOntology#PropertyRd"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +93,36 @@
     <!-- urn:absolute:testingOntology#ClassY -->
 
     <owl:Class rdf:about="urn:absolute:testingOntology#ClassY"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassY1 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassY1"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassY2 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassY2"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassY3 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassY3"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassY4 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassY4"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassY5 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassY5"/>
     
 
 

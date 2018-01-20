@@ -396,14 +396,16 @@ public class GenerateRules {
 		
 		// 17.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
-		premise2 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-	    conclusion = getSubClassOfAxiom("X", "F");
-		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", conclusion, premise1, premise2);
+		premise2 = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n2", "Ro", "Y"));
+		RuleRestriction[] restrictions = new RuleRestriction[] { 
+				new RelLowerBound("n1", "n2", true), new AbsCardinalityRestriction("n2", 0, false) };
+		conclusion = getSubClassOfAxiom("X", "F");
+		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", restrictions, conclusion, premise1, premise2);
 		
 		
 		// 17.2
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n1", "Ro", "Y"));
-		RuleString rule17_2 = new RuleString("17.2", "ObjMin-ObjMax", conclusion, premise1, premise2);
+		RuleString rule17_2 = new RuleString("17.2", "ObjMin-ObjMax", restrictions, conclusion, premise1, premise2);
 		
 		
 		
@@ -483,7 +485,7 @@ public class GenerateRules {
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		conclusion = getSubClassOfAxiom("X", "F");
-		RuleRestriction[] restrictions = new RuleRestriction[] {new subSetRestriction("C1", "C2") };	
+		restrictions = new RuleRestriction[] {new subSetRestriction("C1", "C2") };	
 		RuleString rule22_1 = new RuleString("22.1", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 		
 		
