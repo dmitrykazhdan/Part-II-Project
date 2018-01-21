@@ -4,6 +4,7 @@
 
 - Implement generating rules.
 
+- Have a "simple/atomic" expression group, and a more complex expression group.
 
 - Fixup excessive type-casting in pattern matching.
 

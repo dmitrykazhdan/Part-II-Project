@@ -207,6 +207,7 @@ public class RuleString {
 		}
 		return false;
 	}
+	
 
 	// Assume sub object property consists of two primitives.
 	private boolean matchSubObjectProperty(OWLSubObjectPropertyOfAxiom subObjPropAxiom, OWLAxiomStr pattern) {
@@ -365,26 +366,38 @@ public class RuleString {
 		return false;
 	}
 	
+	
+	private boolean matchSubClassAxiom(OWLSubClassOfAxiom subClsAxiom, OWLAxiomStr pattern) {
+		
+		if (!(pattern.getExpressions().size() == 2 &&
+			  pattern.getExpressions().get(0) instanceof ClsExpStr &&
+			  pattern.getExpressions().get(1) instanceof ClsExpStr)) {
+			
+			return false;
+		}
+		
+		ClsExpStr subClass = (ClsExpStr) pattern.getExpressions().get(0);
+		ClsExpStr superClass = (ClsExpStr) pattern.getExpressions().get(1);
+				
+		return match(subClsAxiom.getSubClass(), subClass) && 
+			   match(subClsAxiom.getSuperClass(), superClass);
+	}
 
 	
 	private boolean matchTBoxAxiom(OWLAxiom tBoxAxiom, OWLAxiomStr pattern) {
 
 		if (tBoxAxiom.isOfType(AxiomType.SUBCLASS_OF)) {
-
-			OWLSubClassOfAxiom subClsAxiom = (OWLSubClassOfAxiom) tBoxAxiom;
-
-			return match(subClsAxiom.getSubClass(), (ClsExpStr) pattern.getExpressions().get(0))
-					&& match(subClsAxiom.getSuperClass(), (ClsExpStr) pattern.getExpressions().get(1));
+			return matchSubClassAxiom((OWLSubClassOfAxiom) tBoxAxiom, pattern);
 
 		} else if (tBoxAxiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 
 			OWLEquivalentClassesAxiom eqvClassesAxiom = (OWLEquivalentClassesAxiom) tBoxAxiom;
-			return matchGroupAxiom(eqvClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
+			return matchGroupAxiomNonUniquely(eqvClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
 
 		} else if (tBoxAxiom.isOfType(AxiomType.DISJOINT_CLASSES)){
 
 			OWLDisjointClassesAxiom disjClassesAxiom = (OWLDisjointClassesAxiom) tBoxAxiom;
-			return matchGroupAxiom(disjClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
+			return matchGroupAxiomNonUniquely(disjClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
 
 		} else if (tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ||
 				   tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN) ||
@@ -435,63 +448,77 @@ public class RuleString {
 	}
 
 
-
-
-	private boolean matchGroupAxiom(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
+	
+	// Attempts to match an axiom which may potentially have multiple acceptable matchings.
+	private boolean matchGroupAxiomNonUniquely(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
 
 		// If the pattern only has an anonymous group, match the entire class expression set to it and return.
 		if (pattern.hasAnonymousExpressions() && pattern.getNamedExpressions().length == 0) {
-			currentInstantiation.getGroupInstantiation().put(pattern.getAnonymousGroupName(), classExpressions);
-			return true;
+			return matchAnonymousGroupExpression(classExpressions, pattern.getAnonymousGroupName());
 		}
 		
-		
+		// Otherwise, generate all permutations of the given set of class expressions.
 		List<Instantiation> newInstantiations = new ArrayList<Instantiation>();		
 		PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
 		List<List<OWLClassExpression>> allPermutations = permGen.generatePermutations(new ArrayList<OWLClassExpression> (classExpressions));
-
 		Instantiation oldInstantiation = currentInstantiation;
 		boolean atLeastOneMatch = false;
 
+		// For every permutation, attempt to match it to the pattern.
 		for (List<OWLClassExpression> permutation : allPermutations) {
 
 			currentInstantiation = new Instantiation(oldInstantiation);
 
-			if (matchOrderedList(permutation, pattern)) {
+			// If the match is successful, add this new instantiation.
+			if (matchOrderedGroup(permutation, pattern)) {
 				newInstantiations.add(currentInstantiation);
 				atLeastOneMatch= true;
 			}				
 		}
 
+		// If there was at least one match, add all the new instantiations.
 		if (atLeastOneMatch) {
 			allInstantiations.addAll(newInstantiations);
 		}
 		
+		// Setting currentInstantiation to null signifies that all instantiations have been added anyway.
 		currentInstantiation = null;
 		
 		return atLeastOneMatch;
 	}
 
 
+	
+	// Attempt to match two ordered groups.
+	private boolean matchOrderedGroup(List<OWLClassExpression> clsExpList, ExpressionGroup pattern) {
 
-	private boolean matchOrderedList(List<OWLClassExpression> expList, ExpressionGroup pattern) {
-
-		if (expList.size() < pattern.getNamedExpressions().length) {
+		// Need to match all named expressions, hence given class expression list should be at least as large.	
+		if (clsExpList.size() < pattern.getNamedExpressions().length) {
 			return false;
 		}
 
 		for (GenericExpStr namedExpression : pattern.getNamedExpressions()) {
-			OWLClassExpression exp = expList.remove(0);
 
-			if (!match(exp, (ClsExpStr) namedExpression)) {
+			OWLClassExpression currentClsExp = clsExpList.remove(0);
+
+			if (!(namedExpression instanceof ClsExpStr)) {
+				return false;
+			}
+			
+			// Type-convert the named expression.
+			ClsExpStr namedClsExpression = (ClsExpStr) namedExpression;
+			
+			if (!match(currentClsExp, namedClsExpression)) {
 				return false;
 			}
 		}
-
-		return true;
+		return !pattern.hasAnonymousExpressions() ||
+			   matchAnonymousGroupExpression(new HashSet<OWLClassExpression>(clsExpList), pattern.getAnonymousGroupName());
 	}
 
 
+	
+	
 	// Matches an intersection or union expression, provided that there is a single
 	// unique matching available.
 	private boolean matchGroupExpressionUniquely(OWLClassExpression classExp, ClsExpStr pattern) {
@@ -567,7 +594,7 @@ public class RuleString {
 	private boolean match(OWLClassExpression classExp, ClsExpStr pattern) {
 
 		if (pattern.getExpressionType() == null) {
-			return addToMap(classExp, ((AtomicCls) pattern).getPlaceholder());
+			return matchAtomicCls(classExp, (AtomicCls) pattern);
 		}
 
 		ClassExpressionType classExpType = classExp.getClassExpressionType();
@@ -670,11 +697,6 @@ public class RuleString {
 	
 	
 	
-	
-	
-
-	
-	
 	// Match object and data min/max/exact cardinality expressions.
 	private boolean matchCardinalityExpression(OWLClassExpression classExp, ClsExpStr pattern) {
 		
@@ -715,14 +737,17 @@ public class RuleString {
 			return false;
 		}
 		
-		ComplementCls complementClsPattern = (ComplementCls) pattern;
-		
+		ComplementCls complementClsPattern = (ComplementCls) pattern;	
 		return match(complementClass.getOperand(), complementClsPattern.getSubExpression());
 	}
 	
 	
 	private boolean matchPrimitive(OWLObject entity, TemplatePrimitive pattern) {
 		return addToMap(entity, pattern.getAtomic());
+	}
+	
+	private boolean matchAtomicCls(OWLClassExpression clsExp, AtomicCls atomicCls) {
+		return addToMap(clsExp, atomicCls.getPlaceholder());
 	}
 	
 	private boolean matchCardinality(int cardinality, String pattern) {
@@ -747,6 +772,8 @@ public class RuleString {
 	}
 
 
+	
+	
 	
 
 	// Return all possible conclusions that can be generated.
