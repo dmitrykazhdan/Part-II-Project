@@ -492,48 +492,6 @@ public class RuleString {
 	}
 
 
-
-	// Assumption: all of the named expressions in "pattern" are already instantiated.
-	private boolean matchFullyInstantiatedGroup(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
-
-		if (!pattern.hasAnonymousExpressions() && (classExpressions.size() != pattern.getNamedExpressions().length)) {
-			return false;
-		}
-
-		// throw an exception in the appropriate place
-		for (GenericExpStr exp : pattern.getNamedExpressions()) {
-
-			if (exp instanceof AtomicCls) {
-
-				String placeholder = ((AtomicCls) exp).getPlaceholder();
-
-				if (currentInstantiation.getVariableInstantiation().containsKey(placeholder)) {
-
-					OWLObject obj = currentInstantiation.getVariableInstantiation().get(placeholder);
-
-					if (classExpressions.contains(obj)) {
-						classExpressions.remove(obj);
-
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-
-			}  else {
-				return false;
-			}		
-		}
-
-		if (pattern.hasAnonymousExpressions()) {
-			currentInstantiation.getGroupInstantiation().put(pattern.getAnonymousGroupName(), classExpressions);
-		}
-
-		return true;
-	}
-	
-	
 	// Matches an intersection or union expression, provided that there is a single
 	// unique matching available.
 	private boolean matchGroupExpressionUniquely(OWLClassExpression classExp, ClsExpStr pattern) {
@@ -542,19 +500,65 @@ public class RuleString {
 			return false;
 		}
 		
-		InterUnion specialisedPattern = (InterUnion) pattern;	
+		InterUnion specialisedPattern = (InterUnion) pattern;
+		ExpressionGroup groupPattern = specialisedPattern.getExpressionGroup();
 		OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
 		
+		// All named expressions in the pattern should be matched.
+		// Hence there must be at least as many given class expressions.
+		if (groupExpression.getOperands().size() < groupPattern.getNamedExpressions().length) {
+			return false;
+		}
 		
+		Set<OWLClassExpression> operands = groupExpression.getOperands();
 		
-		return false;
+		return matchNamedExpressions(operands, groupPattern.getNamedExpressions()) &&
+				matchAnonymousGroupExpression(operands, groupPattern.getAnonymousGroupName());
 	}
 	
-	// expressions can be: 
-	// - one anon group, 
-	// - group expression with 1 instantiated class and one uninstantiated anon group, 
-	// - 2 instantiated classes,  
-
+	
+	// Method for matching an anonymous group against a given set of class expressions.
+	private boolean matchAnonymousGroupExpression(Set<OWLClassExpression> classExpressions, String anonymousGroupName) {
+		
+		// If the group has been instantiated, check if sets are the same.
+		if (currentInstantiation.getGroupInstantiation().containsKey(anonymousGroupName)) {
+			return classExpressions.equals(currentInstantiation.getGroupInstantiation().get(anonymousGroupName));
+		
+		// Otherwise insert new instantiation.
+		} else {
+			currentInstantiation.getGroupInstantiation().put(anonymousGroupName, classExpressions);
+			return true;
+		}
+	}
+	
+	
+	// For the purposes of these rules, intersection and union only have atomic named expressions.
+	private boolean matchNamedExpressions(Set<OWLClassExpression> classExpressions, ClsExpStr[] namedExpressions) {
+		
+		for (ClsExpStr expression : namedExpressions) {
+			
+			if (!(expression instanceof AtomicCls)) {
+				return false;
+			}
+			
+			AtomicCls atomicExpression = (AtomicCls) expression;
+			String atomicExpressionName = atomicExpression.getPlaceholder();
+			
+			if (!currentInstantiation.getVariableInstantiation().containsKey(atomicExpressionName)) {
+				return false;
+			}
+			
+			OWLObject obj = currentInstantiation.getVariableInstantiation().get(atomicExpressionName);
+			
+			if (classExpressions.contains(obj)) {
+				classExpressions.remove(obj);
+			} else {
+				return false;
+			}		
+		}
+		return true;
+	}
+	
 
 	
 
