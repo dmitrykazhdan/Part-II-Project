@@ -58,6 +58,7 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.TemplateObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
@@ -203,24 +204,91 @@ public class RuleString {
 		return false;
 	}
 
+	// Assume sub object property consists of two primitives.
+	private boolean matchSubObjectProperty(OWLSubObjectPropertyOfAxiom subObjPropAxiom, OWLAxiomStr pattern) {
+		
+		List<GenericExpStr> patternExpressions = pattern.getExpressions();
+		
+		if (patternExpressions.size() == 2) {
+			
+			if (patternExpressions.get(0) instanceof TemplateObjectProperty &&
+				patternExpressions.get(1) instanceof TemplateObjectProperty) {
+			
+				TemplateObjectProperty subProperty = (TemplateObjectProperty) patternExpressions.get(0);
+				TemplateObjectProperty superProperty = (TemplateObjectProperty) patternExpressions.get(1);
+				
+				return matchPrimitive(subObjPropAxiom.getSubProperty(), subProperty) &&
+						matchPrimitive(subObjPropAxiom.getSuperProperty(), superProperty);
+			}
+		}		
+		return false;
+	}
+	
+	// Used to match an axiom containing a single primitive property as an argument.
+	// Cases include: functional object property, inverse functional object property,
+	// symmetric object property, transitive object property and functional data property.
+	private boolean matchAxiomWithProperty(HasProperty<OWLProperty> axiomWithProperty, OWLAxiomStr pattern) {
+		
+		List<GenericExpStr> patternExpressions = pattern.getExpressions();
+		
+		if (patternExpressions.size() == 1) {
+			if (patternExpressions.get(0) instanceof TemplatePrimitive) {
+				TemplatePrimitive primitiveProperty = (TemplatePrimitive) patternExpressions.get(0);
+				
+				return matchPrimitive(axiomWithProperty.getProperty(), primitiveProperty);
+			}
+		}
+		
+		return false;
+	}
 
+	
+	// This assumes that the first listed inverse property has already been instantiated.
+	private boolean matchInverseObjectProperty(OWLInverseObjectPropertiesAxiom invObjPropAxiom, OWLAxiomStr pattern) {
+		
+		List<GenericExpStr> patternExpressions = pattern.getExpressions();
 
+		if (patternExpressions.size() != 2) {
+			return false; 
+		}
+
+		if (patternExpressions.get(0) instanceof TemplateObjectProperty && patternExpressions.get(1) instanceof TemplateObjectProperty) {
+
+			TemplateObjectProperty instantiatedProperty = (TemplateObjectProperty) patternExpressions.get(0);
+			TemplateObjectProperty uninstantiatedProperty = (TemplateObjectProperty) patternExpressions.get(1);
+
+			// We assume that the first property has already been instantiated.
+			if (!currentInstantiation.getVariableInstantiation().containsKey(instantiatedProperty.getAtomic())) {
+				return false;
+			}
+
+			OWLObject obj = currentInstantiation.getVariableInstantiation().get(instantiatedProperty.getAtomic());
+
+			if (obj instanceof OWLObjectPropertyExpression) {
+				OWLObjectPropertyExpression instantiatedPropertyValue = (OWLObjectPropertyExpression) obj;
+				
+				if (instantiatedPropertyValue.equals(invObjPropAxiom.getFirstProperty())) {
+					return matchPrimitive(invObjPropAxiom.getSecondProperty(), uninstantiatedProperty);
+				
+				} else if (instantiatedPropertyValue.equals(invObjPropAxiom.getSecondProperty())) {
+					return matchPrimitive(invObjPropAxiom.getFirstProperty(), uninstantiatedProperty);
+				}
+			}
+		}
+		return false;
+	}
+	
+	
 	private boolean matchRBoxAxiom(OWLAxiom rBoxAxiom, OWLAxiomStr pattern) {
 		
 		if (rBoxAxiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
-
 			OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) rBoxAxiom;
-
-			return matchPrimitive(subObjPropAxiom.getSubProperty(), (TemplatePrimitive) pattern.getExpressions().get(0))
-					&& matchPrimitive(subObjPropAxiom.getSuperProperty(), (TemplatePrimitive) pattern.getExpressions().get(1));
+			return matchSubObjectProperty(subObjPropAxiom, pattern);
 
 		} else if (rBoxAxiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES)) {
-
 			OWLInverseObjectPropertiesAxiom invObjPropAxiom = (OWLInverseObjectPropertiesAxiom) rBoxAxiom;
-
-			return matchPrimitive(invObjPropAxiom.getFirstProperty(), (TemplatePrimitive) pattern.getExpressions().get(0))
-					&& matchPrimitive(invObjPropAxiom.getSecondProperty(), (TemplatePrimitive) pattern.getExpressions().get(1));
-
+			return matchInverseObjectProperty(invObjPropAxiom, pattern);
+			
 		} else if (rBoxAxiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) ||
 				rBoxAxiom.isOfType(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) ||
 				rBoxAxiom.isOfType(AxiomType.SYMMETRIC_OBJECT_PROPERTY) ||
@@ -228,12 +296,10 @@ public class RuleString {
 				rBoxAxiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
 
 			HasProperty<OWLProperty> axiomWithProperty = (HasProperty<OWLProperty>) rBoxAxiom;
-			return matchPrimitive(axiomWithProperty.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0));
-
-		} else {
-
-			return false;
-		}
+			return matchAxiomWithProperty(axiomWithProperty, pattern);
+			
+		} 
+		return false;
 	}
 
 
