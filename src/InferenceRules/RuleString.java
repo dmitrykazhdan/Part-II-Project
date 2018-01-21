@@ -58,6 +58,7 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
@@ -353,22 +354,40 @@ public class RuleString {
 	}
 
 
+	// Currently we assume that the axiom only contains 2 individuals, both of which have been instantiated.
+	private boolean matchDifferentIndividuals(OWLDifferentIndividualsAxiom diffIndividualsAxiom, OWLAxiomStr pattern) {
+		
+		List<GenericExpStr> patternExpressions = pattern.getExpressions();
+		List<OWLIndividual> individuals = diffIndividualsAxiom.getIndividualsAsList();
 
+		if (patternExpressions.size() != 2 || individuals.size() != 2) {
+			return false; 
+		}
+		
+		if (patternExpressions.get(0) instanceof TemplateLiteral && patternExpressions.get(1) instanceof TemplateLiteral) {
+			
+			TemplateLiteral i = (TemplateLiteral) patternExpressions.get(0);
+			TemplateLiteral j = (TemplateLiteral) patternExpressions.get(1);
+			
+			// Check that both individuals have been instantiated and
+			// attempt to match the two possible orderings.
+			if (currentInstantiation.getVariableInstantiation().containsKey(i.getAtomic()) &&
+				currentInstantiation.getVariableInstantiation().containsKey(j.getAtomic())) {
+				
+				return 	(matchPrimitive(individuals.get(0), i) && matchPrimitive(individuals.get(1), j)) ||
+						(matchPrimitive(individuals.get(1), i) && matchPrimitive(individuals.get(0), j));			
+			}			
+		}
+		return false;
+	}
+	
 	private boolean matchABoxAxiom(OWLAxiom aBoxAxiom, OWLAxiomStr pattern) {
 
 		// Currently only a "Different Individuals" axiom that has only two individuals is matched.
 		if (aBoxAxiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
-
 			OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) aBoxAxiom;				
-			List<OWLIndividual> individuals = diffIndividualsAxiom.getIndividualsAsList();
-			TemplatePrimitive iStr  = (TemplatePrimitive) pattern.getExpressions().get(0);
-			TemplatePrimitive jStr  = (TemplatePrimitive) pattern.getExpressions().get(1);
-
-			return (individuals.size() == 2) && (
-					(matchPrimitive(individuals.get(0), iStr) && matchPrimitive(individuals.get(1), jStr)) ||
-					(matchPrimitive(individuals.get(1), iStr) && matchPrimitive(individuals.get(0), jStr)));
+			return matchDifferentIndividuals(diffIndividualsAxiom, pattern);
 		}	
-
 		return false;
 	}
 
