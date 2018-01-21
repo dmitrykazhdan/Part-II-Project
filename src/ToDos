@@ -5,6 +5,7 @@
 - Implement generating rules.
 
 - Have a "simple/atomic" expression group, and a more complex expression group.
+Matching and generation of class expressions only uses the atomic expression groups.
 
 - Fixup excessive type-casting in pattern matching.
 
