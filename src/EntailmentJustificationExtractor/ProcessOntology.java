@@ -22,6 +22,7 @@ import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
 import org.semanticweb.owl.explanation.api.ExplanationManager;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -29,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
@@ -90,7 +92,10 @@ public class ProcessOntology {
 		// Note that "getSubClasses" returns strict subclasses.
 		// Hence need to manually add equivalent classes as well.
 		subClasses.addAll(reasoner.getEquivalentClasses(superclass).getEntities());
-
+		
+		// Remove the trivial statement that the class is equivalent to itself.
+		subClasses.remove(superclass);
+		
 		return subClasses;
 	}
 
@@ -104,7 +109,7 @@ public class ProcessOntology {
 				
 				// Generate unique identifier when naming the file
 				String uuid = UUID.randomUUID().toString();			
-				File outputFile = new File(outputDir + ontName + uuid + ".xml");
+				File outputFile = new File(outputDir + ontName + "_" + uuid + ".xml");
 				OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
 				// Store the explanation in the file
@@ -120,6 +125,24 @@ public class ProcessOntology {
 
 		// COMPLETE
 		// Define a "trivial" subsumption
+		
+		/* Currently it is assumed that trivial subsumptions are:
+		1) X <= T
+		2) F <= X
+		*/
+		OWLAxiom conclusion = explanation.getEntailment();
+		
+		if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+			
+			OWLSubClassOfAxiom subClassOfAxiom = (OWLSubClassOfAxiom) conclusion;
+			
+			if (subClassOfAxiom.getSubClass().isOWLNothing() ||
+					subClassOfAxiom.getSuperClass().isOWLThing()) {
+				
+				return true;
+			}			
+		}
+				
 		return false;
 	}
 }

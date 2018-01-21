@@ -385,7 +385,7 @@ public class ProofTreeGenerator {
 	
 
 
-	public static ProofTree GenerateProofTree(OWLAxiom entailment, Set<OWLAxiom> justification) {
+	public static List<ProofTree> GenerateProofTree(OWLAxiom entailment, Set<OWLAxiom> justification) {
 		
 		/* Algorithm implementation goes here: */
 		List<ProofTree> proofTreeList = ComputeProofTrees(justification, entailment);
@@ -393,14 +393,14 @@ public class ProofTreeGenerator {
 		
 		// Get most understandable tree.
 		if ((proofTreeList != null) && proofTreeList.size() > 0) {
-			return proofTreeList.get(0);
+			return proofTreeList;
 		} else {
 			return null;
 		}
 	}
 	
 	
-	public static ProofTree GenerateProofTree(Explanation<OWLAxiom> explanation) {
+	public static List<ProofTree> GenerateProofTree(Explanation<OWLAxiom> explanation) {
 		
 		return GenerateProofTree(explanation.getEntailment(), explanation.getAxioms());
 	}

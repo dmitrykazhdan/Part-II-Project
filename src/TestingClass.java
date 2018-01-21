@@ -47,7 +47,7 @@ public class TestingClass {
 //			
 //			boolean m = rule39.matchPremises(premises);
 			
-			ProofTree proofTree = ProofTreeGenerator.GenerateProofTree(explanation);
+			List<ProofTree> proofTree = ProofTreeGenerator.GenerateProofTree(explanation);
 			
 			System.out.println("Proof Tree computed successfully.");
 		}	

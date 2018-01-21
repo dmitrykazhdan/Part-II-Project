@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -36,7 +37,7 @@ public class GenerateTrees {
 			InputStream fileInputStream = new FileInputStream(explanationFilename);
 
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);			
-			ProofTree proofTree = ProofTreeGenerator.GenerateProofTree(explanation);
+			List<ProofTree> proofTrees = ProofTreeGenerator.GenerateProofTree(explanation);
 			
 			System.out.println("Proof Tree computed successfully.");
 					
