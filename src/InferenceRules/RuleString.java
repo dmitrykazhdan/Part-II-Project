@@ -60,6 +60,7 @@ import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplateDataProperty;
 import OWLExpressionTemplates.TemplateDataRange;
+import OWLExpressionTemplates.TemplateIndividual;
 import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -350,10 +351,10 @@ public class RuleString {
 				return matchObjectPropertyDomain((OWLObjectPropertyDomainAxiom) axiom, (TemplateObjectProperty) patternExpressions.get(0), cls);						
 			
 			} else if (axiom instanceof OWLObjectPropertyRangeAxiom && patternExpressions.get(0) instanceof TemplateObjectProperty) {
-				matchObjectPropertyRange((OWLObjectPropertyRangeAxiom) axiom, (TemplateObjectProperty) patternExpressions.get(0), cls);
+				return matchObjectPropertyRange((OWLObjectPropertyRangeAxiom) axiom, (TemplateObjectProperty) patternExpressions.get(0), cls);
 
 			} else if (axiom instanceof OWLDataPropertyDomainAxiom && patternExpressions.get(0) instanceof TemplateDataProperty) {
-				matchDataPropertyDomain((OWLDataPropertyDomainAxiom) axiom, (TemplateDataProperty) patternExpressions.get(0), cls);				
+				return matchDataPropertyDomain((OWLDataPropertyDomainAxiom) axiom, (TemplateDataProperty) patternExpressions.get(0), cls);				
 			}
 	
 		} else if (axiom instanceof OWLDataPropertyRangeAxiom && patternExpressions.get(1) instanceof TemplateDataRange &&
@@ -492,8 +493,6 @@ public class RuleString {
 
 
 
-
-
 	// Assumption: all of the named expressions in "pattern" are already instantiated.
 	private boolean matchFullyInstantiatedGroup(Set<OWLClassExpression> classExpressions, ExpressionGroup pattern) {
 
@@ -533,7 +532,31 @@ public class RuleString {
 
 		return true;
 	}
+	
+	
+	// Matches an intersection or union expression, provided that there is a single
+	// unique matching available.
+	private boolean matchGroupExpressionUniquely(OWLClassExpression classExp, ClsExpStr pattern) {
+		
+		if (!(pattern instanceof InterUnion)) {
+			return false;
+		}
+		
+		InterUnion specialisedPattern = (InterUnion) pattern;	
+		OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
+		
+		
+		
+		return false;
+	}
+	
+	// expressions can be: 
+	// - one anon group, 
+	// - group expression with 1 instantiated class and one uninstantiated anon group, 
+	// - 2 instantiated classes,  
 
+
+	
 
 	// Important assumption:
 	// Currently all class expression pattern matching is assumed to be producing at most one instantiation.
@@ -550,28 +573,17 @@ public class RuleString {
 			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF) || 
 				classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
 
-				OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
-				return matchFullyInstantiatedGroup(groupExpression.getOperands(), ((InterUnion) pattern).getExpressionGroup());
-
+				return matchGroupExpressionUniquely(classExp, pattern);
+				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
+
 				return matchComplementClassExpression((OWLObjectComplementOf) classExp, pattern);
 
-			}  else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+			}  else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE) ||
+					    classExpType.equals(ClassExpressionType.DATA_HAS_VALUE)) {
 				
-				OWLObjectHasValue objSomeValFrom = (OWLObjectHasValue) classExp;
-				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
-
-				return matchPrimitive(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
-						&& matchPrimitive(objSomeValFrom.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
-									
-			}  else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE))  {
-				
-				OWLDataHasValue quantDataRest = (OWLDataHasValue) classExp;
-				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
-
-				return matchPrimitive(quantDataRest.getProperty(), specialisedPattern.getProperty())
-						&& matchPrimitive(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
-								
+				return matchHasValueExpression(classExp, pattern);
+						
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
 					   classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM) ||
 					   classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM)) {
@@ -579,11 +591,11 @@ public class RuleString {
 				return matchQuantifiedClassExpression(classExp, pattern);
 				
 			} else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY) ||			
-					    classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
-					    classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY) ||
-					    classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
-						classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
-						classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
+					   classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
+					   classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY) ||
+					   classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
+					   classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
+					   classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
 
 				return matchCardinalityExpression(classExp, pattern);
 			} 
@@ -591,33 +603,34 @@ public class RuleString {
 		return false;
 	}
 	
-	// expressions can be: 
-	// - one anon group, 
-	// - group expression with 1 instantiated class and one uninstantiated anon group, 
-	// - 2 instantiated classes, 
-	// - primitive class 
-	
-	
-	
-	// object intersection of: anon group, group expression with 1 instantiated class and
-	// one uninstantiated anon group, 2 instantiated classes
-	
-	// object union of: anon group, 2 instantiated classes, 
-
-	
-
-
-
-	// object some values from can be: primitive class, anon. group,  data range some values from,
-	// group expression with 1 instantiated class and one uninstantiated anon group, one anon group, 
-	//  2 instantiated classes, object some values from, individual
-	
-	// data some values from can be: primitive data range, literal, 
 
 	
 	// Match object/data has value expression.
 	private boolean matchHasValueExpression(OWLClassExpression classExp, ClsExpStr pattern) {
 		
+		if (!(pattern instanceof ExistsOrForAll)) {
+			return false;
+		}
+		
+		ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
+
+		if (classExp instanceof OWLObjectHasValue && specialisedPattern.getExpression() instanceof TemplateIndividual) {
+			
+			OWLObjectHasValue objHasValue = (OWLObjectHasValue) classExp;
+			TemplateIndividual individual = (TemplateIndividual) specialisedPattern.getExpression();
+			
+			return matchPrimitive(objHasValue.getProperty(), specialisedPattern.getProperty()) && 
+				   matchPrimitive(objHasValue.getFiller(),individual);	
+
+			
+		} else if (classExp instanceof OWLDataHasValue && specialisedPattern.getExpression() instanceof TemplateLiteral) {
+			
+			OWLDataHasValue quantDataRest = (OWLDataHasValue) classExp;
+			TemplateLiteral literal = (TemplateLiteral) specialisedPattern.getExpression();
+			
+			return matchPrimitive(quantDataRest.getProperty(), specialisedPattern.getProperty()) && 
+				   matchPrimitive(quantDataRest.getFiller(), literal);
+		}	
 		return false;
 	}
 	
