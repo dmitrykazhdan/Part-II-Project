@@ -29,13 +29,18 @@ import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.model.OWLQuantifiedDataRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
@@ -46,6 +51,7 @@ import OWLExpressionTemplates.CardExpGen;
 import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.ComplementCls;
 import OWLExpressionTemplates.TemplatePrimitive;
+import OWLExpressionTemplates.UninstantiatedCardinalityException;
 import RuleRestrictions.AbsCardinalityRestriction;
 import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.DisjointDatatypesRestriction;
@@ -66,6 +72,7 @@ import OWLExpressionTemplates.TemplateObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectCardinalityRestrictionImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
@@ -779,24 +786,43 @@ public class RuleString {
 	// Return all possible conclusions that can be generated.
 	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
 
-		List<OWLAxiom> conclusion = new ArrayList<OWLAxiom>();
+		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 
 		// Attempt to match premises.
 		if (matchPremises(premises)) {
 
-			// Iterate over all possible instantiations and attempt to generate a conclusion
-			// from each one.
+			// Iterate over all possible instantiations and attempt to generate a conclusion from each one.
 			for (Instantiation instantiation : allInstantiations) {
 				currentInstantiation = instantiation;
-				conclusion.addAll(generateConclusion());				
+				conclusions.addAll(generateConclusionsFromCurrentInstantiation());				
 			}
 		}
 
-		return conclusion;
+		return conclusions;
 	}
 
+	
+	/*
+	 * conclusion can be:
+	  
+	   subclass:
+	   1) both primitive classes
+	   2) a primitve class and an anonymous group
+	   
+	 
+	 */
 
-	private List<OWLAxiom> generateConclusion() {
+	
+	private OWLAxiom generateSubObjectPropertyAxiom() {
+		
+		
+		return null;
+	}
+	
+	// Given the current instantiation, generate all possible conclusions from it.
+	// Assumption: given the way the rules are structured, there is no ambiguity in how the axioms
+	// themselves are generated.
+	private List<OWLAxiom> generateConclusionsFromCurrentInstantiation() {
 
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		OWLAxiom conclusionAxiom = null;
@@ -846,57 +872,149 @@ public class RuleString {
 
 	}
 
+	private boolean checkExpressionIsObjSomeOrAllValuesFrom(ExistsOrForAll existsOrForAll) {
+		
+		OWLObject generatedProperty = generate(existsOrForAll.getProperty());
+		
+		if (!(generatedProperty instanceof OWLObjectPropertyExpression) || 
+			!(existsOrForAll.getExpression() instanceof ClsExpStr) || generatedProperty == null) {
+			
+			return false;
+		}
+		
+		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
+		List<OWLObject> generatedExps = generate(expressionStr);
+		
+		// We assume there can be at most a single unique generated value.
+		if (generatedExps == null || !(generatedExps.size() == 1 && generatedExps.get(0) instanceof OWLClassExpression)) {
+			return false;
+		}
 
+		return true;
+	}
+	
 
+	
+	private OWLObjectSomeValuesFrom generateObjSomeValuesFrom(ExistsOrForAll existsOrForAll) {
+				
+		if (!checkExpressionIsObjSomeOrAllValuesFrom(existsOrForAll)) {
+			return null;
+		}
+		
+		OWLObjectPropertyExpression generatedProperty = (OWLObjectPropertyExpression) generate(existsOrForAll.getProperty());
+		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
+		OWLClassExpression generatedClsExp = (OWLClassExpression) generate(expressionStr).get(0);
+
+		return new OWLObjectSomeValuesFromImpl(generatedProperty, generatedClsExp);
+	}
+	
+	
+	private OWLObjectAllValuesFrom generateObjAllValuesFrom(ExistsOrForAll existsOrForAll) {
+		
+		if (!checkExpressionIsObjSomeOrAllValuesFrom(existsOrForAll)) {
+			return null;
+		}
+		
+		OWLObjectPropertyExpression generatedProperty = (OWLObjectPropertyExpression) generate(existsOrForAll.getProperty());
+		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
+		OWLClassExpression generatedClsExp = (OWLClassExpression) generate(expressionStr).get(0);
+	
+		return new OWLObjectAllValuesFromImpl(generatedProperty, generatedClsExp);
+	}
+	
+	
+	private boolean checkExpressionIsObjCardinality(CardExpGen cardinalityExpression) {
+
+		if (!(cardinalityExpression.getExpression() instanceof ClsExpStr)) {
+			return false;
+		}
+		
+		// Check whether the cardinality value is instantiated.
+		try {
+			generateCardinality(cardinalityExpression.getCardinality());
+		} catch (UninstantiatedCardinalityException e) {
+			return false;
+		}
+		
+		OWLObject objPropExp =  generate(cardinalityExpression.getProperty());
+		List<OWLObject> classExpressions =  generate((ClsExpStr) cardinalityExpression.getExpression());			
+		
+		if (!(objPropExp instanceof OWLObjectPropertyExpression) || classExpressions.size() != 1 ||
+			!(classExpressions.get(0) instanceof OWLClassExpression)) {
+			
+			return false;
+		}		
+		return true;	
+	}
+	
+		
+	private OWLObjectMaxCardinality generateObjMaxCardinality(CardExpGen cardinalityExpression) {
+		
+		if (!checkExpressionIsObjCardinality(cardinalityExpression)) {
+			return null;
+		}
+		
+		int cardinality;
+		
+		try {
+			cardinality = generateCardinality(cardinalityExpression.getCardinality());
+		} catch (UninstantiatedCardinalityException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		OWLObjectPropertyExpression objPropExp =  (OWLObjectPropertyExpression) generate(cardinalityExpression.getProperty());
+		OWLClassExpression classExp =  (OWLClassExpression) generate((ClsExpStr) cardinalityExpression.getExpression()).get(0);			
+		
+		return new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );
+	}
+	
+	
+	private OWLObjectExactCardinality generateObjExactCardinality(CardExpGen cardinalityExpression) {
+		
+		OWLObjectCardinalityRestriction genericCardinalityExpr = generateObjMaxCardinality(cardinalityExpression);	
+		return new OWLObjectExactCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
+	}
+	
+	
+	private OWLObjectMinCardinality generateObjMinCardinality(CardExpGen cardinalityExpression) {
+		
+		OWLObjectCardinalityRestriction genericCardinalityExpr = generateObjMaxCardinality(cardinalityExpression);	
+		return new OWLObjectMinCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
+	}
+	
+	
+	
+	// All types of generated expressions are unique, except for
+	// the intersection and union types, where multiple conclusions may be generated.
 	private List<OWLObject> generate(ClsExpStr conclusionExp) {
 
-		List<OWLObject> expressions = new ArrayList<OWLObject>();
-		OWLObject expression = null;
-
+		List<OWLObject> generatedExpressions = new ArrayList<OWLObject>();
+		OWLObject generatedExpression = null;
 
 		if (conclusionExp.getExpressionType() == null) {
-			expression = currentInstantiation.getVariableInstantiation().get(((AtomicCls) conclusionExp).getPlaceholder());
-			expressions.add(expression);
+			generatedExpression = currentInstantiation.getVariableInstantiation().get(((AtomicCls) conclusionExp).getPlaceholder());
+			generatedExpressions.add(generatedExpression);
+
 		} else {
 
 			ClassExpressionType classExpType = conclusionExp.getExpressionType();
 
-			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
-
-				ExistsOrForAll specialisedPattern = (ExistsOrForAll) conclusionExp;
-
-				OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate(specialisedPattern.getProperty());
-				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression()).get(0);			
-
-				if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ) {
-					expression =  new OWLObjectSomeValuesFromImpl(objPropExp, classExp);
-				} else {
-					expression =  new OWLObjectAllValuesFromImpl(objPropExp, classExp);			
-				}
-				expressions.add(expression);
-
-
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY) ||
-					classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
-					classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
-
-				CardExpGen specialisedPattern = (CardExpGen) conclusionExp;
-
-				int cardinality = generateCardinality(specialisedPattern.getCardinality());
-				OWLObjectPropertyExpression objPropExp = (OWLObjectPropertyExpression) generate(specialisedPattern.getProperty());
-				OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) specialisedPattern.getExpression()).get(0);			
-
-				if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
-					expression =  new OWLObjectMinCardinalityImpl(objPropExp, cardinality, classExp );				
-				} else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
-					expression =  new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );				
-				} else {
-					expression =  new OWLObjectExactCardinalityImpl(objPropExp, cardinality, classExp );				
-				}
-				expressions.add(expression);
-
-
+			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM)) {
+				generatedExpression = generateObjSomeValuesFrom((ExistsOrForAll) conclusionExp);
+							
+			} else if(classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
+				generatedExpression = generateObjAllValuesFrom((ExistsOrForAll) conclusionExp);
+				
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
+				generatedExpression = generateObjMinCardinality((CardExpGen) conclusionExp);
+				
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
+				generatedExpression = generateObjExactCardinality((CardExpGen) conclusionExp);
+				
+			}else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
+				generatedExpression = generateObjMaxCardinality((CardExpGen) conclusionExp);
+				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF) ||
 					classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
 
@@ -951,18 +1069,22 @@ public class RuleString {
 
 					if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
 						OWLObjectUnionOfImpl union = new OWLObjectUnionOfImpl(group);
-						expressions.add(union);			
+						generatedExpressions.add(union);			
 
 					} else {
 						OWLObjectIntersectionOfImpl intersection = new OWLObjectIntersectionOfImpl(group);
-						expressions.add(intersection);
+						generatedExpressions.add(intersection);
 					}
 
 				}
 			} 
 		}
+		
+		if (generatedExpression != null) {
+			generatedExpressions.add(generatedExpression);
+		}
 
-		return expressions;
+		return generatedExpressions;
 	}
 
 
@@ -970,13 +1092,13 @@ public class RuleString {
 		return currentInstantiation.getVariableInstantiation().get(conclusionExp.getAtomic());
 	}
 	
-	private int generateCardinality(String pattern) {
+	private int generateCardinality(String pattern) throws UninstantiatedCardinalityException {
 		if (currentInstantiation.getCardinalityInstantiation().containsKey(pattern)) {
 			return currentInstantiation.getCardinalityInstantiation().get(pattern);
 		} else {
 			
 			// Need to decide on how to generate non-defined cardinalities
-			return -1;
+			throw new UninstantiatedCardinalityException();
 		}
 	}
 
