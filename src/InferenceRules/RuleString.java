@@ -58,6 +58,8 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.TemplateDataProperty;
+import OWLExpressionTemplates.TemplateDataRange;
 import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -304,7 +306,66 @@ public class RuleString {
 	}
 
 
+	private boolean matchObjectPropertyDomain(OWLObjectPropertyDomainAxiom objPropDomAxiom, TemplateObjectProperty property, AtomicCls domain) {
 
+		return match(objPropDomAxiom.getDomain(), domain) &&
+				matchPrimitive(objPropDomAxiom.getProperty(), property);
+	}
+	
+	
+	private boolean matchObjectPropertyRange(OWLObjectPropertyRangeAxiom objRngDomAxiom, TemplateObjectProperty property, AtomicCls range) {
+
+		return match(objRngDomAxiom.getRange(), range) &&
+				matchPrimitive(objRngDomAxiom.getProperty(), property);
+	}
+	
+	private boolean matchDataPropertyRange(OWLDataPropertyRangeAxiom dataRngDomAxiom, TemplateDataProperty property, TemplateDataRange range) {
+
+		return matchPrimitive(dataRngDomAxiom.getRange(), range) &&
+				matchPrimitive(dataRngDomAxiom.getProperty(), property);
+	}
+	
+	
+	private boolean matchDataPropertyDomain(OWLDataPropertyDomainAxiom dataPropDomAxiom, TemplateDataProperty property, AtomicCls range) {
+
+		return match(dataPropDomAxiom.getDomain(), range) &&
+				matchPrimitive(dataPropDomAxiom.getProperty(), property);
+	}
+
+	
+	// Here we assume that in all 4 cases (data domain, data range, object domain and object range) that both
+	// variables are primitive.
+	private boolean matchDataOrObjectDomainOrRange(OWLAxiom axiom, OWLAxiomStr pattern) {
+
+		List<GenericExpStr> patternExpressions = pattern.getExpressions();
+
+		if (patternExpressions.size() != 2) {
+			return false; 
+		}
+		
+		if (patternExpressions.get(1) instanceof AtomicCls) {
+			AtomicCls cls = (AtomicCls) patternExpressions.get(1);
+			
+			if (axiom instanceof OWLObjectPropertyDomainAxiom && patternExpressions.get(0) instanceof TemplateObjectProperty) {
+				return matchObjectPropertyDomain((OWLObjectPropertyDomainAxiom) axiom, (TemplateObjectProperty) patternExpressions.get(0), cls);						
+			
+			} else if (axiom instanceof OWLObjectPropertyRangeAxiom && patternExpressions.get(0) instanceof TemplateObjectProperty) {
+				matchObjectPropertyRange((OWLObjectPropertyRangeAxiom) axiom, (TemplateObjectProperty) patternExpressions.get(0), cls);
+
+			} else if (axiom instanceof OWLDataPropertyDomainAxiom && patternExpressions.get(0) instanceof TemplateDataProperty) {
+				matchDataPropertyDomain((OWLDataPropertyDomainAxiom) axiom, (TemplateDataProperty) patternExpressions.get(0), cls);				
+			}
+	
+		} else if (axiom instanceof OWLDataPropertyRangeAxiom && patternExpressions.get(1) instanceof TemplateDataRange &&
+				   patternExpressions.get(0) instanceof TemplateDataProperty) {
+			
+			return matchDataPropertyRange((OWLDataPropertyRangeAxiom) axiom, (TemplateDataProperty) patternExpressions.get(0), (TemplateDataRange) patternExpressions.get(1));
+		}	
+		return false;
+	}
+	
+
+	
 	private boolean matchTBoxAxiom(OWLAxiom tBoxAxiom, OWLAxiomStr pattern) {
 
 		if (tBoxAxiom.isOfType(AxiomType.SUBCLASS_OF)) {
@@ -313,30 +374,6 @@ public class RuleString {
 
 			return match(subClsAxiom.getSubClass(), (ClsExpStr) pattern.getExpressions().get(0))
 					&& match(subClsAxiom.getSuperClass(), (ClsExpStr) pattern.getExpressions().get(1));
-
-		} else if (tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ) {
-
-			OWLObjectPropertyRangeAxiom objPropRngAxiom = (OWLObjectPropertyRangeAxiom) tBoxAxiom;
-			return matchPrimitive(objPropRngAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					match(objPropRngAxiom.getRange(), (ClsExpStr) pattern.getExpressions().get(1));
-
-		} else if (tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
-
-			OWLObjectPropertyDomainAxiom objPropDomAxiom = (OWLObjectPropertyDomainAxiom) tBoxAxiom;
-			return matchPrimitive(objPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					match(objPropDomAxiom.getDomain(), (ClsExpStr) pattern.getExpressions().get(1));
-
-		} else if (tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN)) {
-
-			OWLDataPropertyDomainAxiom dataPropDomAxiom = (OWLDataPropertyDomainAxiom) tBoxAxiom;
-			return matchPrimitive(dataPropDomAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					match(dataPropDomAxiom.getDomain(), (ClsExpStr) pattern.getExpressions().get(1));
-
-		} else if (tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
-
-			OWLDataPropertyRangeAxiom dataPropRngAxiom = (OWLDataPropertyRangeAxiom) tBoxAxiom;
-			return matchPrimitive(dataPropRngAxiom.getProperty(), (TemplatePrimitive) pattern.getExpressions().get(0)) &&
-					matchPrimitive(dataPropRngAxiom.getRange(), (TemplatePrimitive) pattern.getExpressions().get(1));
 
 		} else if (tBoxAxiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 
@@ -348,9 +385,14 @@ public class RuleString {
 			OWLDisjointClassesAxiom disjClassesAxiom = (OWLDisjointClassesAxiom) tBoxAxiom;
 			return matchGroupAxiom(disjClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
 
-		} else {
-			return false;
+		} else if (tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_RANGE) ||
+				   tBoxAxiom.isOfType(AxiomType.OBJECT_PROPERTY_DOMAIN) ||
+				   tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_DOMAIN) ||
+				   tBoxAxiom.isOfType(AxiomType.DATA_PROPERTY_RANGE)) {
+
+			return matchDataOrObjectDomainOrRange(tBoxAxiom, pattern);		
 		}
+		return false;		
 	}
 
 
@@ -582,6 +624,10 @@ public class RuleString {
 		}
 		return false;
 	}
+	
+	
+	
+
 
 
 
