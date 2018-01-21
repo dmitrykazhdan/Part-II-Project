@@ -40,13 +40,7 @@ public class ExistsOrForAll extends ClsExpStr {
 				new TemplateDataProperty(property), new TemplateDataRange(dataRange));
 	}
 	
-	public static ExistsOrForAll createDataAllValFrom(String property, String dataRange) {
-		return new ExistsOrForAll(ClassExpressionType.DATA_ALL_VALUES_FROM, 
-				new TemplateDataProperty(property), new TemplateDataRange(dataRange));
-	}
-	
 
-	
 	// Object expressions:
 	public static ExistsOrForAll createObjSomeValFrom(String property, String cls) {
 		return new ExistsOrForAll(ClassExpressionType.OBJECT_SOME_VALUES_FROM, 

@@ -535,7 +535,7 @@ public class RuleString {
 	}
 
 
-
+	// Important assumption:
 	// Currently all class expression pattern matching is assumed to be producing at most one instantiation.
 	private boolean match(OWLClassExpression classExp, ClsExpStr pattern) {
 
@@ -548,57 +548,22 @@ public class RuleString {
 		if (classExpType.equals(pattern.getExpressionType())) {
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF) || 
-					classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
+				classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
 
 				OWLNaryBooleanClassExpression groupExpression = (OWLNaryBooleanClassExpression) classExp;			
 				return matchFullyInstantiatedGroup(groupExpression.getOperands(), ((InterUnion) pattern).getExpressionGroup());
 
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_COMPLEMENT_OF)) {
+				return matchComplementClassExpression((OWLObjectComplementOf) classExp, pattern);
 
-				OWLObjectComplementOf compObj = (OWLObjectComplementOf) classExp;
-				return match(compObj.getOperand(), ((ComplementCls) pattern).getSubExpression());
-
-
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
-
-				OWLQuantifiedObjectRestriction objSomeValFrom = (OWLQuantifiedObjectRestriction) classExp;
-				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
-
-				return matchPrimitive(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
-						&& match(objSomeValFrom.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
-
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+			}  else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
 				
 				OWLObjectHasValue objSomeValFrom = (OWLObjectHasValue) classExp;
 				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
 
 				return matchPrimitive(objSomeValFrom.getProperty(), specialisedPattern.getProperty())
 						&& matchPrimitive(objSomeValFrom.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
-							
-			
-			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
-					classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
-					classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
-
-				OWLObjectCardinalityRestriction objCardRest = (OWLObjectCardinalityRestriction) classExp;				
-				CardExpGen specialisedPattern = (CardExpGen) pattern;
-
-				return  matchCardinality(objCardRest.getCardinality(), specialisedPattern.getCardinality())
-						&& matchPrimitive(objCardRest.getProperty(), specialisedPattern.getProperty())
-						&& match(objCardRest.getFiller(), (ClsExpStr) specialisedPattern.getExpression());
-
-
-			}  else if (classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM) ||
-					classExpType.equals(ClassExpressionType.DATA_ALL_VALUES_FROM)) {
-
-				OWLQuantifiedDataRestriction quantDataRest = (OWLQuantifiedDataRestriction) classExp;
-				ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
-
-				return matchPrimitive(quantDataRest.getProperty(), specialisedPattern.getProperty())
-						&& matchPrimitive(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
-
-
+									
 			}  else if (classExpType.equals(ClassExpressionType.DATA_HAS_VALUE))  {
 				
 				OWLDataHasValue quantDataRest = (OWLDataHasValue) classExp;
@@ -606,31 +571,139 @@ public class RuleString {
 
 				return matchPrimitive(quantDataRest.getProperty(), specialisedPattern.getProperty())
 						&& matchPrimitive(quantDataRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
-				
-				
-				
-			}  else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY) ||
-			
-					classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
-					classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY)) {
+								
+			} else if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM) ||
+					   classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM) ||
+					   classExpType.equals(ClassExpressionType.DATA_SOME_VALUES_FROM)) {
 
-				OWLDataCardinalityRestriction dataCardRest = (OWLDataCardinalityRestriction) classExp;				
-				CardExpGen specialisedPattern = (CardExpGen) pattern;
+				return matchQuantifiedClassExpression(classExp, pattern);
+				
+			} else if (classExpType.equals(ClassExpressionType.DATA_MIN_CARDINALITY) ||			
+					    classExpType.equals(ClassExpressionType.DATA_MAX_CARDINALITY) ||
+					    classExpType.equals(ClassExpressionType.DATA_EXACT_CARDINALITY) ||
+					    classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)  ||
+						classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY) ||
+						classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
 
-				return matchCardinality(dataCardRest.getCardinality(), specialisedPattern.getCardinality())
-						&& matchPrimitive(dataCardRest.getProperty(), specialisedPattern.getProperty())
-						&& matchPrimitive(dataCardRest.getFiller(), (TemplatePrimitive) specialisedPattern.getExpression());
+				return matchCardinalityExpression(classExp, pattern);
 			} 
+		}
+		return false;
+	}
+	
+	// expressions can be: 
+	// - one anon group, 
+	// - group expression with 1 instantiated class and one uninstantiated anon group, 
+	// - 2 instantiated classes, 
+	// - primitive class 
+	
+	
+	
+	// object intersection of: anon group, group expression with 1 instantiated class and
+	// one uninstantiated anon group, 2 instantiated classes
+	
+	// object union of: anon group, 2 instantiated classes, 
+
+	
+
+
+
+	// object some values from can be: primitive class, anon. group,  data range some values from,
+	// group expression with 1 instantiated class and one uninstantiated anon group, one anon group, 
+	//  2 instantiated classes, object some values from, individual
+	
+	// data some values from can be: primitive data range, literal, 
+
+	
+	// Match object/data has value expression.
+	private boolean matchHasValueExpression(OWLClassExpression classExp, ClsExpStr pattern) {
+		
+		return false;
+	}
+	
+	
+	// Match object/data some/all values from expressions.
+	private boolean matchQuantifiedClassExpression(OWLClassExpression classExp, ClsExpStr pattern) {
+		
+		if (!(pattern instanceof ExistsOrForAll)) {
+			return false;
+		}
+		
+		ExistsOrForAll specialisedPattern = (ExistsOrForAll) pattern;
+		
+		if (classExp instanceof OWLQuantifiedObjectRestriction && specialisedPattern.getExpression() instanceof ClsExpStr)  {
+			
+			OWLQuantifiedObjectRestriction quantObjRestriction = (OWLQuantifiedObjectRestriction) classExp;
+			ClsExpStr patternFiller = (ClsExpStr) specialisedPattern.getExpression();
+			
+			return matchPrimitive(quantObjRestriction.getProperty(), specialisedPattern.getProperty()) && 
+				   match(quantObjRestriction.getFiller(), patternFiller);
+	
+			
+		} else if (classExp instanceof OWLQuantifiedDataRestriction && specialisedPattern.getExpression() instanceof TemplateDataRange)  {
+			
+			OWLQuantifiedDataRestriction quantDataRestriction = (OWLQuantifiedDataRestriction) classExp;
+			TemplateDataRange dataRangePrimitive = (TemplateDataRange) specialisedPattern.getExpression();
+
+			return matchPrimitive(quantDataRestriction.getProperty(), specialisedPattern.getProperty()) && 
+				   matchPrimitive(quantDataRestriction.getFiller(), dataRangePrimitive);
 		}
 		return false;
 	}
 	
 	
 	
+	
+	
 
+	
+	
+	// Match object and data min/max/exact cardinality expressions.
+	private boolean matchCardinalityExpression(OWLClassExpression classExp, ClsExpStr pattern) {
+		
+		if (!(pattern instanceof CardExpGen)) {
+			return false;
+		}
+				
+		CardExpGen specialisedPattern = (CardExpGen) pattern;
 
+		// Currently we assume all data cardinality expressions contain a primitive data range.
+		if (classExp instanceof OWLDataCardinalityRestriction && specialisedPattern.getExpression() instanceof TemplateDataRange) {
 
+			OWLDataCardinalityRestriction cardRestExpression = (OWLDataCardinalityRestriction) classExp;							
+			TemplateDataRange dataRangePrimitive = (TemplateDataRange) specialisedPattern.getExpression();
+			
+			return matchCardinality(cardRestExpression.getCardinality(), specialisedPattern.getCardinality()) && 
+				   matchPrimitive(cardRestExpression.getProperty(), specialisedPattern.getProperty()) &&
+				   matchPrimitive(cardRestExpression.getFiller(), dataRangePrimitive);
 
+			
+		// An object cardinality expression can contain more complex expressions.
+		} else if (classExp instanceof OWLObjectCardinalityRestriction && specialisedPattern.getExpression() instanceof ClsExpStr) {
+			
+			OWLObjectCardinalityRestriction cardRestExpression = (OWLObjectCardinalityRestriction) classExp;
+			ClsExpStr innerClassExpression = (ClsExpStr) specialisedPattern.getExpression();
+			
+			return  matchCardinality(cardRestExpression.getCardinality(), specialisedPattern.getCardinality()) && 
+					matchPrimitive(cardRestExpression.getProperty(), specialisedPattern.getProperty()) && 
+					match(cardRestExpression.getFiller(), innerClassExpression);
+		}
+		return false;
+	}
+
+	
+	private boolean matchComplementClassExpression(OWLObjectComplementOf complementClass, ClsExpStr pattern) {
+
+		if (!(pattern instanceof ComplementCls)) {
+			return false;
+		}
+		
+		ComplementCls complementClsPattern = (ComplementCls) pattern;
+		
+		return match(complementClass.getOperand(), complementClsPattern.getSubExpression());
+	}
+	
+	
 	private boolean matchPrimitive(OWLObject entity, TemplatePrimitive pattern) {
 		return addToMap(entity, pattern.getAtomic());
 	}
