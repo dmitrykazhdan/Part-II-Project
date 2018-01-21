@@ -34,6 +34,12 @@ import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplateDataProperty;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
+import RuleRestrictions.AbsCardinalityRestriction;
+import RuleRestrictions.CardinalitySign;
+import RuleRestrictions.DisjointDatatypesRestriction;
+import RuleRestrictions.RelCardinalityRestriction;
+import RuleRestrictions.RuleRestriction;
+import RuleRestrictions.SubSetRestriction;
 
 public class GenerateRules {
 

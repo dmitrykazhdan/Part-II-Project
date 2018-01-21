@@ -5,15 +5,7 @@
 - Implement generating rules.
 
 
-
 - Fixup excessive type-casting in pattern matching.
-
-- Fixup "GroupExpression" pattern for equivalent classes and for disjoint classes.
-
-- Add restrictions to rules.
-
-- Implement disjoint data range checking.
-
 
 
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.
@@ -25,9 +17,6 @@ when computing laconic justifications.
 
 
 
-- Potentially: add restrictions between free variables, contained in the ruleString constructor.
-
-- Throw exception if class expression is non-deterministic.
 
 - Have a "Matcher" interface, with "RuleString" and "Exception" implementing it.
 

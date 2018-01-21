@@ -1,4 +1,4 @@
-package InferenceRules;
+package RuleRestrictions;
 
 public class AbsCardinalityRestriction extends CardinalityRestriction {
 

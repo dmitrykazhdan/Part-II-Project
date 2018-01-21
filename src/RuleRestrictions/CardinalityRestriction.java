@@ -1,4 +1,4 @@
-package InferenceRules;
+package RuleRestrictions;
 
 // Abstract cardinality restriction class.
 public abstract class CardinalityRestriction implements RuleRestriction {

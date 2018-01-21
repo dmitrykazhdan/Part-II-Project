@@ -1,4 +1,4 @@
-package InferenceRules;
+package RuleRestrictions;
 
 public interface RuleRestriction {
 

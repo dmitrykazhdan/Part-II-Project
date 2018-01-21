@@ -1,4 +1,4 @@
-package InferenceRules;
+package RuleRestrictions;
 
 import OWLExpressionTemplates.InterUnion;
 

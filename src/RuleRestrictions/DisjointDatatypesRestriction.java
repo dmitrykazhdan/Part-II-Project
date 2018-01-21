@@ -1,4 +1,4 @@
-package InferenceRules;
+package RuleRestrictions;
 
 // This class holds identifiers of either datatypes, or of literals.
 public class DisjointDatatypesRestriction implements RuleRestriction {
