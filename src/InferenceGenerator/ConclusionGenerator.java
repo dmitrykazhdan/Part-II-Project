@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
@@ -18,9 +19,14 @@ import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 
 import InferenceRules.Instantiation;
 import InferenceRules.PermutationGenerator;
@@ -54,7 +60,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 
 	
 	private OWLAxiomStr conclusionStr;
-	
 	private Instantiation currentInstantiation;
 	private List<Instantiation> allInstantiations;
 	
@@ -81,71 +86,140 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		// Iterate over all possible instantiations and attempt to generate a conclusion from each one.
 		for (Instantiation instantiation : allInstantiations) {
 			currentInstantiation = instantiation;
-			conclusions.addAll(generateConclusionsFromCurrentInstantiation());				
+			conclusions.addAll(generateConclusionFromCurrentInstantiation());	
 		}
-
 		return conclusions;
 	}
 
 
 	
 	
-	private OWLAxiom generateSubObjectPropertyAxiom() {
+	private OWLSubObjectPropertyOfAxiom generateSubObjectPropertyAxiom() {
 		
+		OWLObject subProperty = generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
+		OWLObject superProperty = generate((TemplatePrimitive) conclusionStr.getExpressions().get(1));
 		
+		if (subProperty instanceof OWLObjectProperty && superProperty instanceof OWLObjectProperty) {
+			return new OWLSubObjectPropertyOfAxiomImpl((OWLObjectProperty) subProperty, (OWLObjectProperty) superProperty, new ArrayList<OWLAnnotation>());
+		}
 		return null;
 	}
 	
+	
+	// Important assumption: given the way the rules are structured, we can assume that
+	// the subclass and superclass instantiations are independent, hence can simply return all possible
+	// pairings between the two.
+	private List<OWLSubClassOfAxiom> generateSubClassOfAxioms() {
+		
+		List<OWLSubClassOfAxiom> subClassAxioms = new ArrayList<OWLSubClassOfAxiom>();
+		List<OWLObject> subClsList = generate((ClsExpStr) conclusionStr.getExpressions().get(0));
+		List<OWLObject> superClsList = generate((ClsExpStr) conclusionStr.getExpressions().get(1));
+		
+		for (OWLObject subCls : subClsList) {
+			for (OWLObject  superCls : superClsList) {
+				
+				if (subCls instanceof OWLClassExpression && superCls instanceof OWLClassExpression) {		
+					subClassAxioms.add(new OWLSubClassOfAxiomImpl((OWLClassExpression) subCls, (OWLClassExpression) superCls, new ArrayList<OWLAnnotation>()));
+				} else {
+					return new ArrayList<OWLSubClassOfAxiom>();
+				}			
+			}
+		}
+		return subClassAxioms;
+	}
+	
+	
+	private OWLTransitiveObjectPropertyAxiom generateTransitiveProperty() {
+		OWLObject transProperty = generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
+		
+		if (transProperty instanceof OWLObjectProperty) {
+			return new OWLTransitiveObjectPropertyAxiomImpl((OWLObjectProperty) transProperty, new ArrayList<OWLAnnotation>());
+		}
+		return null;
+	}
+	
+
 	// Given the current instantiation, generate all possible conclusions from it.
 	// Assumption: given the way the rules are structured, there is no ambiguity in how the axioms
 	// themselves are generated.
-	private List<OWLAxiom> generateConclusionsFromCurrentInstantiation() {
+	private List<OWLAxiom> generateConclusionFromCurrentInstantiation() {
 
-		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		OWLAxiom conclusionAxiom = null;
+		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 		AxiomType<?>  conclusionType = conclusionStr.getConstructor();
 
 		if (conclusionType.equals(AxiomType.SUBCLASS_OF)) {
-			OWLClassExpression subCls = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(0)).get(0);
-			OWLClassExpression superCls = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(1)).get(0);
-			conclusionAxiom = new OWLSubClassOfAxiomImpl(subCls, superCls, new ArrayList<OWLAnnotation>());
-			conclusions.add(conclusionAxiom);
+			conclusions.addAll(generateSubClassOfAxioms());	
 
 		} else if (conclusionType.equals(AxiomType.SUB_OBJECT_PROPERTY)) {
-			OWLObjectProperty subProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
-			OWLObjectProperty superProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(1));
-			conclusionAxiom = new OWLSubObjectPropertyOfAxiomImpl(subProperty, superProperty, new ArrayList<OWLAnnotation>());
-			conclusions.add(conclusionAxiom);
-
+			conclusionAxiom = generateSubObjectPropertyAxiom();
+			
 		} else if (conclusionType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)) {
-
-			OWLObjectProperty transProperty = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
-			conclusionAxiom = new OWLTransitiveObjectPropertyAxiomImpl(transProperty, new ArrayList<OWLAnnotation>());
-			conclusions.add(conclusionAxiom);
+			conclusionAxiom = generateTransitiveProperty();
 
 		} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_DOMAIN)) {
-
-			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
-			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(1)).get(0);
-			conclusionAxiom = new OWLObjectPropertyDomainAxiomImpl(property, classExp, new HashSet<OWLAnnotation>());
-			conclusions.add(conclusionAxiom);
+			conclusions.addAll(generateObjectPropertyDomainAxioms());
 
 		} else if (conclusionType.equals(AxiomType.OBJECT_PROPERTY_RANGE)) {
-
-			OWLObjectProperty property = (OWLObjectProperty) generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
-			OWLClassExpression classExp = (OWLClassExpression) generate((ClsExpStr) conclusionStr.getExpressions().get(1)).get(0);
-			conclusionAxiom = new OWLObjectPropertyRangeAxiomImpl(property, classExp, new HashSet<OWLAnnotation>());
-			conclusions.add(conclusionAxiom);
-
-
-		// Assumption: all free variables in the template have been instantiated
+			conclusions.addAll(generateObjectPropertyRangeAxioms());
+		
 		} else if (conclusionType.equals(AxiomType.DISJOINT_CLASSES)) {
-
-			conclusionAxiom = new OWLDisjointClassesAxiomImpl(generateGroup(conclusionStr.getExpressionGroup()), new HashSet<OWLAnnotation>());			
+			conclusionAxiom =  generateDisjointClassesAxiom();
+		}
+		
+		if (conclusionAxiom != null) {
 			conclusions.add(conclusionAxiom);
 		}
-
 		return 	conclusions;
+	}
+	
+	
+	private List<OWLObjectPropertyDomainAxiom> generateObjectPropertyDomainAxioms() {
+		
+		List<OWLObjectPropertyDomainAxiom> objectPropertyDomainAxioms = new ArrayList<OWLObjectPropertyDomainAxiom>();
+		OWLObject property = generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
+		List<OWLObject> fillerExpressions = generate((ClsExpStr) conclusionStr.getExpressions().get(1));
+		
+		if (!(property instanceof OWLObjectProperty)) {
+			return objectPropertyDomainAxioms;
+		}
+		
+		for (OWLObject filler : fillerExpressions) {
+			if (filler instanceof OWLClassExpression) {
+				objectPropertyDomainAxioms.add(new OWLObjectPropertyDomainAxiomImpl((OWLObjectProperty) property, (OWLClassExpression) filler, new HashSet<OWLAnnotation>()));
+			} else {
+				return new ArrayList<OWLObjectPropertyDomainAxiom>();
+			}
+		}		
+		return objectPropertyDomainAxioms;
+	}
+	
+	
+	
+	private List<OWLObjectPropertyRangeAxiom> generateObjectPropertyRangeAxioms() {
+		
+		List<OWLObjectPropertyRangeAxiom> objectPropertyRangeAxioms = new ArrayList<OWLObjectPropertyRangeAxiom>();
+		OWLObject property = generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
+		List<OWLObject> fillerExpressions = generate((ClsExpStr) conclusionStr.getExpressions().get(1));
+		
+		if (!(property instanceof OWLObjectProperty)) {
+			return objectPropertyRangeAxioms;
+		}
+		
+		for (OWLObject filler : fillerExpressions) {
+			if (filler instanceof OWLClassExpression) {
+				objectPropertyRangeAxioms.add(new OWLObjectPropertyRangeAxiomImpl((OWLObjectProperty) property, (OWLClassExpression) filler, new HashSet<OWLAnnotation>()));
+			} else {
+				return new ArrayList<OWLObjectPropertyRangeAxiom>();
+			}
+		}		
+		return objectPropertyRangeAxioms;
+	}
+	
+	
+	// Assumption: all free variables in the template have been instantiated.
+	private OWLDisjointClassesAxiom generateDisjointClassesAxiom() {
+		return new OWLDisjointClassesAxiomImpl(generateGroup(conclusionStr.getExpressionGroup()), new HashSet<OWLAnnotation>());			
 	}
 
 	private boolean checkExpressionIsObjSomeOrAllValuesFrom(ExistsOrForAll existsOrForAll) {
@@ -381,12 +455,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	
 	
 
-
-
-
-	
-	
-	
 	// All types of generated expressions are unique, except for
 	// the intersection and union types, where multiple conclusions may be generated.
 	private List<OWLObject> generate(ClsExpStr conclusionExp) {

@@ -1,3 +1,5 @@
+- Remove repeated code. Cleanup somehow.
+
 - Implement restriction checking.
 	
 - Implement exception rules.
