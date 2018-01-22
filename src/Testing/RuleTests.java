@@ -2,6 +2,8 @@ package Testing;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.junit.Test;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -150,11 +154,15 @@ public class RuleTests {
 							
 				List<OWLAxiom> generatedConclusions = rule.generateConclusions(premises);		
 				
-				// Add checking for multiple conclusions as well
-				assertTrue(generatedConclusions.size() == 1);
-												
-				OWLAxiom conclusion = loadConclusion(ruleTestFolderName + "Conclusion.xml");
-				assertTrue(conclusion.equalsIgnoreAnnotations(generatedConclusions.get(0)));						
+				File testFolderDir = new File(ruleTestFolderName);
+				File[] conclusionFiles = testFolderDir.listFiles((FileFilter) new PrefixFileFilter("Conclusion", IOCase.INSENSITIVE));
+				List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
+				
+				for (File file : conclusionFiles) {
+					conclusions.add(loadConclusion(file.getAbsolutePath()));
+				}
+								
+				assertTrue(conclusions.equals(generatedConclusions));						
 			}
 		}	
 	}
