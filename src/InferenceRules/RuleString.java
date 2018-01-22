@@ -1051,64 +1051,119 @@ public class RuleString {
 	}
 	
 	
+	// Given the structure of the rules, here we assume that
+	// we are given a group that contains 0 or more named classes, all of which
+	// must be instantiated, and at most 1 anonymous group.
+	// If the group is uninstantiated, then we attempt to generate it based on subset restrictions.
+	// If this is impossible, then we return nothing.
 	private Set<Set<OWLClassExpression>> generateGroup(InterUnion interUnion) {
 		
-		
-		// union and intersection in conclusion can be:
-		/*
-		 1) Anonymous group
-		 2) Fully instantiated named group
-		 */
-		
-		Set<Set<OWLClassExpression>> possibleSets = new HashSet<Set<OWLClassExpression>>();
+		Set<Set<OWLClassExpression>> allGroups = new HashSet<Set<OWLClassExpression>>();
+		Set<OWLClassExpression> generatedNamedExpressions = generateNamedExpressions(interUnion);
 
-		Set<OWLClassExpression> expressionSet = new HashSet<OWLClassExpression>();
+		if (generatedNamedExpressions == null) {
+			return allGroups;
+		}
+		
+		if (interUnion.getExpressionGroup().hasAnonymousExpressions()) {
+			allGroups = generateAnonymousExpression(interUnion, generatedNamedExpressions);		
+		} else {
+			allGroups.add(generatedNamedExpressions);
+		}	
+		return allGroups;
+	}
+	
+
+	private Set<Set<OWLClassExpression>> generateAnonymousExpression(InterUnion interUnion, Set<OWLClassExpression> generatedNamedExpressions) {
+
+		ExpressionGroup expGroup = interUnion.getExpressionGroup();
+		String anonGroupName = expGroup.getAnonymousGroupName();
+		Set<Set<OWLClassExpression>> possibleInstantiations = new HashSet<Set<OWLClassExpression>>();
+			
+		// If the group is instantiated, retrieve its value.
+		if (currentInstantiation.getGroupInstantiation().containsKey(anonGroupName)) {			
+			possibleInstantiations.add(currentInstantiation.getGroupInstantiation().get(anonGroupName));			
+		
+		// If it is not, attempt to generate it using subset restrictions.
+		} else {
+
+			Set<OWLClassExpression> superSet = findInstantiatedSuperset(expGroup);
+			
+			// We expect there to be exactly one superset, so we return a null otherwise.
+			if (superSet == null) {
+				return null;
+			}
+			
+			PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
+			possibleInstantiations = permGen.generateStrictNonEmptyPowerSet(superSet);
+			
+			// Add the named expression instantiations to every instantiation.
+			for (Set<OWLClassExpression> instantiation : possibleInstantiations) {
+				instantiation.addAll(generatedNamedExpressions);
+			}		
+		}
+		return possibleInstantiations;
+	}
+
+	
+
+	// Given an anonymous group, attempt to find a subset restriction in which it is a subset,
+	// and it has an instantiated superset.
+	// Assumption: assume there is at most one such restriction.
+	private Set<OWLClassExpression> findInstantiatedSuperset(ExpressionGroup expGroup) {
+		
+		String anonGroupName = expGroup.getAnonymousGroupName();
+		String superSetName = "";
+		Set<OWLClassExpression> superSet = null;
+		
+		for (RuleRestriction restriction : ruleRestrictions) {
+			if (restriction instanceof SubSetRestriction) {
+
+				SubSetRestriction subSetRest = (SubSetRestriction) restriction;
+
+				if (subSetRest.getSubClass().equals(anonGroupName)) {
+
+					superSetName = subSetRest.getSuperClass();
+					
+					if (currentInstantiation.getGroupInstantiation().containsKey(superSetName)) {
+						
+						// We expect there to be only one superset. Hence if we find more than one,
+						// we return a null value to signify an error.
+						if (superSet != null) {
+							return null;
+						} else {
+							superSet = currentInstantiation.getGroupInstantiation().get(superSetName);
+						}
+					}
+				}					
+			}						
+		}
+		return superSet;
+	}
+	
+	
+	
+	// We assume that every named expression is generated uniquely.
+	private Set<OWLClassExpression> generateNamedExpressions(InterUnion interUnion) {
+
 		ExpressionGroup expGroup = interUnion.getExpressionGroup();
 		ClsExpStr[] namedExpressions = expGroup.getNamedExpressions();
-		boolean noNamedExpressions = (namedExpressions == null) || (namedExpressions.length == 0);
-
-
-		// Assumption: for now, either the group is fully named, or fully anonymous.
-		if (expGroup.hasAnonymousExpressions() && noNamedExpressions)  {
-
-			String anonGroupName = expGroup.getAnonymousGroupName();
-			String superSetName = "";
-			boolean groupFound = false;
-
-			for (RuleRestriction restriction : ruleRestrictions) {
-				if (restriction instanceof SubSetRestriction) {
-					SubSetRestriction subSetRest = (SubSetRestriction) restriction;
-
-					if (subSetRest.getSubClass().equals(anonGroupName)) {
-						superSetName = subSetRest.getSuperClass();
-						groupFound = true;
-						break;
-					}					
-				}						
-			}
-
-			if (groupFound) {
-				Set<OWLClassExpression> superSet = currentInstantiation.getGroupInstantiation().get(superSetName);
-				PermutationGenerator<OWLClassExpression> permGen = new PermutationGenerator<OWLClassExpression>();
-
-				possibleSets = permGen.generatePowerSet(superSet);
-				Set<OWLClassExpression> emptySet = new HashSet<OWLClassExpression>();
-				possibleSets.remove(superSet);
-				possibleSets.remove(emptySet);
-			}
-
-		} else if (!expGroup.hasAnonymousExpressions() && !noNamedExpressions) {
-
-			for (ClsExpStr namedExpression : namedExpressions) {
-				expressionSet.add((OWLClassExpression) generate(namedExpression).get(0)); 
-			}
-
-			possibleSets.add(expressionSet);
-		}
-
+		Set<OWLClassExpression> generatedGroup = new HashSet<OWLClassExpression>();
 		
-		return null;
+		for (ClsExpStr namedExpression : namedExpressions) {
+			
+			List<OWLObject> generatedClasses = generate(namedExpression);
+			
+			if (generatedClasses.size() != 1 || !(generatedClasses.get(0) instanceof OWLClassExpression)) {
+				return null;
+			}
+			
+			OWLClassExpression generatedClassExpression = (OWLClassExpression) generatedClasses.get(0);
+			generatedGroup.add(generatedClassExpression);
+		}	
+		return generatedGroup;
 	}
+	
 	
 
 	private OWLObject generate(TemplatePrimitive conclusionExp) {
