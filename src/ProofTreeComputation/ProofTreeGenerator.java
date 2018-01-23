@@ -98,7 +98,7 @@ public class ProofTreeGenerator {
 		
 		// Compute all sets of laconic justifications from 		 		 
 		// the set of (potentially non-laconic) justification given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 64);
 		/* timeout if computation is taking too long */
 		
 		return laconicJustifications;
@@ -165,6 +165,7 @@ public class ProofTreeGenerator {
 					RuleString rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
 					if (rule == null) {							
+						System.out.println("Could not find rule for laconic axiom!");
 						return null;
 					} else {
 						ProofTree appliedTree = tree;

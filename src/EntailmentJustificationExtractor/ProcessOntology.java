@@ -69,7 +69,7 @@ public class ProcessOntology {
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
 
 				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> explanationSet = gen.getExplanations(entailment, 4);
+				Set<Explanation<OWLAxiom>> explanationSet = gen.getExplanations(entailment, 32);
 
 
 				// timeout when you are unable to generate a justification
@@ -131,8 +131,13 @@ public class ProcessOntology {
 		2) F <= X
 		*/
 		OWLAxiom conclusion = explanation.getEntailment();
+		Set<OWLAxiom> justification = explanation.getAxioms();
+	
 		
-		if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
+		if (justification.contains(conclusion.getAxiomWithoutAnnotations())) {
+			return true;
+			
+		} else if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
 			
 			OWLSubClassOfAxiom subClassOfAxiom = (OWLSubClassOfAxiom) conclusion;
 			
@@ -141,8 +146,7 @@ public class ProcessOntology {
 				
 				return true;
 			}			
-		}
-				
+		} 			
 		return false;
 	}
 }
