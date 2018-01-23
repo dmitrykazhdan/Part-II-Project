@@ -10,18 +10,14 @@
  
  <SubClassOf>
      
-    <Class IRI="urn:absolute:testingOntology#ClassX"/>
-
+        <Class IRI="urn:absolute:testingOntology#ClassX"/>
+     
     <ObjectIntersectionOf>
         <Class IRI="urn:absolute:testingOntology#ClassY"/>
         <Class IRI="urn:absolute:testingOntology#ClassY1"/>
         <Class IRI="urn:absolute:testingOntology#ClassY2"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY3"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY4"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY5"/>
-        
     </ObjectIntersectionOf>
-    
+
  </SubClassOf>
 
     <SubClassOf>

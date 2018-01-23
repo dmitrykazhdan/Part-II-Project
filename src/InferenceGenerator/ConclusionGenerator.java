@@ -239,41 +239,48 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
 		List<OWLObject> generatedExps = generate(expressionStr);
 		
-		// We assume there can be at most a single unique generated value.
-		if (generatedExps == null || !(generatedExps.size() == 1 && generatedExps.get(0) instanceof OWLClassExpression)) {
+		if (generatedExps == null) {
 			return false;
 		}
-
 		return true;
 	}
 	
 
 	
-	private OWLObjectSomeValuesFrom generateObjSomeValuesFrom(ExistsOrForAll existsOrForAll) {
-				
+	
+	private List<OWLObject> generateObjSomeOrAllValuesFrom(ExistsOrForAll existsOrForAll, boolean someValFrom) {
+		
 		if (!checkExpressionIsObjSomeOrAllValuesFrom(existsOrForAll)) {
 			return null;
 		}
 		
 		OWLObjectPropertyExpression generatedProperty = (OWLObjectPropertyExpression) generate(existsOrForAll.getProperty());
 		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
-		OWLClassExpression generatedClsExp = (OWLClassExpression) generate(expressionStr).get(0);
-
-		return new OWLObjectSomeValuesFromImpl(generatedProperty, generatedClsExp);
+		List<OWLObject> generatedClsExpressions =  generate(expressionStr);
+		List<OWLObject> quantifiedExpressions = new ArrayList<OWLObject>();
+		
+		for (OWLObject expression : generatedClsExpressions) {
+			if (!(expression instanceof OWLClassExpression)) {
+				return new ArrayList<OWLObject>();
+			} else {
+				
+				if (someValFrom) {
+					quantifiedExpressions.add(new OWLObjectSomeValuesFromImpl(generatedProperty, (OWLClassExpression) expression));
+				} else {
+					quantifiedExpressions.add(new OWLObjectAllValuesFromImpl(generatedProperty, (OWLClassExpression) expression));
+				}
+			}
+		}		
+		return quantifiedExpressions;
 	}
 	
 	
-	private OWLObjectAllValuesFrom generateObjAllValuesFrom(ExistsOrForAll existsOrForAll) {
-		
-		if (!checkExpressionIsObjSomeOrAllValuesFrom(existsOrForAll)) {
-			return null;
-		}
-		
-		OWLObjectPropertyExpression generatedProperty = (OWLObjectPropertyExpression) generate(existsOrForAll.getProperty());
-		ClsExpStr expressionStr = (ClsExpStr) existsOrForAll.getExpression();
-		OWLClassExpression generatedClsExp = (OWLClassExpression) generate(expressionStr).get(0);
+	private List<OWLObject> generateObjSomeValuesFrom(ExistsOrForAll existsOrForAll) {
+		return generateObjSomeOrAllValuesFrom(existsOrForAll, true);
+	}
 	
-		return new OWLObjectAllValuesFromImpl(generatedProperty, generatedClsExp);
+	private List<OWLObject> generateObjAllValuesFrom(ExistsOrForAll existsOrForAll) {
+		return generateObjSomeOrAllValuesFrom(existsOrForAll, false);
 	}
 	
 	
@@ -334,6 +341,11 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	private OWLObjectMinCardinality generateObjMinCardinality(CardExpGen cardinalityExpression) {
 		
 		OWLObjectCardinalityRestriction genericCardinalityExpr = generateObjMaxCardinality(cardinalityExpression);	
+
+		if (genericCardinalityExpr == null) {
+			return null;
+		}
+
 		return new OWLObjectMinCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
 	}
 
@@ -476,10 +488,10 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 			ClassExpressionType classExpType = conclusionExp.getExpressionType();
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM)) {
-				generatedExpression = generateObjSomeValuesFrom((ExistsOrForAll) conclusionExp);
+				generatedExpressions.addAll(generateObjSomeValuesFrom((ExistsOrForAll) conclusionExp));
 							
 			} else if(classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
-				generatedExpression = generateObjAllValuesFrom((ExistsOrForAll) conclusionExp);
+				generatedExpressions.addAll(generateObjAllValuesFrom((ExistsOrForAll) conclusionExp));
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
 				generatedExpression = generateObjMinCardinality((CardExpGen) conclusionExp);

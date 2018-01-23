@@ -9,23 +9,16 @@
     ontologyIRI="urn:absolute:testingOntology">
  
  <SubClassOf>
- 
- 
-     <Class IRI="urn:absolute:testingOntology#ClassX"/>
- 
-     <ObjectSomeValuesFrom>
-         
-         <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
-
-        <ObjectIntersectionOf>
-            <Class IRI="urn:absolute:testingOntology#ClassY"/>
-            <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-            <Class IRI="urn:absolute:testingOntology#ClassY2"/>
-            <Class IRI="urn:absolute:testingOntology#ClassY3"/>
-            <Class IRI="urn:absolute:testingOntology#ClassY4"/>
-            <Class IRI="urn:absolute:testingOntology#ClassY5"/>
-        </ObjectIntersectionOf>
-    </ObjectUnionOf>
+     
+         <Class IRI="urn:absolute:testingOntology#ClassX"/>
+     
+    <ObjectSomeValuesFrom>
+    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+    <ObjectIntersectionOf>
+        <Class IRI="urn:absolute:testingOntology#ClassY1"/>
+        <Class IRI="urn:absolute:testingOntology#ClassY2"/>
+    </ObjectIntersectionOf>
+    </ObjectSomeValuesFrom>
     
 
     
