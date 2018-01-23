@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
 public class PermutationGenerator<T> {
 	
 	
@@ -34,6 +36,18 @@ public class PermutationGenerator<T> {
 	}
 	
 	
+	public Set<Set<T>> generateStrictNonEmptyPowerSet(Set<T> originalSet) {
+		
+		Set<Set<T>> allSets = generatePowerSet(originalSet);
+		Set<Set<T>> strictNonEmptySets = new HashSet<Set<T>>();
+		
+		for (Set<T> set : allSets) {
+			if (set.size() > 0 && set.size() < originalSet.size()) {
+				strictNonEmptySets.add(set);
+			}
+		}
+		return strictNonEmptySets;
+	}
 	
 	public Set<Set<T>> generatePowerSet(Set<T> originalSet) {
 		

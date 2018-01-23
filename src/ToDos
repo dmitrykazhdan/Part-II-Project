@@ -1,11 +1,11 @@
-- Implement restriction checking.
-	
 - Implement exception rules.
 
-- Implement generating rules.
+- Remove repeated code. Cleanup somehow.
+
+- Have a "simple/atomic" expression group, and a more complex expression group.
+Matching and generation of class expressions only uses the atomic expression groups.
 
 
-- Fixup excessive type-casting in pattern matching.
 
 
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.

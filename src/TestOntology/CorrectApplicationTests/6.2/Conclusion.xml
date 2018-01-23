@@ -18,8 +18,6 @@
 
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
         
-        <Class IRI="urn:absolute:testingOntology#ClassX"/>
-        
         <ObjectMaxCardinality cardinality="4">
             <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
             <Class IRI="urn:absolute:testingOntology#ClassY"/>

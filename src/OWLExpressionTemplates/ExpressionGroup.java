@@ -1,5 +1,14 @@
 package OWLExpressionTemplates;
 
+
+//Class containing an abstract group expression.
+//A group consists of:
+//1) Named expressions, which are used in other places of the rule and are part of the
+//rule's variable instantiation. 
+
+//2) Anonymous expressions. These are expressions whose size is not pre-defined.
+//They match an group of classes participating in a conjunction, and group these under a common nae,e.
+//These are part of the rule's group instantiation.
 public class ExpressionGroup {
 
 	private String groupName;

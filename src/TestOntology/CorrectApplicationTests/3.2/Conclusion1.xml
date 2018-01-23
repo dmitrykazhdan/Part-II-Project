@@ -7,8 +7,8 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     ontologyIRI="urn:absolute:testingOntology">
-    
-    
+ 
+
     <SubClassOf>
         <Annotation>
             <AnnotationProperty IRI="http://owl.cs.manchester.ac.uk/explanation/vocabulary#entailment"/>
@@ -16,20 +16,22 @@
         </Annotation>
 
 
-<Class IRI="urn:absolute:testingOntology#ClassX"/>
+        <Class IRI="urn:absolute:testingOntology#ClassX"/>
+        
+        
+<ObjectSomeValuesFrom>
+    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+    <ObjectIntersectionOf>
+        <Class IRI="urn:absolute:testingOntology#ClassY1"/>
 
-<ObjectIntersectionOf>
-    <Class IRI="urn:absolute:testingOntology#ClassY"/>
-    <Class IRI="urn:absolute:testingOntology#ClassY2"/>
-    <Class IRI="urn:absolute:testingOntology#ClassY4"/>
-  
-</ObjectIntersectionOf>
+    </ObjectIntersectionOf>
+</ObjectSomeValuesFrom>
 
 
+        
+    </SubClassOf>
 
 
-</SubClassOf>
-    
 </Ontology>
 
 

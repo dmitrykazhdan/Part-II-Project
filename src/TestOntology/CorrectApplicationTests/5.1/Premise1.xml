@@ -13,10 +13,6 @@
         <Class IRI="urn:absolute:testingOntology#ClassY"/>
         <Class IRI="urn:absolute:testingOntology#ClassY1"/>
         <Class IRI="urn:absolute:testingOntology#ClassY2"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY3"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY4"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY5"/>
-        
     </ObjectUnionOf>
     
     <Class IRI="urn:absolute:testingOntology#ClassX"/>
