@@ -11,8 +11,6 @@
  <SubClassOf>
     <ObjectUnionOf>
         <Class IRI="urn:absolute:testingOntology#ClassY"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY2"/>
     </ObjectUnionOf>
     
     <Class IRI="urn:absolute:testingOntology#ClassX"/>

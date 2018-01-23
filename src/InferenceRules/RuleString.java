@@ -63,6 +63,7 @@ import RuleRestrictions.DisjointDatatypesRestriction;
 import RuleRestrictions.RelCardinalityRestriction;
 import RuleRestrictions.RestrictionChecker;
 import RuleRestrictions.RuleRestriction;
+import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.ExpressionGroup;
@@ -98,9 +99,7 @@ public class RuleString {
 	private List<OWLAxiomStr> premisesStr;
 	private int premiseNumber;
 
-//	private Instantiation currentInstantiation;
-//	private List<Instantiation> allInstantiations;
-	private RuleRestriction[] ruleRestrictions;
+	private RuleRestrictions ruleRestrictions;
 
 
 	public String getRuleID() {
@@ -113,20 +112,20 @@ public class RuleString {
 		this.premisesStr = premisesStr;
 		this.premiseNumber = premisesStr.size();
 		this.conclusionStr = conclusion;
-		this.ruleRestrictions = new RuleRestriction[]{};
+		this.ruleRestrictions = new RuleRestrictions();
 	}
 
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
 		this(ruleID, ruleName, conclusion, new ArrayList<OWLAxiomStr>(Arrays.asList(premises)));
 	}
 
-	public RuleString(String ruleID, String ruleName, RuleRestriction[] ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
+	public RuleString(String ruleID, String ruleName, RuleRestrictions ruleRestrictions, OWLAxiomStr conclusion, OWLAxiomStr... premises) {
 		this(ruleID, ruleName, conclusion, premises);
 		this.ruleRestrictions = ruleRestrictions;
 	}
 
 
-	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr) {
+	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
 
 		PremiseMatcher matcher = new PremiseMatcher(expressions, expressionStr, ruleRestrictions);
 		List<Instantiation> allInstantiations = matcher.getAllMatchedInstantiations();		
@@ -137,7 +136,7 @@ public class RuleString {
 
 	public boolean matchPremises(List<OWLAxiom> premises) {
 		List<OWLAxiomStr> expressions = new ArrayList<OWLAxiomStr>(premisesStr);
-		return matchExpressions(premises, expressions);
+		return matchExpressions(premises, expressions, ruleRestrictions.getPremiseRestrictions());
 	}
 	
 
@@ -151,13 +150,13 @@ public class RuleString {
 		List<OWLAxiomStr> expressions = new ArrayList<OWLAxiomStr>(premisesStr);
 		expressions.add(conclusionStr);
 		
-		return matchExpressions(premisesAndConclusion, expressions);
+		return matchExpressions(premisesAndConclusion, expressions, ruleRestrictions.getAllRestrictions());
 	}
 	
 	
 	// Return all possible conclusions that can be generated.
 	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
-		ConclusionGenerator conclusionGenerator = new ConclusionGenerator(premises, premisesStr, conclusionStr, ruleRestrictions);
+		ConclusionGenerator conclusionGenerator = new ConclusionGenerator(premises, premisesStr, conclusionStr, ruleRestrictions.getAllRestrictions());
 		return conclusionGenerator.generateConclusions();
 	}
 }

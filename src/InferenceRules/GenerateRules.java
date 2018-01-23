@@ -39,6 +39,7 @@ import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.DisjointDatatypesRestriction;
 import RuleRestrictions.RelCardinalityRestriction;
 import RuleRestrictions.RuleRestriction;
+import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
 
 public class GenerateRules {
@@ -146,7 +147,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
-		RuleRestriction[] restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
+		RuleRestrictions restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule2_1 = new RuleString("2.1", "ObjInt-1", restrictions, conclusion, premise1);
 		
 
@@ -160,7 +161,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
 
 		
@@ -174,7 +175,7 @@ public class GenerateRules {
 
 		anonConj = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");				
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));
-		restrictions = new RuleRestriction[] { new SubSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
 		
 
@@ -187,7 +188,7 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 
 		conclusion =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
 
 		
@@ -204,7 +205,7 @@ public class GenerateRules {
 		premise1 = new OWLAxiomStr(AxiomType.EQUIVALENT_CLASSES, tmpGroup1);
 		
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] { new SubSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule4_1 = new RuleString("4.1", "ObjUni-1", restrictions, conclusion, premise1);
 		
 		
@@ -218,7 +219,7 @@ public class GenerateRules {
 		
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };		
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
 
 
@@ -231,7 +232,7 @@ public class GenerateRules {
 
 		premise1 = getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj1), "X");			
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };	
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
 		
 			
@@ -241,7 +242,7 @@ public class GenerateRules {
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));
 		conclusion =  getSubClassOfAxiom((ClsExpStr) tmp, "X");
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y2", "Y1") };
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule5_2 = new RuleString("5.2", "ObjUni-2", restrictions, conclusion, premise1);
 		
 
@@ -251,19 +252,19 @@ public class GenerateRules {
 		// 6.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n1", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") };
+		RuleRestriction [] sb=ubRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") };
 		RuleString rule6_1 = new RuleString("6.1", "ObjExt", restrictions, conclusion, premise1);
 
 		// 6.2
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n", "Ro", "Y"));
-		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n", CardinalitySign.GEQ,  0)};
+		premiseRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n", CardinalitySign.GEQ,  0)};
 		RuleString rule6_2 = new RuleString("6.2", "ObjExt", restrictions, conclusion, premise1);
 		
 		// 6.3
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-		restrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1", CardinalitySign.GEQ, "n2") };
+		premiseRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1", CardinalitySign.GEQ, "n2") };
 		RuleString rule6_3 = new RuleString("6.3", "ObjExt", restrictions, conclusion, premise1);
 	
 
