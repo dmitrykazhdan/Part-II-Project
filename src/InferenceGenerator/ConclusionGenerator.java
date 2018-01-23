@@ -41,6 +41,7 @@ import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.UninstantiatedCardinalityException;
 import RuleRestrictions.RuleRestriction;
+import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
@@ -58,24 +59,23 @@ import uk.ac.manchester.cs.owl.owlapi.OWLTransitiveObjectPropertyAxiomImpl;
 
 public class ConclusionGenerator extends RuleMatcherGenerator{
 
-	
-	private OWLAxiomStr conclusionStr;
+	protected OWLAxiomStr conclusionStr;
 	private Instantiation currentInstantiation;
 	private List<Instantiation> allInstantiations;
-	
+	private RuleRestrictions ruleRestrictions;
 
-	public ConclusionGenerator(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, OWLAxiomStr conclusionStr, RuleRestriction[] ruleRestrictions) {		
-		super(expressions, expressionStr, ruleRestrictions);
+	public ConclusionGenerator(List<OWLAxiom> premises, List<OWLAxiomStr> premisesStr, OWLAxiomStr conclusionStr, RuleRestrictions ruleRestrictions) {		
+		super(premises, premisesStr);
+		this.ruleRestrictions =  ruleRestrictions;
 		this.conclusionStr = conclusionStr;
 	}
-	
-	
+		
 	
 	// Return all possible conclusions that can be generated.
 	public List<OWLAxiom> generateConclusions() {
 
 		// Attempt to match premises.
-		PremiseMatcher matcher = new PremiseMatcher(this.expressions, this.expressionStr, this.ruleRestrictions);
+		PremiseMatcher matcher = new PremiseMatcher(this.expressions, this.expressionStr, ruleRestrictions.getPremiseRestrictions());
 		allInstantiations = matcher.getAllMatchedInstantiations();
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
 
@@ -86,10 +86,14 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		// Iterate over all possible instantiations and attempt to generate a conclusion from each one.
 		for (Instantiation instantiation : allInstantiations) {
 			currentInstantiation = instantiation;
-			conclusions.addAll(generateConclusionFromCurrentInstantiation());	
+			List<OWLAxiom> newGeneratedConclusions = generateConclusionsFromCurrentInstantiation();
+			
+			conclusions.addAll(newGeneratedConclusions);	
 		}
 		return conclusions;
 	}
+	
+
 
 
 	
@@ -142,7 +146,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	// Given the current instantiation, generate all possible conclusions from it.
 	// Assumption: given the way the rules are structured, there is no ambiguity in how the axioms
 	// themselves are generated.
-	private List<OWLAxiom> generateConclusionFromCurrentInstantiation() {
+	private List<OWLAxiom> generateConclusionsFromCurrentInstantiation() {
 
 		OWLAxiom conclusionAxiom = null;
 		List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
@@ -405,7 +409,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		String superSetName = "";
 		Set<OWLClassExpression> superSet = null;
 		
-		for (RuleRestriction restriction : ruleRestrictions) {
+		for (RuleRestriction restriction : ruleRestrictions.conclusionRestrictions()) {
 			if (restriction instanceof SubSetRestriction) {
 
 				SubSetRestriction subSetRest = (SubSetRestriction) restriction;
@@ -502,30 +506,43 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	}
 
 	
-	private List<OWLObjectUnionOf> generateUnionExpressions(InterUnion interUnion) {
-		
-		Set<Set<OWLClassExpression>> allGroups = generateGroup(interUnion);
-		List<OWLObjectUnionOf> allUnionExpressions = new ArrayList<OWLObjectUnionOf>();
- 		
-		for (Set<OWLClassExpression> group : allGroups) {
-				OWLObjectUnionOfImpl union = new OWLObjectUnionOfImpl(group);
-				allUnionExpressions.add(union);			
-		}
-		return allUnionExpressions;
+	private List<OWLClassExpression> generateUnionExpressions(InterUnion interUnion) {
+		return generateIntersectionOrUnionExpressions(interUnion, true);
+	}
+	
+	private List<OWLClassExpression> generateIntersectionExpressions(InterUnion interUnion) {
+		return generateIntersectionOrUnionExpressions(interUnion, false);
 	}
 	
 	
-	private List<OWLObjectIntersectionOf> generateIntersectionExpressions(InterUnion interUnion) {
+	private List<OWLClassExpression> generateIntersectionOrUnionExpressions(InterUnion interUnion, boolean generateUnion) {
 		
 		Set<Set<OWLClassExpression>> allGroups = generateGroup(interUnion);
-		List<OWLObjectIntersectionOf> allUnionExpressions = new ArrayList<OWLObjectIntersectionOf>();
+		List<OWLClassExpression> allGroupExpressions = new ArrayList<OWLClassExpression>();
  		
 		for (Set<OWLClassExpression> group : allGroups) {
-			OWLObjectIntersectionOf union = new OWLObjectIntersectionOfImpl(group);
-			allUnionExpressions.add(union);			
+			
+			// Here we assume that groups of size 1 are treated as simple classes,
+			// not as unions/intersections of size 1.
+			if (group.size() == 1) {
+				List<OWLClassExpression> groupList = new ArrayList<OWLClassExpression>(group);
+				allGroupExpressions.add(groupList.remove(0));
+				
+			} else {
+				OWLClassExpression union = null;
+				
+				if (generateUnion) {
+					union = new OWLObjectUnionOfImpl(group);
+				} else {
+					union = new OWLObjectIntersectionOfImpl(group);
+				}			
+				allGroupExpressions.add(union);
+			}					
 		}
-		return allUnionExpressions;
+		return allGroupExpressions;
 	}
+	
+	
 	
 	
 	// Given the structure of the rules, here we assume that

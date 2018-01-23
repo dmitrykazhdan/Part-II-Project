@@ -156,7 +156,7 @@ public class RuleString {
 	
 	// Return all possible conclusions that can be generated.
 	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
-		ConclusionGenerator conclusionGenerator = new ConclusionGenerator(premises, premisesStr, conclusionStr, ruleRestrictions.getAllRestrictions());
+		ConclusionGenerator conclusionGenerator = new ConclusionGenerator(premises, premisesStr, conclusionStr, ruleRestrictions);
 		return conclusionGenerator.generateConclusions();
 	}
 }

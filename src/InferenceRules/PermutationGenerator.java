@@ -39,14 +39,14 @@ public class PermutationGenerator<T> {
 	public Set<Set<T>> generateStrictNonEmptyPowerSet(Set<T> originalSet) {
 		
 		Set<Set<T>> allSets = generatePowerSet(originalSet);
-		 
-		// We only need strict, non-empty subsets.
-		// Hence we remove the equivalent set and the empty set.
-		Set<T> emptySet = new HashSet<T>();
-		allSets.remove(originalSet);
-		allSets.remove(emptySet);
+		Set<Set<T>> strictNonEmptySets = new HashSet<Set<T>>();
 		
-		return allSets;
+		for (Set<T> set : allSets) {
+			if (set.size() > 0 && set.size() < originalSet.size()) {
+				strictNonEmptySets.add(set);
+			}
+		}
+		return strictNonEmptySets;
 	}
 	
 	public Set<Set<T>> generatePowerSet(Set<T> originalSet) {

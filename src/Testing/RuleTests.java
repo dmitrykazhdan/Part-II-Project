@@ -8,8 +8,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
@@ -152,15 +154,16 @@ public class RuleTests {
 				System.out.println(rule.getRuleID());
 				assertTrue(rule.matchPremises(premises));
 							
-				List<OWLAxiom> generatedConclusions = rule.generateConclusions(premises);		
+				Set<OWLAxiom> generatedConclusions = new HashSet<OWLAxiom>(rule.generateConclusions(premises));		
 				
 				File testFolderDir = new File(ruleTestFolderName);
 				File[] conclusionFiles = testFolderDir.listFiles((FileFilter) new PrefixFileFilter("Conclusion", IOCase.INSENSITIVE));
-				List<OWLAxiom> conclusions = new ArrayList<OWLAxiom>();
+				Set<OWLAxiom> conclusions = new HashSet<OWLAxiom>();
 				
 				for (File file : conclusionFiles) {
 					conclusions.add(loadConclusion(file.getAbsolutePath()));
 				}
+				
 								
 				assertTrue(conclusions.equals(generatedConclusions));						
 			}

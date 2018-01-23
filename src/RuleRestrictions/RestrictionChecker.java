@@ -27,8 +27,7 @@ public class RestrictionChecker {
 			if (!checkRestriction(restriction)) {
 				return false;
 			}		
-		}
-		
+		}		
 		return true;
 	}
 

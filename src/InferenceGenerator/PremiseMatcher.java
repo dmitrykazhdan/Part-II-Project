@@ -53,17 +53,20 @@ import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.TemplatePrimitive;
 import RuleRestrictions.RestrictionChecker;
 import RuleRestrictions.RuleRestriction;
+import RuleRestrictions.RuleRestrictions;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class PremiseMatcher extends RuleMatcherGenerator{
 
-	
+	// Rule restrictions to check.
+	private RuleRestriction[] ruleRestrictions;
 	private Instantiation currentInstantiation;
 	private List<Instantiation> allInstantiations;
 	
 
 	public PremiseMatcher(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {		
-		super(expressions, expressionStr, ruleRestrictions);
+		super(expressions, expressionStr);
+		this.ruleRestrictions = ruleRestrictions;
 	}
 	
 	
@@ -109,18 +112,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 	
 	
 	private void cleanupInstantiations() {
-		
-		List<Instantiation> prevInstantiations = new ArrayList<Instantiation>(allInstantiations);
-		allInstantiations = new ArrayList<Instantiation>();
-
-		for (Instantiation instantiation : prevInstantiations) {
-			
-			RestrictionChecker restrictionChecker = new RestrictionChecker(ruleRestrictions, instantiation);
-			
-			if (restrictionChecker.checkRestrictionsForInstantiation()) {
-				allInstantiations.add(instantiation);
-			}			
-		}
+		allInstantiations = checkInstantiationRestrictions(allInstantiations, ruleRestrictions);
 	}
 	
 	
