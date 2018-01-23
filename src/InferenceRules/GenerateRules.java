@@ -252,19 +252,23 @@ public class GenerateRules {
 		// 6.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n1", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-		RuleRestriction [] sb=ubRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") };
+		restrictions = new RuleRestrictions(
+				new RuleRestriction[] { new AbsCardinalityRestriction("n1", CardinalitySign.GEQ, 0) },
+				new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") });
 		RuleString rule6_1 = new RuleString("6.1", "ObjExt", restrictions, conclusion, premise1);
 
 		// 6.2
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n", "Ro", "Y"));
-		premiseRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n", CardinalitySign.GEQ,  0)};
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
 		RuleString rule6_2 = new RuleString("6.2", "ObjExt", restrictions, conclusion, premise1);
 		
 		// 6.3
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
 		conclusion = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n2", "Ro", "Y"));
-		premiseRestrictions = new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1", CardinalitySign.GEQ, "n2") };
+		restrictions = new RuleRestrictions(
+				new RuleRestriction[] { new AbsCardinalityRestriction("n1", CardinalitySign.GEQ, 0) },
+				new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") });
 		RuleString rule6_3 = new RuleString("6.3", "ObjExt", restrictions, conclusion, premise1);
 	
 
@@ -338,7 +342,7 @@ public class GenerateRules {
 		// 12.1
 		OWLAxiomStr premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createDataSomeValFrom("Rd", "Dr0"));
 		OWLAxiomStr premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
-		RuleRestriction[] restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
+		RuleRestrictions restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("Dr0", "Dr1"));
 		OWLAxiomStr conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule12_1 = new RuleString("12.1", "DatSom-DatRng", restrictions, conclusion, premise1, premise2);
 		
@@ -346,7 +350,7 @@ public class GenerateRules {
 		// 12.2
 		ClsExpStr tmp = ExistsOrForAll.createObjSomeValFrom("Ro", ExistsOrForAll.createDataSomeValFrom("Rd", "Dr0"));
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);		
-		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
+		restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("Dr0", "Dr1"));
 		RuleString rule12_2 = new RuleString("12.2", "DatSom-DatRng", restrictions, conclusion, premise1, premise2);
 		
 		
@@ -356,7 +360,7 @@ public class GenerateRules {
 		// 13.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createDataMinCard("n", "Rd", "Dr0"));	
 		premise2 = createPrimitiveDataRangeProp("Rd", "Dr1");
-		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("Dr0", "Dr1") };
+		restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("Dr0", "Dr1"));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule13_1 = new RuleString("13.1", "DatMin-DatRng", restrictions, conclusion, premise1, premise2);
 
@@ -374,7 +378,7 @@ public class GenerateRules {
 		// 14.1
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise2 = createPrimitiveDataRangeProp("Rd", "Dr");
-		restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("l0", "Dr") };
+		restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("l0", "Dr"));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule14_1 = new RuleString("14.1", "DatVal-DatRng", restrictions, conclusion, premise1, premise2);
 		
@@ -412,8 +416,8 @@ public class GenerateRules {
 		// 17.1
 		premise1 = getSubClassOfAxiom("X", CardExpGen.createObjMinCard("n1", "Ro", "Y"));
 		premise2 = getSubClassOfAxiom("X", CardExpGen.createObjMaxCard("n2", "Ro", "Y"));
-		restrictions = new RuleRestriction[] { 
-				new RelCardinalityRestriction("n1", CardinalitySign.G, "n2"), new AbsCardinalityRestriction("n2", CardinalitySign.GEQ,  0) };
+		restrictions = new RuleRestrictions( 
+				new RelCardinalityRestriction("n1", CardinalitySign.G, "n2"), new AbsCardinalityRestriction("n2", CardinalitySign.GEQ,  0));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule17_1 = new RuleString("17.1", "ObjMin-ObjMax", restrictions, conclusion, premise1, premise2);
 		
@@ -500,7 +504,7 @@ public class GenerateRules {
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		conclusion = getSubClassOfAxiom("X", "F");
-		restrictions = new RuleRestriction[] {new SubSetRestriction("Y1", "Y2") };	
+		restrictions = new RuleRestrictions(new SubSetRestriction("Y1", "Y2"));	
 		RuleString rule22_1 = new RuleString("22.1", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 		
 		
@@ -720,7 +724,7 @@ public class GenerateRules {
 
 		// 36.2
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Z");
-		RuleRestriction[] ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.G, 0)};
+		RuleRestrictions ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule36_2 = new RuleString("36.2", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
@@ -728,7 +732,7 @@ public class GenerateRules {
 		
 		// 36.3
 		tmp = CardExpGen.createObjExactCard("n", "Ro", "Z");
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.G, 0) };
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);				
 		RuleString rule36_3 = new RuleString("36.3", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
@@ -753,14 +757,14 @@ public class GenerateRules {
 
 		// 37.2
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");		
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.G, 0) };
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
 		RuleString rule37_2 = new RuleString("37.2", "DatSom-DatDom", ruleRestrictions, conclusion, premise1, premise2);
 
 		
 		// 37.3
 		tmp = CardExpGen.createDataExactCard("n", "Rd", "Dr");		
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.G, 0) };
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 				
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);				
 		RuleString rule37_3 = new RuleString("37.3", "DatSom-DatDom", conclusion, premise1, premise2);
@@ -818,7 +822,7 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1) };
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
 		RuleString rule41_1 = new RuleString("41.1", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
 
@@ -826,7 +830,7 @@ public class GenerateRules {
 		// 41.2
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise1 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), tmp);
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.G, 0)};
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", "Y");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
@@ -849,7 +853,7 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");
 		premise2 = new OWLAxiomStr(AxiomType.SUBCLASS_OF, tmp, new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestriction[]{ new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1) };
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
 		conclusion = new OWLAxiomStr(AxiomType.SUBCLASS_OF, new AtomicCls("X"), new AtomicCls("Z"));
 		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", ruleRestrictions, conclusion, premise1, premise2);
 
@@ -1160,7 +1164,7 @@ public class GenerateRules {
 		premise1 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise2 = getSubClassOfAxiom("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l1"));
 		premise3 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new TemplateDataProperty("Rd"));
-		RuleRestriction[] restrictions = new RuleRestriction[] { new DisjointDatatypesRestriction("l0", "l1") };
+		RuleRestrictions restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("l0", "l1"));
 		conclusion = getSubClassOfAxiom("X", "F");
 		RuleString rule56 = new RuleString("56", "DatVal-DatVal-DatFun", restrictions, conclusion, premise1, premise2, premise3);
 

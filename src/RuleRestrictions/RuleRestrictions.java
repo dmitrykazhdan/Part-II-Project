@@ -11,8 +11,11 @@ public class RuleRestrictions {
 	}
 	
 	public RuleRestrictions() {
-		this.premiseRestrictions = new RuleRestriction[]{};
-		this.conclusionRestrictions = new RuleRestriction[]{};
+		this(new RuleRestriction[]{}, new RuleRestriction[]{});
+	}
+	
+	public RuleRestrictions(RuleRestriction... restrictions) {
+		this(restrictions, new RuleRestriction[]{});		
 	}
 	
 	
