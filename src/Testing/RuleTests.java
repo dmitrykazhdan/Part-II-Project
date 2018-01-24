@@ -56,7 +56,12 @@ public class RuleTests {
 				
 				for (File file : conclusionFiles) {
 					conclusions.add(loadConclusion(file.getAbsolutePath()));
-				}							
+				}	
+				// Potential: 2, 3, 4, 5, 21, 22
+				for (OWLAxiom conclusion : conclusions) {
+					assertTrue(rule.matchPremisesAndConclusion(premises, conclusion));
+				}
+				
 				assertTrue(conclusions.equals(generatedConclusions));						
 			}
 		}	

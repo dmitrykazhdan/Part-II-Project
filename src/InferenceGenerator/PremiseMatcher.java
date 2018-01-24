@@ -463,7 +463,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 		Set<OWLClassExpression> operands = groupExpression.getOperands();
 		
 		return matchNamedExpressions(operands, groupPattern.getNamedExpressions()) &&
-				matchAnonymousGroupExpression(operands, groupPattern.getAnonymousGroupName());
+			   matchAnonymousGroupExpression(operands, groupPattern.getAnonymousGroupName());
 	}
 	
 	
@@ -521,7 +521,8 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 		}
 
 		ClassExpressionType classExpType = classExp.getClassExpressionType();
-
+		
+		
 		if (classExpType.equals(pattern.getExpressionType())) {
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF) || 

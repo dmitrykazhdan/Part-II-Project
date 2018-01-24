@@ -1,5 +1,7 @@
 - Implement exception rules.
 
+- Look at cases when intersection/union size = 1. Think about how to handle it.
+
 - Remove repeated code. Cleanup somehow.
 
 - Have a "simple/atomic" expression group, and a more complex expression group.
