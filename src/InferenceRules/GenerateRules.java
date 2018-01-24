@@ -325,8 +325,8 @@ public class GenerateRules {
 		rules.get(1).add(rule6_2);
 		rules.get(1).add(rule6_3);
 		rules.get(1).add(rule7);
-	//	rules.get(1).add(rule8);
-	//	rules.get(1).add(rule9);
+		rules.get(1).add(rule8);
+		rules.get(1).add(rule9);
 		rules.get(1).add(rule10);
 		rules.get(1).add(rule11);
 

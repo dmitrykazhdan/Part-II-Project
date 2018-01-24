@@ -59,7 +59,9 @@ public class RuleTests {
 				}	
 				// Potential: 2, 3, 4, 5, 21, 22
 				for (OWLAxiom conclusion : conclusions) {
-					assertTrue(rule.matchPremisesAndConclusion(premises, conclusion));
+					if (!rule.matchPremisesAndConclusion(premises, conclusion)) {
+						System.out.println("Could not match rule:" + rule.getRuleID());
+					}
 				}
 				
 				assertTrue(conclusions.equals(generatedConclusions));						

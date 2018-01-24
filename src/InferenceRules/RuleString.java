@@ -101,6 +101,9 @@ public class RuleString {
 
 	private RuleRestrictions ruleRestrictions;
 
+	public int getPremiseNumber() {
+		return premiseNumber;
+	}
 
 	public String getRuleID() {
 		return ruleID;

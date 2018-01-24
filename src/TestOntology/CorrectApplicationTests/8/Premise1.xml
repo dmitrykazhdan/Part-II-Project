@@ -9,10 +9,11 @@
     ontologyIRI="urn:absolute:testingOntology">
  
  <SubClassOf>
+     
+     <Class IRI="http://www.w3.org/2002/07/owl#Thing"/>
+
     <Class IRI="urn:absolute:testingOntology#ClassX"/>
-     <ObjectComplementOf>
-         <Class IRI="urn:absolute:testingOntology#ClassX"/>
-     </ObjectComplementOf>
+
      
  </SubClassOf>
 
