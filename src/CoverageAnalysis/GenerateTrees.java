@@ -21,7 +21,7 @@ public class GenerateTrees {
 	
 	public static void main(String args[]) throws IOException   {
 
-		String explanationDirName = "/Users/AdminDK/Desktop/TestExplanations/";
+		String explanationDirName = "/Users/AdminDK/Desktop/FailedExplanations/";
 		File explanationDir = new File(explanationDirName);
 		
 		File[] explanationFiles = explanationDir.listFiles(new FilenameFilter() {
@@ -45,9 +45,9 @@ public class GenerateTrees {
 			
 			if (proofTrees != null && proofTrees.size() > 0) {
 				totalTreesComputed++;
-				System.out.println("Proof Tree computed successfully.");
+//				System.out.println("Proof Tree computed successfully. " + " (Total: " + totalJustifications + ")");
 			} else {
-				System.out.println("Could not compute Proof Tree.");
+				System.out.println("Could not compute Proof Tree." +"Filename" + explanationFilename + " (Total: " + totalJustifications + ")");
 			}
 			
 					
