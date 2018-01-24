@@ -7,6 +7,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     ontologyIRI="urn:absolute:testingOntology">
+ 
 
     <SubClassOf>
         <Annotation>
@@ -15,16 +16,14 @@
         </Annotation>
 
 
-<Class IRI="urn:absolute:testingOntology#ClassX"/>
+<ObjectIntersectionOf>
+    <Class IRI="urn:absolute:testingOntology#ClassZ1"/>
+    <Class IRI="urn:absolute:testingOntology#ClassZ2"/>
+</ObjectIntersectionOf>
 
-
-<ObjectSomeValuesFrom>
-    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
-    <ObjectIntersectionOf>
-        <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-    </ObjectIntersectionOf>
-    
-</ObjectSomeValuesFrom>
+<ObjectIntersectionOf>
+    <Class IRI="urn:absolute:testingOntology#ClassY2"/>
+</ObjectIntersectionOf>
 
 
 

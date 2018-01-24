@@ -1,24 +1,10 @@
 package InferenceRules;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.ClassExpressionType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpGen;
 import OWLExpressionTemplates.ClsExpStr;
@@ -28,15 +14,13 @@ import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.ExistsOrForAll;
 import OWLExpressionTemplates.ExpressionGroup;
-import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplateDataProperty;
-import ProofTreeComputation.ProofTree;
-import ProofTreeComputation.ProofTreeGenerator;
 import RuleRestrictions.AbsCardinalityRestriction;
 import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.DisjointDatatypesRestriction;
+import RuleRestrictions.GroupContainsRestriction;
 import RuleRestrictions.RelCardinalityRestriction;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
@@ -149,9 +133,16 @@ public class GenerateRules {
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonDisj2));
 		RuleRestrictions restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule2_1 = new RuleString("2.1", "ObjInt-1", restrictions, conclusion, premise1);
+
+		
+		// 2.2 - Extra rule to cater for single-class case.
+		conclusion =  getSubClassOfAxiom("X", "Y");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
+
 		
 
-		// 2.2
+		// 2.3
 		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
@@ -162,7 +153,14 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
-		RuleString rule2_2 = new RuleString("2.2", "ObjInt-1", restrictions, conclusion, premise1);
+		RuleString rule2_3 = new RuleString("2.3", "ObjInt-1", restrictions, conclusion, premise1);
+
+		
+		// 2.4 - Extra rule to cater for single-class case.
+		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", new AtomicCls("Y"));						
+		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule2_4 = new RuleString("2.4", "ObjInt-1", restrictions, conclusion, premise1);
 
 		
 
@@ -177,9 +175,15 @@ public class GenerateRules {
 		conclusion =  getSubClassOfAxiom("X", InterUnion.createIntersectionExpression( anonConj));
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule3_1 = new RuleString("3.1", "ObjInt-2", restrictions, conclusion, premise1);
-		
 
-		// 3.2
+		
+		// 3.2 - Extra rule to cater for single-class case.			
+		conclusion =  getSubClassOfAxiom("X", "Y");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
+
+
+		// 3.3
 		anonConj = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( anonConj));
 		premise1 = getSubClassOfAxiom("X", (ClsExpStr) tmp);
@@ -189,8 +193,14 @@ public class GenerateRules {
 
 		conclusion =  getSubClassOfAxiom("X", (ClsExpStr) tmp);
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
-		RuleString rule3_2 = new RuleString("3.2", "ObjInt-2", restrictions, conclusion, premise1);
+		RuleString rule3_3 = new RuleString("3.3", "ObjInt-2", restrictions, conclusion, premise1);
 
+		
+		// 3.4 - Extra rule to cater for single-class case.
+		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", new AtomicCls("Y"));						
+		conclusion = getSubClassOfAxiom("X", (ClsExpStr) tmp);
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule3_4 = new RuleString("3.4", "ObjInt-1", restrictions, conclusion, premise1);
 		
 		
 
@@ -207,9 +217,16 @@ public class GenerateRules {
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule4_1 = new RuleString("4.1", "ObjUni-1", restrictions, conclusion, premise1);
+
+		
+		// 4.2 - Extra rule to cater for single-class case.
+		conclusion =  getSubClassOfAxiom("Y", "X");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
+
 		
 		
-		// 4.2
+		// 4.3
 		anonDisj1 = new ExpressionGroup("C1", new ClsExpStr[] {}, "Y1");	
 		anonDisj2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");	
 		
@@ -220,7 +237,14 @@ public class GenerateRules {
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));						
 		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
-		RuleString rule4_2 = new RuleString("4.2", "ObjUni-1", restrictions, conclusion, premise1);
+		RuleString rule4_3 = new RuleString("4.3", "ObjUni-1", restrictions, conclusion, premise1);
+
+		
+		// 4.4 - Extra rule to cater for single-class case.
+		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", new AtomicCls("Y"));						
+		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule4_4 = new RuleString("4.4", "ObjUni-1", restrictions, conclusion, premise1);
 
 
 		
@@ -234,17 +258,30 @@ public class GenerateRules {
 		conclusion =  getSubClassOfAxiom(InterUnion.createUnionExpression( anonDisj2), "X");
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
 		RuleString rule5_1 = new RuleString("5.1", "ObjUni-2", restrictions, conclusion, premise1);
+
 		
-			
-		// 5.2
+		// 5.2 - Extra rule to cater for single-class case.
+		conclusion =  getSubClassOfAxiom("Y", "X");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule5_2 = new RuleString("5.2", "ObjUni-1", restrictions, conclusion, premise1);
+
+	
+		// 5.3
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj1));		
 		premise1 = getSubClassOfAxiom((ClsExpStr) tmp, "X");
 
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createUnionExpression( anonDisj2));
 		conclusion =  getSubClassOfAxiom((ClsExpStr) tmp, "X");
 		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new SubSetRestriction("Y2", "Y1")});		
-		RuleString rule5_2 = new RuleString("5.2", "ObjUni-2", restrictions, conclusion, premise1);
+		RuleString rule5_3 = new RuleString("5.3", "ObjUni-2", restrictions, conclusion, premise1);
+
 		
+		// 5.4 - Extra rule to cater for single-class case.
+		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", new AtomicCls("Y"));						
+		conclusion = getSubClassOfAxiom((ClsExpStr) tmp, "X");
+		restrictions = new RuleRestrictions(new RuleRestriction[] {}, new RuleRestriction[] {new GroupContainsRestriction("Y", "Y1")});		
+		RuleString rule5_4 = new RuleString("5.4", "ObjUni-1", restrictions, conclusion, premise1);
+
 
 		
 		// Rule 6
@@ -315,12 +352,20 @@ public class GenerateRules {
 		rules.get(1).add(rule1);
 		rules.get(1).add(rule2_1);
 		rules.get(1).add(rule2_2);
+		rules.get(1).add(rule2_3);
+		rules.get(1).add(rule2_4);
 		rules.get(1).add(rule3_1);
-		rules.get(1).add(rule3_2);		
+		rules.get(1).add(rule3_2);	
+		rules.get(1).add(rule3_3);
+		rules.get(1).add(rule3_4);
 		rules.get(1).add(rule4_1);
 		rules.get(1).add(rule4_2);
+		rules.get(1).add(rule4_3);
+		rules.get(1).add(rule4_4);
 		rules.get(1).add(rule5_1);
 		rules.get(1).add(rule5_2);
+		rules.get(1).add(rule5_3);
+		rules.get(1).add(rule5_4);
 		rules.get(1).add(rule6_1);
 		rules.get(1).add(rule6_2);
 		rules.get(1).add(rule6_3);

@@ -15,15 +15,15 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
 
+<Class IRI="urn:absolute:testingOntology#ClassX"/>
 
-<ObjectIntersectionOf>
-    <Class IRI="urn:absolute:testingOntology#ClassZ1"/>
-    <Class IRI="urn:absolute:testingOntology#ClassZ2"/>
-</ObjectIntersectionOf>
-
-<ObjectIntersectionOf>
-    <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-</ObjectIntersectionOf>
+<ObjectSomeValuesFrom>
+    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+    <ObjectIntersectionOf>
+        <Class IRI="urn:absolute:testingOntology#ClassY"/>
+    </ObjectIntersectionOf>
+    
+</ObjectSomeValuesFrom>
 
 
 

@@ -46,10 +46,32 @@ public class RestrictionChecker {
 		} else if (restriction instanceof DisjointDatatypesRestriction) {
 			return checkDisjointDatatypesRestriction((DisjointDatatypesRestriction) restriction);
 
+		} else if (restriction instanceof GroupContainsRestriction) {
+			return checkGroupContainsRestriction((GroupContainsRestriction) restriction);
+			
 		} else {
 			return false;
 		}
 	}
+	
+	
+	private boolean checkGroupContainsRestriction(GroupContainsRestriction restriction) {
+		
+		String groupName = restriction.getAnonymousGroupName();
+		String atomicClsName = restriction.getAtomicClsName();
+		
+		if (!instantiation.getGroupInstantiation().containsKey(groupName) ||
+			!instantiation.getVariableInstantiation().containsKey(atomicClsName)) {
+			
+			return false;			
+		}
+		
+		OWLClassExpression atomicCls = (OWLClassExpression) instantiation.getVariableInstantiation().get(atomicClsName);
+		Set<OWLClassExpression> group = instantiation.getGroupInstantiation().get(groupName);
+		
+		return group.contains(atomicCls);
+	}
+	
 	
 	
 	private boolean checkDisjointDatatypesRestriction(DisjointDatatypesRestriction restriction) {

@@ -40,6 +40,7 @@ import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.UninstantiatedCardinalityException;
+import RuleRestrictions.GroupContainsRestriction;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
@@ -470,6 +471,44 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	}
 	
 	
+	private List<OWLObject> generateAtomicCls(AtomicCls atomicCls) {
+		
+		List<OWLObject> generatedExpressions = new ArrayList<OWLObject>();
+		
+		if (currentInstantiation.getVariableInstantiation().containsKey(atomicCls.getPlaceholder())) {
+			generatedExpressions.add(currentInstantiation.getVariableInstantiation().get(atomicCls.getPlaceholder()));
+		} else {
+			generatedExpressions.addAll(getContainedClasses(atomicCls));
+		}
+		return generatedExpressions;
+	}
+	
+	private List<OWLObject> getContainedClasses(AtomicCls atomicCls) {
+		
+		List<OWLObject> allClasses = new ArrayList<OWLObject>();
+		
+		for (RuleRestriction restriction : ruleRestrictions.conclusionRestrictions()){
+			if (restriction instanceof GroupContainsRestriction) {
+
+				GroupContainsRestriction groupContainsRestriction = (GroupContainsRestriction) restriction;
+				String anonGroupName = groupContainsRestriction.getAnonymousGroupName();
+				
+				if (!groupContainsRestriction.getAtomicClsName().equals(atomicCls.getPlaceholder())) {
+					continue;
+				}
+								
+				if (currentInstantiation.getGroupInstantiation().containsKey(anonGroupName)) {
+					Set<OWLClassExpression> group = currentInstantiation.getGroupInstantiation().get(anonGroupName);
+					
+					for (OWLClassExpression cls : group) {
+						allClasses.add(cls);
+					}				
+				}			
+			}
+		}
+		return allClasses;
+	}
+	
 
 	// All types of generated expressions are unique, except for
 	// the intersection and union types, where multiple conclusions may be generated.
@@ -479,10 +518,9 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		OWLObject generatedExpression = null;
 
 		if (conclusionExp.getExpressionType() == null) {
-			generatedExpression = currentInstantiation.getVariableInstantiation().get(((AtomicCls) conclusionExp).getPlaceholder());
-			generatedExpressions.add(generatedExpression);
+			generatedExpressions.addAll(generateAtomicCls((AtomicCls) conclusionExp));
 			return generatedExpressions;
-
+			
 		} else {
 
 			ClassExpressionType classExpType = conclusionExp.getExpressionType();
@@ -534,13 +572,8 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
  		
 		for (Set<OWLClassExpression> group : allGroups) {
 			
-			// Here we assume that groups of size 1 are treated as simple classes,
-			// not as unions/intersections of size 1.
-			if (group.size() == 1) {
-				List<OWLClassExpression> groupList = new ArrayList<OWLClassExpression>(group);
-				allGroupExpressions.add(groupList.remove(0));
-				
-			} else {
+			// Here we assume that an intersection and a union should contain > 1 class.
+			if (group.size() > 1) {
 				OWLClassExpression union = null;
 				
 				if (generateUnion) {

@@ -14,9 +14,13 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
 
-<ObjectUnionOf>
-    <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-</ObjectUnionOf>
+<ObjectSomeValuesFrom>
+    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+    <ObjectUnionOf>
+
+        <Class IRI="urn:absolute:testingOntology#ClassY2"/>
+    </ObjectUnionOf>
+</ObjectSomeValuesFrom>
 
 <Class IRI="urn:absolute:testingOntology#ClassX"/>
 

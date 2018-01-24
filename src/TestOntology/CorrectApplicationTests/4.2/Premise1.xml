@@ -9,14 +9,11 @@
     ontologyIRI="urn:absolute:testingOntology">
  
  <EquivalentClasses>
-     
-    <ObjectSomeValuesFrom>
-    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
     <ObjectUnionOf>
+        <Class IRI="urn:absolute:testingOntology#ClassY"/>
         <Class IRI="urn:absolute:testingOntology#ClassY1"/>
         <Class IRI="urn:absolute:testingOntology#ClassY2"/>
     </ObjectUnionOf>
-    </ObjectSomeValuesFrom>
     
     <Class IRI="urn:absolute:testingOntology#ClassX"/>
     
