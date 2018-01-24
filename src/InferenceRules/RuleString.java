@@ -128,7 +128,7 @@ public class RuleString {
 	}
 
 
-	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
+	private boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
 
 		PremiseMatcher matcher = new PremiseMatcher(expressions, expressionStr, ruleRestrictions);
 		List<Instantiation> allInstantiations = matcher.getAllMatchedInstantiations();		
