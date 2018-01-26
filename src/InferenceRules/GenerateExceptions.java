@@ -12,6 +12,16 @@ import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import ProofTreeComputation.ProofTree;
 
+/*
+Base Case:
+ Strategy:
+ 1) Match(premise, incorrectConclusion) to make sure this is the exception case.
+ 2) Either leave it as-is, or attempt to recursively construct a proof tree from
+    the premise to the correctedConclusion by calling generateProofTree(premise, correctedConclusion)
+
+ */
+
+
 public class GenerateExceptions {
 
 	private static List<RuleString> exceptions = null;
