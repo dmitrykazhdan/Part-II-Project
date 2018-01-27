@@ -34,8 +34,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
  */
 public class RuleException {
 
-	private OWLAxiomStr correctAxiomStr;
-	private OWLAxiomStr laconicAxiomStr;
+	protected OWLAxiomStr correctAxiomStr;
+	protected OWLAxiomStr laconicAxiomStr;
 	private OWLAxiomStr justificationAxiomStr;
 	private boolean includeEquivalentCase;
 	private boolean includeIntersectionCase;
