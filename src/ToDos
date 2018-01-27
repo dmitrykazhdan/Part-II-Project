@@ -11,6 +11,8 @@
 - Have a "simple/atomic" expression group, and a more complex expression group.
 Matching and generation of class expressions only uses the atomic expression groups.
 
+- What happens if the entailment is already in the laconic justification?
+Currently we have a node with the same value, and so we fail.
 
 
 

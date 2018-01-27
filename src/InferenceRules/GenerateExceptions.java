@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
@@ -16,6 +18,8 @@ import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import ProofTreeComputation.ProofTree;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectHasValueImpl;
 
 /*
 Base Case:
@@ -70,12 +74,17 @@ public class GenerateExceptions {
 		// Case 1	
 		ClsExpStr justificationStr = ExistsOrForAll.createObjSomeValFrom("Ro", "D");
 		ClsExpStr laconicStr = ExistsOrForAll.createObjSomeValFrom("Ro", "T");		
-		BaseRuleException case1_1 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
-
+		BaseRuleException case1 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
 
 		
+		// Case 2
+		justificationStr = ExistsOrForAll.createIndividualSomeValFrom("Ro", "i");
+		laconicStr = ExistsOrForAll.createObjSomeValFrom("Ro", "T");		
+		BaseRuleException case2 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
+
 		
-		ruleExceptions.add(case1_1);
+		ruleExceptions.add(case1);
+		ruleExceptions.add(case2);
 	}
 	
 
