@@ -275,7 +275,7 @@ public class ProofTreeGenerator {
 					for (RuleString applicableRule : applicableRules) {
 						ProofTree copiedTree = new ProofTree(incompleteProofTree);
 						copiedTree.setInferenceRule(applicableRule);
-						completeProofTreeList.add(incompleteProofTree);
+						completeProofTreeList.add(copiedTree);
 					}
 				} else {
 					
