@@ -21,7 +21,7 @@ public class GenerateTrees {
 	
 	public static void main(String args[]) throws IOException   {
 
-		String explanationDirName = "/Users/AdminDK/Desktop/FailedExplanations/";
+		String explanationDirName = "/Users/AdminDK/Desktop/TestExplanations/";
 		File explanationDir = new File(explanationDirName);
 		
 		File[] explanationFiles = explanationDir.listFiles(new FilenameFilter() {
