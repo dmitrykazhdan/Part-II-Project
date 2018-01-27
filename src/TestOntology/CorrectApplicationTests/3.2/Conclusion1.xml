@@ -18,15 +18,10 @@
 
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
         
-        
-<ObjectSomeValuesFrom>
-    <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
     <ObjectIntersectionOf>
-        <Class IRI="urn:absolute:testingOntology#ClassY1"/>
-
-    </ObjectIntersectionOf>
-</ObjectSomeValuesFrom>
-
+            <Class IRI="urn:absolute:testingOntology#ClassY"/>
+        </ObjectIntersectionOf>
+        
 
         
     </SubClassOf>

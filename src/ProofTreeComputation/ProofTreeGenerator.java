@@ -98,7 +98,7 @@ public class ProofTreeGenerator {
 		
 		// Compute all sets of laconic justifications from 		 		 
 		// the set of (potentially non-laconic) justification given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 4);
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 64);
 		/* timeout if computation is taking too long */
 		
 		return laconicJustifications;
@@ -151,8 +151,10 @@ public class ProofTreeGenerator {
 			
 			if (tree.getSubTrees() != null) {
 				
-				if (GenerateExceptions.isException(tree)) {
-					appliedTrees.add(GenerateExceptions.applyExceptionRule(tree));
+				ProofTree exceptionTree = GenerateExceptions.matchException(tree);
+				
+				if (exceptionTree != null) {
+					appliedTrees.add(exceptionTree);
 					
 				} else {
 					
@@ -162,13 +164,14 @@ public class ProofTreeGenerator {
 					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					RuleString rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
+					List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
-					if (rule == null) {							
+					if (applicableRules == null || applicableRules.size() == 0) {							
+						System.out.println("Could not find rule for laconic axiom!");
 						return null;
 					} else {
 						ProofTree appliedTree = tree;
-						appliedTree.setInferenceRule(rule);
+						appliedTree.setInferenceRule(applicableRules.get(0));
 						appliedTrees.add(appliedTree);
 					}
 				}
@@ -247,7 +250,7 @@ public class ProofTreeGenerator {
 	/*
 		COMPUTATION OF COMPLETE PROOF TREES
 	 */
-	private static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
+	public static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
 		
 		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
 		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();
@@ -258,18 +261,22 @@ public class ProofTreeGenerator {
 		// Add rules to all of the rule applications.
 		// Need to copy tree as appropriate.
 		while (!incompleteProofTreeList.isEmpty()) {
-			
+					
+			newIncompleteProofTreeList = new ArrayList<ProofTree>();
+
 			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
 				
 				OWLAxiom rootAxiom = incompleteProofTree.getAxiom();
-				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
-				newIncompleteProofTreeList = new ArrayList<ProofTree>();
+				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();				
+				List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
-				RuleString rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
-				
-				if (rule != null) {	
-					incompleteProofTree.setInferenceRule(rule);
-					completeProofTreeList.add(incompleteProofTree);
+				if (applicableRules != null && applicableRules.size() > 0) {	
+					
+					for (RuleString applicableRule : applicableRules) {
+						ProofTree copiedTree = new ProofTree(incompleteProofTree);
+						copiedTree.setInferenceRule(applicableRule);
+						completeProofTreeList.add(copiedTree);
+					}
 				} else {
 					
 					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);

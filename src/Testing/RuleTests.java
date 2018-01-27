@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ public class RuleTests {
 		
 		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
 		String testsPath = "src/TestOntology/CorrectApplicationTests/";
-		
 		
 		// Iterate over all of the rules
 		for (int premiseNumber : rules.keySet()) {
@@ -56,7 +56,12 @@ public class RuleTests {
 				
 				for (File file : conclusionFiles) {
 					conclusions.add(loadConclusion(file.getAbsolutePath()));
-				}							
+				}	
+
+				for (OWLAxiom conclusion : conclusions) {
+					assertTrue(rule.matchPremisesAndConclusion(premises, conclusion));
+				}
+				
 				assertTrue(conclusions.equals(generatedConclusions));						
 			}
 		}	

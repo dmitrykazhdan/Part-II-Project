@@ -1,10 +1,24 @@
+- Add check if laconic axiom contains conclusion
+
+- False Negatives are easier to test than false positives.
+
+- Edge case of rule 52 (and potentially others) if class expressions are equal.
+
+- Add restrictions on exceptions. Allow only a restricted input type.
+
+- Do disjointness of data ranges.
+
 - Implement exception rules.
+
+- Look at cases when intersection/union size = 1. Think about how to handle it.
 
 - Remove repeated code. Cleanup somehow.
 
 - Have a "simple/atomic" expression group, and a more complex expression group.
 Matching and generation of class expressions only uses the atomic expression groups.
 
+- What happens if the entailment is already in the laconic justification?
+Currently we have a node with the same value, and so we fail.
 
 
 

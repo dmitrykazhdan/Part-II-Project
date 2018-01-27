@@ -57,6 +57,7 @@ import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.ComplementCls;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.UninstantiatedCardinalityException;
+import ProofTreeComputation.ProofTree;
 import RuleRestrictions.AbsCardinalityRestriction;
 import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.DisjointDatatypesRestriction;
@@ -101,6 +102,9 @@ public class RuleString {
 
 	private RuleRestrictions ruleRestrictions;
 
+	public int getPremiseNumber() {
+		return premiseNumber;
+	}
 
 	public String getRuleID() {
 		return ruleID;
@@ -125,7 +129,7 @@ public class RuleString {
 	}
 
 
-	public boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
+	private boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
 
 		PremiseMatcher matcher = new PremiseMatcher(expressions, expressionStr, ruleRestrictions);
 		List<Instantiation> allInstantiations = matcher.getAllMatchedInstantiations();		
@@ -158,5 +162,9 @@ public class RuleString {
 	public List<OWLAxiom> generateConclusions(List<OWLAxiom> premises) {
 		ConclusionGenerator conclusionGenerator = new ConclusionGenerator(premises, premisesStr, conclusionStr, ruleRestrictions);
 		return conclusionGenerator.generateConclusions();
+	}
+
+	public List<OWLAxiom> generateConclusions(OWLAxiom... premises) {
+		return generateConclusions(Arrays.asList(premises));
 	}
 }
