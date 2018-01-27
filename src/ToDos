@@ -1,3 +1,7 @@
+- Add check if laconic axiom contains conclusion
+
+- False Negatives are easier to test than false positives.
+
 - Edge case of rule 52 (and potentially others) if class expressions are equal.
 
 - Add restrictions on exceptions. Allow only a restricted input type.
