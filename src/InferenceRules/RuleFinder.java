@@ -8,46 +8,48 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 public class RuleFinder {
 
 	// Given premises only, find a rule that fits the pattern.
-	public static RuleString findRuleAppWithoutConclusion(List<OWLAxiom> premises) {
+	public static List<RuleString> findRuleAppWithoutConclusion(List<OWLAxiom> premises) {
 
-		List<RuleString> rules = GenerateRules.getRules().get(premises.size());
+		List<RuleString> applicableRules = new ArrayList<RuleString>();
+		List<RuleString> allRules = GenerateRules.getRules().get(premises.size());
 		List<List<OWLAxiom>> premisePermutations = getPremisePermutations(premises);
 
-		if (rules == null) { return null;} 
+		if (allRules == null) { return null;} 
 
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
-			for (RuleString rule : rules) {
-				if (rule.matchPremises(premisePermutation)) {
-					return rule;
+			for (RuleString rule : allRules) {
+				if (rule.matchPremises(premisePermutation) && !applicableRules.contains(rule)) {
+					applicableRules.add(rule);
 				}
 			}
 		}
 		
-		return null;
+		return applicableRules;
 	}
 	
 	
 	
 	// Given premises and a conclusion, find a rule that fits the pattern.
-	public static RuleString findRuleAppGivenConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
+	public static List<RuleString> findRuleAppGivenConclusion(List<OWLAxiom> premises, OWLAxiom conclusion) {
 
-		List<RuleString> rules = GenerateRules.getRules().get(premises.size());
+		List<RuleString> applicableRules = new ArrayList<RuleString>();
+		List<RuleString> allRules = GenerateRules.getRules().get(premises.size());
 		List<List<OWLAxiom>> premisePermutations = getPremisePermutations(premises);
 
-		if (rules == null) {
+		if (allRules == null) {
 			return null;
 		}
 
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
 
-			for (RuleString rule : rules) {
-				if (rule.matchPremisesAndConclusion(premisePermutation, conclusion)) {
-					return rule;
+			for (RuleString rule : allRules) {
+				if (rule.matchPremisesAndConclusion(premisePermutation, conclusion) && !applicableRules.contains(rule)) {
+					applicableRules.add(rule);
 				}
 			}
 		}
 
-		return null;
+		return applicableRules;
 	}
 	
 	

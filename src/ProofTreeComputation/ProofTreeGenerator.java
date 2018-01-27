@@ -164,14 +164,14 @@ public class ProofTreeGenerator {
 					premises.add(justificationAxiom);
 					
 					// Attempt to find matching rule.
-					RuleString rule = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
+					List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
 					
-					if (rule == null) {							
+					if (applicableRules == null || applicableRules.size() == 0) {							
 						System.out.println("Could not find rule for laconic axiom!");
 						return null;
 					} else {
 						ProofTree appliedTree = tree;
-						appliedTree.setInferenceRule(rule);
+						appliedTree.setInferenceRule(applicableRules.get(0));
 						appliedTrees.add(appliedTree);
 					}
 				}
@@ -268,11 +268,15 @@ public class ProofTreeGenerator {
 				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
 				newIncompleteProofTreeList = new ArrayList<ProofTree>();
 				
-				RuleString rule = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
+				List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
-				if (rule != null) {	
-					incompleteProofTree.setInferenceRule(rule);
-					completeProofTreeList.add(incompleteProofTree);
+				if (applicableRules != null && applicableRules.size() > 0) {	
+					
+					for (RuleString applicableRule : applicableRules) {
+						ProofTree copiedTree = new ProofTree(incompleteProofTree);
+						copiedTree.setInferenceRule(applicableRule);
+						completeProofTreeList.add(incompleteProofTree);
+					}
 				} else {
 					
 					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);

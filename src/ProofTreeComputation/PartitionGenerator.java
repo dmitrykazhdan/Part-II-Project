@@ -21,7 +21,8 @@ public class PartitionGenerator {
 			
 		for (Partition partition : partitions) {
 			
-			PartitionWithRules newPartitionWithRules = new PartitionWithRules(new ArrayList<InstanceOfRule>());
+			List<PartitionWithRules> newPartitionsWithRules = new ArrayList<PartitionWithRules>();
+			newPartitionsWithRules.add(new PartitionWithRules(new ArrayList<InstanceOfRule>()));
 			atLeastOneApplication = false;
 			
 			// For now, we apply as much rules as we can to a partition.
@@ -33,18 +34,30 @@ public class PartitionGenerator {
 			//				 ... etc.				
 			for (List<OWLAxiom> subSet : partition.getElements()) {
 				
-				RuleString applicableRule = RuleFinder.findRuleAppWithoutConclusion(subSet);
+				List<RuleString> applicableRules = RuleFinder.findRuleAppWithoutConclusion(subSet);
 				
-				if (applicableRule != null) {
-					atLeastOneApplication = true;
+				if (applicableRules == null || applicableRules.size() == 0) {
+					continue;
 				}
 				
-				InstanceOfRule ruleApplication = new InstanceOfRule(subSet, null, applicableRule);
-				newPartitionWithRules.getItems().add(ruleApplication);
+				atLeastOneApplication = true;
+				List<PartitionWithRules> oldPartitionsWithRules = newPartitionsWithRules;		
+				newPartitionsWithRules = new ArrayList<PartitionWithRules>();
+				
+				for (RuleString applicableRule : applicableRules) {
+					
+					for (PartitionWithRules newPartitionWithRules : oldPartitionsWithRules) {
+						
+						PartitionWithRules copiedPartition = new PartitionWithRules(newPartitionWithRules);
+						InstanceOfRule ruleApplication = new InstanceOfRule(subSet, null, applicableRule);
+						copiedPartition.getItems().add(ruleApplication);
+						newPartitionsWithRules.add(copiedPartition);
+					}
+				}			
 			}	
 			
 			if (atLeastOneApplication) {
-				allRuleApplications.add(newPartitionWithRules);
+				allRuleApplications.addAll(newPartitionsWithRules);
 			}
 		}
 			

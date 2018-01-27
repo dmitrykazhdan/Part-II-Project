@@ -15,6 +15,10 @@ public class PartitionWithRules {
 		this.elements = elements;
 	}
 	
+	public PartitionWithRules(PartitionWithRules original) {
+		this.elements = new ArrayList<InstanceOfRule>(original.getItems());
+	}
+	
 	public List<InstanceOfRule> getItems() {
 		return elements;
 	}	
