@@ -20,7 +20,7 @@
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY"/>
+        <Class IRI="urn:absolute:testingOntology#ClassZ"/>
     </SubClassOf>
 
 

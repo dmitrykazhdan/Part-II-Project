@@ -1,4 +1,6 @@
--Add restrictions on exceptions. Allow only a restricted input type.
+- Edge case of rule 52 (and potentially others) if class expressions are equal.
+
+- Add restrictions on exceptions. Allow only a restricted input type.
 
 - Do disjointness of data ranges.
 

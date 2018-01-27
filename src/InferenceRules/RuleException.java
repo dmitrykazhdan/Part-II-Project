@@ -37,16 +37,96 @@ public class RuleException {
 	private OWLAxiomStr correctAxiomStr;
 	private OWLAxiomStr laconicAxiomStr;
 	private OWLAxiomStr justificationAxiomStr;
-	
+	private boolean includeEquivalentCase;
+	private boolean includeIntersectionCase;
 
-	public RuleException(OWLAxiomStr laconicAxiomStr,  OWLAxiomStr justificationAxiomStr, OWLAxiomStr correctAxiomStr) {
+	public RuleException(OWLAxiomStr laconicAxiomStr,  OWLAxiomStr justificationAxiomStr, OWLAxiomStr correctAxiomStr, boolean includeEquivalentCase, boolean includeIntersectionCase) {
 		this.laconicAxiomStr = laconicAxiomStr;
 		this.justificationAxiomStr = justificationAxiomStr;
 		this.correctAxiomStr = correctAxiomStr;
+		this.includeEquivalentCase = includeEquivalentCase;
+		this.includeIntersectionCase = includeIntersectionCase;
 	}
 	
 
 	public ProofTree matchException(OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
+			
+		if (!(laconicAxiom instanceof OWLSubClassOfAxiom)) {
+			return null;
+		}
+		
+		OWLSubClassOfAxiom laconicSubClsAxiom = (OWLSubClassOfAxiom) laconicAxiom;
+		OWLSubClassOfAxiom justSubClsAxiom = convertJustificationToSubCls(laconicSubClsAxiom, justificationAxiom);
+		
+		if (justSubClsAxiom == null) {
+			return null;
+		}
+		
+		OWLAxiom generatedConclusion = null;
+		
+		if (includeIntersectionCase && justSubClsAxiom.getSuperClass() instanceof OWLObjectIntersectionOf) {
+			
+			OWLObjectIntersectionOf justSuperCls = (OWLObjectIntersectionOf) justSubClsAxiom.getSuperClass();
+			List<OWLClassExpression> operands = justSuperCls.getOperandsAsList();
+			
+			// Currently allow only intersections of size 2, as specified in the thesis.
+			if (operands.size() != 2) {
+				return null;
+			}
+			
+			for (OWLClassExpression innerExp : operands) {
+				OWLSubClassOfAxiom justSubCls = new OWLSubClassOfAxiomImpl(laconicSubClsAxiom.getSubClass(), innerExp, new ArrayList<OWLAnnotation>());
+
+				if (generateConclusion(laconicSubClsAxiom, justSubCls) != null) {
+					generatedConclusion = generateConclusion(laconicSubClsAxiom, justSubCls);
+					break;
+				}
+			}
+			
+		
+		} else {
+			generatedConclusion = generateConclusion(laconicSubClsAxiom, justSubClsAxiom);
+		}
+				
+		if (generatedConclusion == null) {
+			return null;
+		}	
+		
+		return getCorrectedTree(generatedConclusion, justificationAxiom);
+	}
+	
+	
+	
+	private OWLAxiom generateConclusion(OWLSubClassOfAxiom laconicSubClsAxiom, OWLSubClassOfAxiom justSubClsAxiom) {
+		
+		RuleString tmp = new RuleString("t", "t", correctAxiomStr, laconicAxiomStr, justificationAxiomStr);
+		List<OWLAxiom> generatedConclusions = tmp.generateConclusions(laconicSubClsAxiom, justSubClsAxiom);
+		
+		if (generatedConclusions == null || generatedConclusions.size() != 1) {
+			return null;
+		}
+		
+		return generatedConclusions.get(0);
+	}
+	
+	
+	private OWLSubClassOfAxiom convertJustificationToSubCls(OWLSubClassOfAxiom laconicSubClsAxiom, OWLAxiom justificationAxiom) {
+				
+		if (includeEquivalentCase && justificationAxiom instanceof OWLEquivalentClassesAxiom) {
+
+			OWLEquivalentClassesAxiom equivAxiom = (OWLEquivalentClassesAxiom) justificationAxiom;
+			List<OWLClassExpression> innerExpressions = equivAxiom.getClassExpressionsAsList();
+			
+			if (!innerExpressions.contains(laconicSubClsAxiom.getSubClass()) || innerExpressions.size() != 2) {
+				return null;
+			}		
+			innerExpressions.remove(laconicSubClsAxiom.getSubClass());
+			return new OWLSubClassOfAxiomImpl(laconicSubClsAxiom.getSubClass(), innerExpressions.get(0), new ArrayList<OWLAnnotation>());
+			
+		} else if (justificationAxiom instanceof OWLSubClassOfAxiom) {
+			return (OWLSubClassOfAxiom) justificationAxiom;
+			
+		} 
 		return null;
 	}
 	

@@ -11,8 +11,10 @@ import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 
+import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.ExistsOrForAll;
+import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
@@ -74,11 +76,13 @@ public class GenerateExceptions {
 		// Case 1	
 		OWLAxiomStr justificationAxiomStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "D"));
 		OWLAxiomStr laconicStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));		
-		RuleException case1 = new RuleException(laconicStr, laconicStr, justificationAxiomStr);
+		RuleException case1 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
+	
+		
 
 		
-		
 		ruleExceptions.add(case1);
+
 	}
 	
 
