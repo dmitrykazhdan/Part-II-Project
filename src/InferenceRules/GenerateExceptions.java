@@ -9,7 +9,9 @@ import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 
+import OWLExpressionTemplates.ClsExpStr;
 import OWLExpressionTemplates.ExistsOrForAll;
+import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
 import OWLExpressionTemplates.TemplateObjectProperty;
@@ -64,47 +66,34 @@ public class GenerateExceptions {
 		}
 		
 		ruleExceptions = new ArrayList<BaseRuleException>();
-		
-		// Case 1
-		OWLAxiomStr justificationAxiomStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "D"));
-		OWLAxiomStr laconicAxiom = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));		
-		BaseRuleException case1 = new BaseRuleException(laconicAxiom, justificationAxiomStr);
+				
+		// Case 1	
+		ClsExpStr justificationStr = ExistsOrForAll.createObjSomeValFrom("Ro", "D");
+		ClsExpStr laconicStr = ExistsOrForAll.createObjSomeValFrom("Ro", "T");		
+		BaseRuleException case1_1 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
+
 
 		
 		
-		ruleExceptions.add(case1);
+		ruleExceptions.add(case1_1);
 	}
 	
 
 	
-	public static BaseRuleException matchException(OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
+	public static ProofTree matchException(ProofTree tree) {
 		
 		generateExceptions();
 		
-		for (BaseRuleException ruleException : ruleExceptions) {
-			if (ruleException.matchException(laconicAxiom, justificationAxiom)) {
-				return ruleException;
-			}
-		}		
-		return null;
-	}
-	
-	
-	public static boolean isException(ProofTree tree){
-		return (matchException(tree.getAxiom(), tree.getSubTrees().get(0).getAxiom()) == null);
-	}
-	
-	
-	public static ProofTree applyExceptionRule(ProofTree tree) {
-		
 		OWLAxiom laconicAxiom = tree.getAxiom();
 		OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
-		BaseRuleException matchedException = matchException(laconicAxiom, justificationAxiom);
 		
-		if (matchedException != null) {
-			ProofTree correctedTree = matchedException.getCorrectedTree(laconicAxiom, justificationAxiom);
-			return correctedTree;
-		}
+		for (BaseRuleException ruleException : ruleExceptions) {
+			ProofTree generatedTree = ruleException.matchException(laconicAxiom, justificationAxiom);
+			
+			if (generatedTree != null) {
+				return generatedTree;
+			}
+		}		
 		return null;
 	}
 }

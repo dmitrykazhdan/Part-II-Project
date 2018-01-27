@@ -1,3 +1,7 @@
+-Add restrictions on exceptions. Allow only a restricted input type.
+
+- Do disjointness of data ranges.
+
 - Implement exception rules.
 
 - Look at cases when intersection/union size = 1. Think about how to handle it.
