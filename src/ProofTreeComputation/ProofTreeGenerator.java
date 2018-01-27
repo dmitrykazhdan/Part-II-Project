@@ -261,13 +261,13 @@ public class ProofTreeGenerator {
 		// Add rules to all of the rule applications.
 		// Need to copy tree as appropriate.
 		while (!incompleteProofTreeList.isEmpty()) {
-			
+					
+			newIncompleteProofTreeList = new ArrayList<ProofTree>();
+
 			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
 				
 				OWLAxiom rootAxiom = incompleteProofTree.getAxiom();
-				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
-				newIncompleteProofTreeList = new ArrayList<ProofTree>();
-				
+				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();				
 				List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
 				
 				if (applicableRules != null && applicableRules.size() > 0) {	

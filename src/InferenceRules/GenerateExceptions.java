@@ -89,7 +89,7 @@ public class GenerateExceptions {
 		RuleException case2 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
 		
 		
-				
+		
 		// Case 3
 		
 		// 3.1
@@ -120,9 +120,8 @@ public class GenerateExceptions {
 		RuleException case4_2 = new RuleException(laconicStr, justificationAxiomStr, correctedConclusion, true, true);
 
 		
-		
-		
-		// 
+			
+		// Case 5
 		
 		
 		
