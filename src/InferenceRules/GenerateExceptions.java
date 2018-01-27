@@ -61,7 +61,7 @@ Difficult case (given two intersection axioms where you need to return a new pro
  */
 public class GenerateExceptions {
 
-	private static List<BaseRuleException> ruleExceptions = null;
+	private static List<RuleException> ruleExceptions = null;
 	
 	private static void generateExceptions() {
 		
@@ -69,22 +69,16 @@ public class GenerateExceptions {
 			return;
 		}
 		
-		ruleExceptions = new ArrayList<BaseRuleException>();
+		ruleExceptions = new ArrayList<RuleException>();
 				
 		// Case 1	
-		ClsExpStr justificationStr = ExistsOrForAll.createObjSomeValFrom("Ro", "D");
-		ClsExpStr laconicStr = ExistsOrForAll.createObjSomeValFrom("Ro", "T");		
-		BaseRuleException case1 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
+		OWLAxiomStr justificationAxiomStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "D"));
+		OWLAxiomStr laconicStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));		
+		RuleException case1 = new RuleException(laconicStr, laconicStr, justificationAxiomStr);
 
 		
-		// Case 2
-		justificationStr = ExistsOrForAll.createIndividualSomeValFrom("Ro", "i");
-		laconicStr = ExistsOrForAll.createObjSomeValFrom("Ro", "T");		
-		BaseRuleException case2 = new BaseRuleException(laconicStr, justificationStr, justificationStr);
-
 		
 		ruleExceptions.add(case1);
-		ruleExceptions.add(case2);
 	}
 	
 
@@ -96,7 +90,7 @@ public class GenerateExceptions {
 		OWLAxiom laconicAxiom = tree.getAxiom();
 		OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
 		
-		for (BaseRuleException ruleException : ruleExceptions) {
+		for (RuleException ruleException : ruleExceptions) {
 			ProofTree generatedTree = ruleException.matchException(laconicAxiom, justificationAxiom);
 			
 			if (generatedTree != null) {
