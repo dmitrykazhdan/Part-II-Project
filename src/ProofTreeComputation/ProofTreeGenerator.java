@@ -151,8 +151,10 @@ public class ProofTreeGenerator {
 			
 			if (tree.getSubTrees() != null) {
 				
-				if (GenerateExceptions.isException(tree)) {
-					appliedTrees.add(GenerateExceptions.applyExceptionRule(tree));
+				ProofTree exceptionTree = GenerateExceptions.matchException(tree);
+				
+				if (exceptionTree != null) {
+					appliedTrees.add(exceptionTree);
 					
 				} else {
 					
@@ -248,7 +250,7 @@ public class ProofTreeGenerator {
 	/*
 		COMPUTATION OF COMPLETE PROOF TREES
 	 */
-	private static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
+	public static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
 		
 		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
 		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();

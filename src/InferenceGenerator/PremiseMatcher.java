@@ -45,6 +45,7 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.SubClassStr;
 import OWLExpressionTemplates.TemplateDataProperty;
 import OWLExpressionTemplates.TemplateDataRange;
 import OWLExpressionTemplates.TemplateIndividual;
@@ -289,27 +290,17 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 	}
 	
 	
-	private boolean matchSubClassAxiom(OWLSubClassOfAxiom subClsAxiom, OWLAxiomStr pattern) {
-		
-		if (!(pattern.getExpressions().size() == 2 &&
-			  pattern.getExpressions().get(0) instanceof ClsExpStr &&
-			  pattern.getExpressions().get(1) instanceof ClsExpStr)) {
-			
-			return false;
-		}
-		
-		ClsExpStr subClass = (ClsExpStr) pattern.getExpressions().get(0);
-		ClsExpStr superClass = (ClsExpStr) pattern.getExpressions().get(1);
-				
-		return match(subClsAxiom.getSubClass(), subClass) && 
-			   match(subClsAxiom.getSuperClass(), superClass);
+	private boolean matchSubClassAxiom(OWLSubClassOfAxiom subClsAxiom, SubClassStr pattern) {
+	
+		return match(subClsAxiom.getSubClass(), pattern.getSubClassStr()) && 
+			   match(subClsAxiom.getSuperClass(), pattern.getSuperClassStr());
 	}
 
 	
 	private boolean matchTBoxAxiom(OWLAxiom tBoxAxiom, OWLAxiomStr pattern) {
 
 		if (tBoxAxiom.isOfType(AxiomType.SUBCLASS_OF)) {
-			return matchSubClassAxiom((OWLSubClassOfAxiom) tBoxAxiom, pattern);
+			return matchSubClassAxiom((OWLSubClassOfAxiom) tBoxAxiom, (SubClassStr) pattern);
 
 		} else if (tBoxAxiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
 

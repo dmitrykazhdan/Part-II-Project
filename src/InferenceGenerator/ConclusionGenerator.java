@@ -38,6 +38,7 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.GenericExpStr;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
+import OWLExpressionTemplates.SubClassStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.UninstantiatedCardinalityException;
 import RuleRestrictions.GroupContainsRestriction;
@@ -117,8 +118,15 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	private List<OWLSubClassOfAxiom> generateSubClassOfAxioms() {
 		
 		List<OWLSubClassOfAxiom> subClassAxioms = new ArrayList<OWLSubClassOfAxiom>();
-		List<OWLObject> subClsList = generate((ClsExpStr) conclusionStr.getExpressions().get(0));
-		List<OWLObject> superClsList = generate((ClsExpStr) conclusionStr.getExpressions().get(1));
+		
+		if (!(conclusionStr instanceof SubClassStr)) {
+			return subClassAxioms;
+		}
+		
+		SubClassStr subClassStr = (SubClassStr) conclusionStr;
+		
+		List<OWLObject> subClsList = generate(subClassStr.getSubClassStr());
+		List<OWLObject> superClsList = generate(subClassStr.getSuperClassStr());
 		
 		for (OWLObject subCls : subClsList) {
 			for (OWLObject  superCls : superClsList) {
