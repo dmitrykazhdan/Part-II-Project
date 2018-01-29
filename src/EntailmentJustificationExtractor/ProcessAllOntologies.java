@@ -27,7 +27,7 @@ public class ProcessAllOntologies {
 		File[] ontologies = ontologyDir.listFiles(new FilenameFilter() {
 		    @Override
 		    public boolean accept(File dir, String name) {
-		        return name.endsWith(".owl");
+		        return name.endsWith(".owl") || name.endsWith(".xml");
 		    }
 		});
 		

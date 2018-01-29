@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
@@ -48,6 +49,7 @@ import RuleRestrictions.SubSetRestriction;
 import uk.ac.manchester.cs.owl.owlapi.OWLDisjointClassesAxiomImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectExactCardinalityImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectHasValueImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectIntersectionOfImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMaxCardinalityImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectMinCardinalityImpl;
@@ -517,6 +519,21 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		return allClasses;
 	}
 	
+	
+	private List<OWLObject> generateObjectHasValue(ExistsOrForAll hasValueExpression) {
+		
+		OWLObjectPropertyExpression property = (OWLObjectPropertyExpression) generate(hasValueExpression.getProperty());
+		OWLIndividual individual = (OWLIndividual) generate((TemplatePrimitive) hasValueExpression.getExpression());
+		
+		if (individual != null && property != null) {
+			List<OWLObject> values = new ArrayList<OWLObject>();
+			values.add(new OWLObjectHasValueImpl(property, individual));
+			return values;
+		}		
+		return null;
+	}
+	
+	
 
 	// All types of generated expressions are unique, except for
 	// the intersection and union types, where multiple conclusions may be generated.
@@ -536,6 +553,9 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 			if (classExpType.equals(ClassExpressionType.OBJECT_SOME_VALUES_FROM)) {
 				generatedExpressions.addAll(generateObjSomeValuesFrom((ExistsOrForAll) conclusionExp));
 							
+			}  else if (classExpType.equals(ClassExpressionType.OBJECT_HAS_VALUE)) {
+				generatedExpressions.addAll(generateObjectHasValue((ExistsOrForAll) conclusionExp));
+									
 			} else if(classExpType.equals(ClassExpressionType.OBJECT_ALL_VALUES_FROM)) {
 				generatedExpressions.addAll(generateObjAllValuesFrom((ExistsOrForAll) conclusionExp));
 				
