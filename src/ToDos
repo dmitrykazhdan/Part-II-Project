@@ -1,3 +1,5 @@
+- Consider whether their "Object some values from" actually also includes "Object has value" or not...
+
 - Add check if laconic axiom contains conclusion
 
 - False Negatives are easier to test than false positives.
