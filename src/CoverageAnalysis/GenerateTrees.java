@@ -33,7 +33,7 @@ public class GenerateTrees {
 	public static void main(String args[]) throws IOException, InterruptedException, ExecutionException {
 
 		// Declare path to the folder containing the explanation data set.
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/TestExplanations/");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/Explanations/");
 		File explanationDir = new File(explanationDirPath.toString());
 		
 		// Declare a path to the folder that will contain all failed explanations.
@@ -54,7 +54,8 @@ public class GenerateTrees {
 		for (int i = 0; i < explanationFiles.length; i++) {
 			
 			// Increment the justifications counter.
-			totalJustifications++;		
+			totalJustifications++;	
+			System.out.println("Justification number: "+ totalJustifications);
 			
 			// Compute proof trees for the next explanation.
 			Path explanationFilePath = Paths.get(explanationFiles[i].getAbsolutePath());		
@@ -65,7 +66,7 @@ public class GenerateTrees {
 			if (proofTrees != null && proofTrees.size() > 0) {
 				totalTreesComputed++;
 			} else {
-				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
+			//	System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
 				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
@@ -88,7 +89,7 @@ public class GenerateTrees {
 		List<ProofTree> proofTrees = null;
 
 		try {
-			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
+			proofTrees = futureCall.get(20,TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
 		}		

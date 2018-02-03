@@ -135,8 +135,11 @@ public class OntologyProcessing {
 
 		// Write all non-trivial explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
-
-			if (!IsTrivialExplanation(explanation)) {
+			
+			int nonAnnotationJustifictionAxiomCount = getNonAnnotationAxiomCount(explanation.getAxioms());
+			
+			// Store only non-trivial explanations with a justification size of 10 or less.
+			if (!IsTrivialExplanation(explanation) && nonAnnotationJustifictionAxiomCount <= 10) {
 				
 				// Generate unique identifier when naming the file
 				String uuid = UUID.randomUUID().toString();		
@@ -152,6 +155,17 @@ public class OntologyProcessing {
 		}		
 	}
 
+	private int getNonAnnotationAxiomCount(Set<OWLAxiom> axiomSet) {
+		
+		int nonAnnotationAxiomCount = 0;
+		
+		for (OWLAxiom axiom : axiomSet) {
+			if (axiom.isLogicalAxiom()) {
+				nonAnnotationAxiomCount++;
+			}
+		}
+		return nonAnnotationAxiomCount;
+	}
 	
 	/* Currently it is assumed that trivial subsumptions are:
 	1) X <= T
