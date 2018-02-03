@@ -380,9 +380,29 @@ public class ProofTreeGenerator {
 	// between the root node and the root child nodes of the given tree.
 	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partition) {
 
+		List<List<InstanceOfRule>> allPartitionInferences = new ArrayList<List<InstanceOfRule>>();
 		List<ProofTree> newTrees = new ArrayList<ProofTree>();
 		newTrees.add(new ProofTree(oldTree));
+		
+		// Compute all possible applications of rules.
+		for (InstanceOfRule partitionSubSet : partition.getItems()) {
+			if (partitionSubSet.getRule() != null) {
 
+				// Generate all conclusions from the partition subset.
+				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
+
+				// If no conclusion returned, this is an error. Return null.
+				if (newInferences == null) {
+					return null;
+				}			
+				allPartitionInferences.add(newInferences);
+			}
+		}
+		
+		
+		
+		
+		
 		for (InstanceOfRule partitionSubSet : partition.getItems()) {
 
 			if (partitionSubSet.getRule() != null) {
@@ -390,8 +410,7 @@ public class ProofTreeGenerator {
 				// Generate all conclusions from the partition subset.
 				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
 
-				// If there was no generated conclusion, even though the subset had an applicable rule,
-				// then there was an error and a null is returned.
+				// If no conclusion returned, this is an error. Return null.
 				if (newInferences == null) {
 					return null;
 				}
@@ -416,6 +435,19 @@ public class ProofTreeGenerator {
 		return newTrees;
 	}
 	
+	
+	
+	private static List<ProofTree> generateTreesFromPartitionApplications(List<ProofTree> originalSubTrees, List<List<InstanceOfRule>> partition) {
+		
+		List<InstanceOfRule> generatedLemmas = partition.remove(0);
+		List<ProofTree> generatedTrees = new ArrayList<ProofTree>();
+		
+		for (InstanceOfRule subSet : generatedLemmas) {
+			generatedTrees.addAll(generateTreesFromPartitionApplications(partition));
+		}
+		
+		return null;
+	}
 	
 	// Given an incomplete tree and an instance of a rule application,
 	// add a lemma node to the tree between the root node and its child axioms that represent the base axioms
