@@ -30,14 +30,12 @@ public class CorpusProcessing {
 		// Process all of the extracted ontologies.
 		for (File ontology : ontologies) {
 			
-			String ontologyFileName = ontology.getAbsolutePath();
-			
 			try {											
-				OntologyProcessing processOntology = new OntologyProcessing(ontologyFileName, outputDir.getAbsolutePath());
+				OntologyProcessing processOntology = new OntologyProcessing(ontology, outputDir);
 				processOntology.GenerateExplanations();
 				
 			} catch (OWLOntologyCreationException e) {				
-				System.out.println("Could not process ontology: " + ontologyFileName);
+				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
 				
 			} catch (InterruptedException | ExecutionException | IOException e) {

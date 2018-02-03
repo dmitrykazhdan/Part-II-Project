@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,21 +47,20 @@ import ProofTreeComputation.ProofTree;
 
 public class OntologyProcessing {
 
-	private String ontologyFilename;
+	private File ontologyFile;
 	private OWLDataFactory dataFactory;
 	private OWLOntology ontology;
 	private OWLReasoner reasoner;
 	private ExplanationGenerator<OWLAxiom> explanationGen;
-	private String outputDirPath;
+	private File outputDir;
 	
 	
-	public OntologyProcessing(String ontologyFilename, String outputDirPath) throws OWLOntologyCreationException {
+	public OntologyProcessing(File ontologyFile, File outputDir) throws OWLOntologyCreationException {
 
-		this.ontologyFilename = ontologyFilename;
-		this.outputDirPath = outputDirPath;
+		this.ontologyFile = ontologyFile;
+		this.outputDir = outputDir;
 				
 		// Load the ontology from the specified file.
-		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		this.ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 
@@ -94,12 +94,12 @@ public class OntologyProcessing {
 			try {
 				explanationSet = explanationGenThreadCall.get(10, TimeUnit.MINUTES);
 			} catch (TimeoutException e) {
-				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFilename + " entailment: " + entailment.toString());
+				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			}
 			
 			if (explanationSet != null) {
 				// Write these explanations to the output file.
-				StoreExplanations(explanationSet, outputDirPath, ontologyFilename);
+				StoreExplanations(explanationSet);
 			}
 		}			
 	}
@@ -115,13 +115,13 @@ public class OntologyProcessing {
 		try {
 			allSubsumptions = subsumptionThreadCall.get(10, TimeUnit.MINUTES);
 		} catch (TimeoutException e) {
-			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFilename);
+			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFile.getName());
 		}		
 		return allSubsumptions;
 	}
 	
 
-	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir, String ontName) throws IOException {
+	private void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet) throws IOException {
 
 		// Write all non-trivial explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
@@ -129,8 +129,10 @@ public class OntologyProcessing {
 			if (!IsTrivialExplanation(explanation)) {
 				
 				// Generate unique identifier when naming the file
-				String uuid = UUID.randomUUID().toString();			
-				File outputFile = new File(outputDir + ontName + "_" + uuid + ".xml");
+				String uuid = UUID.randomUUID().toString();		
+				
+				Path outputFilePath = outputDir.toPath().resolve(ontologyFile.getName());
+				File outputFile = new File(outputFilePath.toString() +  "_" + uuid + ".xml");
 				OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
 				// Store the explanation in the file
