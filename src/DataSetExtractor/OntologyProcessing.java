@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
@@ -34,6 +40,9 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+
+import CoverageAnalysis.TreeGeneratorThread;
+import ProofTreeComputation.ProofTree;
 
 public class OntologyProcessing {
 
@@ -68,81 +77,49 @@ public class OntologyProcessing {
 	
 	
 	
-	public void GenerateExplanations() throws IOException {
+	public void GenerateExplanations() throws IOException, InterruptedException, ExecutionException {
 		
-		List<OWLAxiom> allSubsumptions = new ArrayList<OWLAxiom>();
-
-		allSubsumptions = computeAllSubsumptionEntailments();
-
+		// Compute all subsumption entailments.
+		List<OWLAxiom> allSubsumptions = ComputeAllSubsumptionEntailments();
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		
+		// For every entailment, generate all of its justifications.
 		for (OWLAxiom entailment : allSubsumptions) {
 
 			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
-
-			// For every such subsumption entailment, compute all of its justifications.
-			explanationSet = explanationGen.getExplanations(entailment);
-
-			// Write these explanations to the output file.
-			StoreExplanations(explanationSet, outputDirPath, ontologyFilename);
+			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new LaconicExplanationGeneratorThread(entailment, explanationGen));
+			
+			// Set a time limit of 10 minutes to the computation of all justifications.
+			try {
+				explanationSet = explanationGenThreadCall.get(10, TimeUnit.MINUTES);
+			} catch (TimeoutException e) {
+				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFilename + " entailment: " + entailment.toString());
+			}
+			
+			if (explanationSet != null) {
+				// Write these explanations to the output file.
+				StoreExplanations(explanationSet, outputDirPath, ontologyFilename);
+			}
 		}			
 	}
 	
 	
-	private List<OWLAxiom> computeAllSubsumptionEntailments() {
+	private List<OWLAxiom> ComputeAllSubsumptionEntailments() throws InterruptedException, ExecutionException {
 		
 		List<OWLAxiom> allSubsumptions = new ArrayList<OWLAxiom>();
-		allSubsumptions.addAll(computeOWLNothingSubsumptions());
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Future<List<OWLAxiom>> subsumptionThreadCall = executor.submit(new SubSumptionComputationThread(dataFactory, ontology, reasoner));
 		
-		// Get all the classes from the ontology.
-		Set<OWLClass> allClasses = ontology.getClassesInSignature();
-
-		// For every class "A" in allClasses, compute all subsumption entailments of the form
-		// B <= A for some other class B.
-		for (OWLClass currentSuperclass : allClasses) {
-
-			// For every class, compute all of its (non-strict) subclasses.
-			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, currentSuperclass);
-
-			for (OWLClass currentSubclass : subClasses) {
-
-				// Generate a subsumption entailment from the (subclass, superclass) pair.
-				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
-				allSubsumptions.add(entailment);
-			}		
+		// Set a time limit of 10 minutes to the computation of all subsumption entailments.
+		try {
+			allSubsumptions = subsumptionThreadCall.get(10, TimeUnit.MINUTES);
+		} catch (TimeoutException e) {
+			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFilename);
 		}		
 		return allSubsumptions;
 	}
 	
-	
-	private List<OWLAxiom> computeOWLNothingSubsumptions() {
-
-		List<OWLAxiom> allOWLNothingSubsumptions = new ArrayList<OWLAxiom>();
-
-		OWLClass owlNothing = dataFactory.getOWLNothing();
-		Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, owlNothing);
-
-		for (OWLClass currentSubclass : subClasses) {
-			OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, owlNothing);				
-			allOWLNothingSubsumptions.add(entailment);
-		}		
-		return allOWLNothingSubsumptions;
-	}
-
-	
-	private static Set<OWLClass> GetNonStrictSubclasses(OWLReasoner reasoner, OWLClass superclass) {
-
-		// For every class in the ontology, compute all of its subclasses (direct and indirect).
-		Set<OWLClass> subClasses = reasoner.getSubClasses(superclass, false).getFlattened();
-
-		// Note that "getSubClasses" returns strict subclasses.
-		// Hence need to manually add equivalent classes as well.
-		subClasses.addAll(reasoner.getEquivalentClasses(superclass).getEntities());
-		
-		// Remove the trivial statement that the class is equivalent to itself.
-		subClasses.remove(superclass);
-		
-		return subClasses;
-	}
-
 
 	private static void StoreExplanations(Set<Explanation<OWLAxiom>> explanationSet, String outputDir, String ontName) throws IOException {
 

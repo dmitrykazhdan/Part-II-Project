@@ -2,6 +2,7 @@ package DataSetExtractor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
@@ -40,6 +41,12 @@ public class CorpusProcessing {
 				e.printStackTrace();
 				
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 		}		
