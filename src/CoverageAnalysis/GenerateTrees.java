@@ -66,8 +66,8 @@ public class GenerateTrees {
 			if (proofTrees != null && proofTrees.size() > 0) {
 				totalTreesComputed++;
 			} else {
-			//	System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
-				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
+				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
+			//	copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
 		
@@ -89,7 +89,7 @@ public class GenerateTrees {
 		List<ProofTree> proofTrees = null;
 
 		try {
-			proofTrees = futureCall.get(20,TimeUnit.SECONDS);
+			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
 		}		
