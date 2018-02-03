@@ -141,7 +141,7 @@ public class RuleException {
 		} 
 		
 		ProofTree root = new ProofTree(correctedAxiom, Arrays.asList(new ProofTree[] {leaf}), null);
-		List<ProofTree> generatedTrees = ProofTreeGenerator.ComputeCompleteProofTrees(root);
+		List<ProofTree> generatedTrees = ProofTreeGenerator.computeCompleteProofTrees(root);
 		
 		if (generatedTrees == null || generatedTrees.size() != 1) {
 			return null;

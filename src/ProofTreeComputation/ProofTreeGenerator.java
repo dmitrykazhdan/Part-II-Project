@@ -44,25 +44,23 @@ public class ProofTreeGenerator {
 
 	
 	/*
-	For our purpose, an initial tree is as an incomplete proof tree in which the root node
+	An initial tree is as an incomplete proof tree in which the root node
 	is an entailment, the terminal nodes are axioms of a justification, and for each terminal
 	node that contains unnecessary parts, a non-terminal node that links the root node to
 	the associated terminal node is added.
 	
 	Such a non-terminal node, if existing, and the associated terminal node 
-	form a local tree which corresponds to a single-premise deduction rule.
-	
+	form a local tree which corresponds to a single-premise deduction rule.	
 	Each non-terminal node is a lemma that unpacks part of the 
 	meaning of the associated axiom in the justification.
-	
-	
+		
 	Horridge's algorithm is used to compute all laconic justifications from the given justification.
 	An initial proof tree is constructed for each laconic justification.
 	
 	Constructing the tree:
 	
 	A tree in which the root node is the entailment, and all terminal nodes are axioms 
-	in the original justification is initialised.
+	in the original justification is initialized.
 	
 	For each axiom in the laconic justification, a reasoner is queried to identify 
 	from which axiom in the original justification this axiom follows.
@@ -74,38 +72,57 @@ public class ProofTreeGenerator {
 	
 	 */
 	
-	private static Set<OWLAxiom> getLogicalAxioms (Set<OWLAxiom> axiomSet) {
+	
+	
+	public static List<ProofTree> generateProofTrees(Explanation<OWLAxiom> explanation) {	
+		return generateProofTrees(explanation.getEntailment(), explanation.getAxioms());
+	}
+	
+	
+	public static List<ProofTree> generateProofTrees(OWLAxiom entailment, Set<OWLAxiom> justification) {
 		
-		Set<OWLAxiom> logicalAxiomSet = new HashSet<OWLAxiom>();
+		List<ProofTree> proofTreeList = computeProofTrees(justification, entailment);
+				
+		if ((proofTreeList != null) && proofTreeList.size() > 0) {
+			return proofTreeList;
+		} else {
+			return null;
+		}
+	}
+	
+	/*
+	 Construction of the proof trees is done by exhaustive search of possible applications of the deduction rules. 
+	 First, superfluous parts in the justification are eliminated resulting in one or more initial trees,
+	 then for each initial tree, all complete proof trees are constructed.
+	 */
+	private static List<ProofTree> computeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
+
+		List<ProofTree> initialProofTreeList = null;
 		
-		for (OWLAxiom axiom : axiomSet) {
-			
-			if (axiom.isLogicalAxiom()) {
-				logicalAxiomSet.add(axiom);
-			}
+		try {
+			initialProofTreeList = computeInitialProofTrees(justification, entailment);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
 		}
 		
-		return logicalAxiomSet;
+		List<ProofTree> allProofTrees = new ArrayList<ProofTree>();
+				
+		for (ProofTree initialTree : initialProofTreeList) {
+						
+			List<ProofTree> completedProofTrees = computeCompleteProofTrees(initialTree);
+			
+			if (completedProofTrees != null) {
+				allProofTrees.addAll(completedProofTrees);
+			}			
+		}		
+		return allProofTrees;		
 	}
 	
 	
-	private static Set<Explanation<OWLAxiom>> getLaconicJustifications (Set<OWLAxiom> justification, OWLAxiom entailment) {
-		
-		// Create a laconic explanation generator.
-		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
-		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFactory);
-		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);		
-		
-		// Compute all sets of laconic justifications from 		 		 
-		// the set of (potentially non-laconic) justification given.
-		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment, 64);
-		/* timeout if computation is taking too long */
-		
-		return laconicJustifications;
-	}
-	
-
-	private static List<ProofTree> ComputeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
+	/*
+	 * COMPUTATION OF INITIAL TREES
+	 */
+	private static List<ProofTree> computeInitialProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) throws OWLOntologyCreationException {
 		
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
 
@@ -136,21 +153,55 @@ public class ProofTreeGenerator {
 				initialTrees.add(initialTree);
 			}
 		}
-
 		return initialTrees;		
 	}	
+
 	
 	
-	private static List<ProofTree> findRulesForLemmas(List<ProofTree> trees) {
+	// Remove non-logical axioms from an axiom set.
+	private static Set<OWLAxiom> getLogicalAxioms (Set<OWLAxiom> axiomSet) {
+		
+		Set<OWLAxiom> logicalAxiomSet = new HashSet<OWLAxiom>();
+		
+		for (OWLAxiom axiom : axiomSet) {
+			
+			if (axiom.isLogicalAxiom()) {
+				logicalAxiomSet.add(axiom);
+			}
+		}	
+		return logicalAxiomSet;
+	}
+	
+	
+	private static Set<Explanation<OWLAxiom>> getLaconicJustifications (Set<OWLAxiom> justification, OWLAxiom entailment) {
+		
+		// Create a laconic explanation generator.
+		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
+		ExplanationGeneratorFactory<OWLAxiom> laconicGeneratorFactory = ExplanationManager.createLaconicExplanationGeneratorFactory(reasonerFactory);
+		ExplanationGenerator<OWLAxiom> laconicExplanationGenerator = laconicGeneratorFactory.createExplanationGenerator(justification);		
+		
+		// Compute all sets of laconic justifications from the set of (potentially non-laconic) justification given.	 		 
+		Set<Explanation<OWLAxiom>> laconicJustifications = laconicExplanationGenerator.getExplanations(entailment);		
+		return laconicJustifications;
+	}
+	
+
+	
+	private static List<ProofTree> findRulesForLemmas(List<ProofTree> lemmaTrees) {
 		
 		List<ProofTree> appliedTrees = new ArrayList<ProofTree>();
 		
 		// We assume that these trees will either be single terminal nodes
 		// or lemmas, which are always trees with a root and one child
-		for (ProofTree tree : trees) {
+		for (ProofTree tree : lemmaTrees) {
 			
-			if (tree.getSubTrees() != null) {
+			// If the tree is a single node, then can add it directly.
+			if (tree.getSubTrees() == null) {			
+				appliedTrees.add(tree);
 				
+			} else {
+				
+				// Check whether the given subtree is an instance of an exception.
 				ProofTree exceptionTree = GenerateExceptions.matchException(tree);
 				
 				if (exceptionTree != null) {
@@ -158,31 +209,42 @@ public class ProofTreeGenerator {
 					
 				} else {
 					
-					OWLAxiom laconicAxiom = tree.getAxiom();
-					OWLAxiom justificationAxiom = tree.getSubTrees().get(0).getAxiom();
-					List<OWLAxiom> premises = new ArrayList<OWLAxiom>();					
-					premises.add(justificationAxiom);
+					// Otherwise, attempt to find matching rule.
+					ProofTree appliedTree = matchLemmaToRule(tree);
 					
-					// Attempt to find matching rule.
-					List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
-					
-					if (applicableRules == null || applicableRules.size() == 0) {							
-						System.out.println("Could not find rule for laconic axiom!");
+					if (appliedTree == null) {
 						return null;
 					} else {
-						ProofTree appliedTree = tree;
-						appliedTree.setInferenceRule(applicableRules.get(0));
 						appliedTrees.add(appliedTree);
 					}
 				}
-			} else {
-				
-				appliedTrees.add(tree);
-			}
+			} 
 		}			
 		return appliedTrees;
 	}
 	
+	
+	// Given a tree consisting of a root node and a single child leaf, attempt to match it to an inference rule.
+	private static ProofTree matchLemmaToRule(ProofTree lemmaTree) {
+		
+		OWLAxiom laconicAxiom = lemmaTree.getAxiom();
+		OWLAxiom justificationAxiom = lemmaTree.getSubTrees().get(0).getAxiom();
+		List<OWLAxiom> premises = new ArrayList<OWLAxiom>();					
+		premises.add(justificationAxiom);
+							
+		List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(premises, laconicAxiom);
+
+		// If there are multiple applicable rules returned, use the first one, since it does not matter
+		// which one to use.
+		if (applicableRules == null || applicableRules.size() == 0) {							
+			System.out.println("Could not find rule for laconic axiom!");
+			return null;
+		} else {
+			ProofTree appliedTree = new ProofTree(lemmaTree);
+			appliedTree.setInferenceRule(applicableRules.get(0));
+			return appliedTree;
+		}
+	}
 	
 	
 	// Given a justification and its corresponding laconic justification, attempt to produce a set of initial proof trees
@@ -190,44 +252,40 @@ public class ProofTreeGenerator {
 	private static List<ProofTree> matchLaconicToNonLaconicJust(Set<OWLAxiom> justification, Set<OWLAxiom> laconicJustification) throws OWLOntologyCreationException {
 		
 		// The set of sub-trees to be returned.
-		List<ProofTree> trees = new ArrayList<ProofTree>();
-		
-		Set<OWLAxiom> unusedLaconicAxioms = new HashSet<OWLAxiom>(laconicJustification);
+		List<ProofTree> matchedAxiomTrees = new ArrayList<ProofTree>();
 		
 		for (OWLAxiom laconicAxiom : laconicJustification) {	
 			
 			if (justification.contains(laconicAxiom)) {
 				
 				// If the laconic axiom is equivalent to an existing one, add it directly.
-				trees.add(new ProofTree(laconicAxiom, null, null));
-				unusedLaconicAxioms.remove(laconicAxiom);
-				
+				matchedAxiomTrees.add(new ProofTree(laconicAxiom, null, null));
+
 			} else {
 
 				// Otherwise attempt to find from which axiom the laconic axiom follows.
+				boolean foundMatchingAxiom = false;
+				
 				for (OWLAxiom justificationAxiom : justification) {
-
 					if (isEntailed(justificationAxiom, laconicAxiom)) {
 
 						ProofTree leaf = new ProofTree(justificationAxiom, null, null);
 						List<ProofTree> leaves = new ArrayList<ProofTree>();
 						leaves.add(leaf);
-
+						foundMatchingAxiom = true;
 						ProofTree lemma = new ProofTree(laconicAxiom, leaves, null);		
-						trees.add(lemma);
-						unusedLaconicAxioms.remove(laconicAxiom);
+						matchedAxiomTrees.add(lemma);
 						break;						
 					}
-				}									
+				}
+				
+				// If a corresponding axiom was not found for a laconic axiom, return null.
+				if (!foundMatchingAxiom) {
+					return null;
+				}
 			} 
 		}
-		
-		// If all laconic axioms were matched successfully, return the sub-tree set. Otherwise return null.
-		if (unusedLaconicAxioms.size() == 0) {
-			return trees;
-		} else {
-			return null;
-		}
+		return matchedAxiomTrees;
 	}
 	
 	
@@ -245,62 +303,78 @@ public class ProofTreeGenerator {
 		return reasoner.isEntailed(laconicAxiom);	
 	}
 	
+	/*
+	 * END OF COMPUTATION OF INITIAL TREES
+	 */
+	
+	
 	
 	
 	/*
 		COMPUTATION OF COMPLETE PROOF TREES
 	 */
-	public static List<ProofTree> ComputeCompleteProofTrees(ProofTree initialTree) {
+	public static List<ProofTree> computeCompleteProofTrees(ProofTree initialTree) {
 		
 		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
 		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();
-		List<ProofTree> newIncompleteProofTreeList =  new ArrayList<ProofTree>();
-
 		incompleteProofTreeList.add(initialTree);
 		
-		// Add rules to all of the rule applications.
-		// Need to copy tree as appropriate.
 		while (!incompleteProofTreeList.isEmpty()) {
 					
-			newIncompleteProofTreeList = new ArrayList<ProofTree>();
+			List<ProofTree> newIncompleteProofTreeList = new ArrayList<ProofTree>();
 
 			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
 				
-				OWLAxiom rootAxiom = incompleteProofTree.getAxiom();
-				List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();				
-				List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(childAxioms, rootAxiom);
+				// Attempt to match the current root children to the root.
+				List<ProofTree> matchedTrees = matchEntailmentToChildAxioms(incompleteProofTree);
 				
-				if (applicableRules != null && applicableRules.size() > 0) {	
+				// If such a match is found, add all matches to the list.
+				if (matchedTrees != null && matchedTrees.size() > 0) {					
+					completeProofTreeList.addAll(matchedTrees);
 					
-					for (RuleString applicableRule : applicableRules) {
-						ProofTree copiedTree = new ProofTree(incompleteProofTree);
-						copiedTree.setInferenceRule(applicableRule);
-						completeProofTreeList.add(copiedTree);
-					}
 				} else {
 					
-					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(childAxioms);
+					// Otherwise compute all partitions where there is at least one applicable rule.
+					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(incompleteProofTree.getChildAxioms());
 					
+					// Compute new incomplete trees by generating new lemma nodes from the applicable rules.
 					for (PartitionWithRules partition : partitionList) {
-						List<ProofTree> newProofTrees = ComputeProofByApplyingPartition(incompleteProofTree, partition);	
+						List<ProofTree> newProofTrees = computeProofByApplyingPartition(incompleteProofTree, partition);	
 						
 						if (newProofTrees != null) {
 							newIncompleteProofTreeList.addAll(newProofTrees);
 						}					
 					}
 				}				
-			}
-			
+			}			
 			incompleteProofTreeList = newIncompleteProofTreeList;
 		}	
 		return completeProofTreeList;
 	}	
-	/*
-		END OF COMPUTATION OF COMPLETE PROOF TREES
-	 */
 	
 	
-	private static List<ProofTree> ComputeProofByApplyingPartition(ProofTree oldTree, PartitionWithRules partition) {
+	private static List<ProofTree> matchEntailmentToChildAxioms(ProofTree incompleteProofTree) {
+
+		List<ProofTree> completedProofTrees = new ArrayList<ProofTree>();
+		OWLAxiom entailment = incompleteProofTree.getAxiom();
+		List<OWLAxiom> childAxioms = incompleteProofTree.getChildAxioms();
+		
+		// Attempt to find all rules matching the entailment to its child axioms.
+		List<RuleString> applicableRules = RuleFinder.findRuleAppGivenConclusion(childAxioms, entailment);
+		
+		// If at least one such rule is found, return all trees with their inference rule set.
+		if (applicableRules != null && applicableRules.size() > 0) {					
+			for (RuleString applicableRule : applicableRules) {
+				ProofTree copiedTree = new ProofTree(incompleteProofTree);
+				copiedTree.setInferenceRule(applicableRule);
+				completedProofTrees.add(copiedTree);
+			}
+		}	
+		return completedProofTrees;
+	}
+
+		
+	private static List<ProofTree> computeProofByApplyingPartition(ProofTree oldTree, PartitionWithRules partition) {
 
 		List<ProofTree> newTrees = new ArrayList<ProofTree>();
 		newTrees.add(new ProofTree(oldTree));
@@ -350,66 +424,7 @@ public class ProofTreeGenerator {
 		return newTrees;
 	}
 	
-
-	private static List<ProofTree> ComputeProofTrees(Set<OWLAxiom> justification, OWLAxiom entailment) {
-			
-		// the construction of the proof trees is through 
-		// exhaustive search of possible applications of the deduction rules
-		
-		// first, superfluous parts in the justification are eliminated 
-		// resulting in one or more initial trees
-		
-		// then for each initial tree, all complete
-		// proof trees are constructed
-		
-		// Think of better variable names
-		List<ProofTree> initialProofTreeList = null;
-		
-		try {
-			initialProofTreeList = ComputeInitialProofTrees(justification, entailment);
-		} catch (OWLOntologyCreationException e) {
-
-			e.printStackTrace();
-		}
-		
-		List<ProofTree> completeProofTreeList = new ArrayList<ProofTree>();
-		List<ProofTree> completeProofTrees = new ArrayList<ProofTree>();
-		
-		
-		for (ProofTree initialTree : initialProofTreeList) {
-						
-			completeProofTrees = ComputeCompleteProofTrees(initialTree);
-			
-			if (completeProofTrees != null) {
-				completeProofTreeList.addAll(completeProofTrees);
-			}
-			
-		}
-		
-		return completeProofTreeList;		
-	}
-	
-	
-
-
-	public static List<ProofTree> GenerateProofTree(OWLAxiom entailment, Set<OWLAxiom> justification) {
-		
-		/* Algorithm implementation goes here: */
-		List<ProofTree> proofTreeList = ComputeProofTrees(justification, entailment);
-		
-		
-		// Get most understandable tree.
-		if ((proofTreeList != null) && proofTreeList.size() > 0) {
-			return proofTreeList;
-		} else {
-			return null;
-		}
-	}
-	
-	
-	public static List<ProofTree> GenerateProofTree(Explanation<OWLAxiom> explanation) {
-		
-		return GenerateProofTree(explanation.getEntailment(), explanation.getAxioms());
-	}
-	
+	/*
+	END OF COMPUTATION OF COMPLETE PROOF TREES
+	 */
 }

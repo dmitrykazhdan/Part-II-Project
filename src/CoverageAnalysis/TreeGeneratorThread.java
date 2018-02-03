@@ -20,6 +20,6 @@ public class TreeGeneratorThread implements Callable<List<ProofTree>> {
 
 	@Override
 	public List<ProofTree> call() throws Exception {
-		return ProofTreeGenerator.GenerateProofTree(explanation);
+		return ProofTreeGenerator.generateProofTrees(explanation);
 	}
 }
