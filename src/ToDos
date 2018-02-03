@@ -22,6 +22,7 @@ Matching and generation of class expressions only uses the atomic expression gro
 - What happens if the entailment is already in the laconic justification?
 Currently we have a node with the same value, and so we fail.
 
+- Time limitation for a single proof tree was 60 seconds.
 
 
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.
