@@ -1,4 +1,4 @@
-package EntailmentJustificationExtractor;
+package DataSetExtractor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,29 +35,68 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-public class ProcessOntology {
+public class OntologyProcessing {
 
-	public static void GenerateExplanations(String ontologyFilename, String outputDir) throws OWLOntologyCreationException, IOException {
+	private String ontologyFilename;
+	private OWLDataFactory dataFactory;
+	private OWLOntology ontology;
+	private OWLReasoner reasoner;
+	private ExplanationGenerator<OWLAxiom> explanationGen;
+	private String outputDirPath;
+	
+	
+	public OntologyProcessing(String ontologyFilename, String outputDirPath) throws OWLOntologyCreationException {
 
+		this.ontologyFilename = ontologyFilename;
+		this.outputDirPath = outputDirPath;
+				
 		// Load the ontology from the specified file.
 		File ontologyFile = new File(ontologyFilename);
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
+		this.ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 
-		// Create the HermiT reasoner for the ontology.
+		// Create the reasoner for the ontology.
 		OWLReasonerFactory reasonerFactory = new ReasonerFactory();
-		OWLReasoner reasoner = reasonerFactory.createReasoner(ontology);
+		this.reasoner = reasonerFactory.createReasoner(ontology);
 
-		OWLDataFactory dataFactory = manager.getOWLDataFactory();
+		this.dataFactory = manager.getOWLDataFactory();
 
 		// Create an explanation generator from the reasoner and the ontology.
 		ExplanationGeneratorFactory<OWLAxiom> genFac = ExplanationManager.createExplanationGeneratorFactory(reasonerFactory);
-		ExplanationGenerator<OWLAxiom> gen = genFac.createExplanationGenerator(ontology);
+		this.explanationGen = genFac.createExplanationGenerator(ontology);
+	}
+	
+	
+	
+	public void GenerateExplanations() throws IOException {
+		
+		List<OWLAxiom> allSubsumptions = new ArrayList<OWLAxiom>();
 
+		allSubsumptions = computeAllSubsumptionEntailments();
+
+		for (OWLAxiom entailment : allSubsumptions) {
+
+			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
+
+			// For every such subsumption entailment, compute all of its justifications.
+			explanationSet = explanationGen.getExplanations(entailment);
+
+			// Write these explanations to the output file.
+			StoreExplanations(explanationSet, outputDirPath, ontologyFilename);
+		}			
+	}
+	
+	
+	private List<OWLAxiom> computeAllSubsumptionEntailments() {
+		
+		List<OWLAxiom> allSubsumptions = new ArrayList<OWLAxiom>();
+		allSubsumptions.addAll(computeOWLNothingSubsumptions());
+		
 		// Get all the classes from the ontology.
 		Set<OWLClass> allClasses = ontology.getClassesInSignature();
 
-
+		// For every class "A" in allClasses, compute all subsumption entailments of the form
+		// B <= A for some other class B.
 		for (OWLClass currentSuperclass : allClasses) {
 
 			// For every class, compute all of its (non-strict) subclasses.
@@ -67,23 +106,28 @@ public class ProcessOntology {
 
 				// Generate a subsumption entailment from the (subclass, superclass) pair.
 				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
-
-				// For every such subsumption entailment, compute all of its justifications.
-				Set<Explanation<OWLAxiom>> explanationSet = gen.getExplanations(entailment, 32);
-
-
-				// timeout when you are unable to generate a justification
-				// check whether the justification is trivial or not before storing it
-
-
-				// Write these explanations to the output file.
-				StoreExplanations(explanationSet, outputDir, ontologyFile.getName());
-
+				allSubsumptions.add(entailment);
 			}		
-		}	
+		}		
+		return allSubsumptions;
+	}
+	
+	
+	private List<OWLAxiom> computeOWLNothingSubsumptions() {
+
+		List<OWLAxiom> allOWLNothingSubsumptions = new ArrayList<OWLAxiom>();
+
+		OWLClass owlNothing = dataFactory.getOWLNothing();
+		Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, owlNothing);
+
+		for (OWLClass currentSubclass : subClasses) {
+			OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, owlNothing);				
+			allOWLNothingSubsumptions.add(entailment);
+		}		
+		return allOWLNothingSubsumptions;
 	}
 
-
+	
 	private static Set<OWLClass> GetNonStrictSubclasses(OWLReasoner reasoner, OWLClass superclass) {
 
 		// For every class in the ontology, compute all of its subclasses (direct and indirect).
@@ -120,20 +164,16 @@ public class ProcessOntology {
 	}
 
 	
-	
+	/* Currently it is assumed that trivial subsumptions are:
+	1) X <= T
+	2) F <= X
+	3) A --> A
+	*/
 	private static boolean isTrivialExplanation(Explanation<OWLAxiom> explanation) {
 
-		// COMPLETE
-		// Define a "trivial" subsumption
-		
-		/* Currently it is assumed that trivial subsumptions are:
-		1) X <= T
-		2) F <= X
-		*/
 		OWLAxiom conclusion = explanation.getEntailment();
 		Set<OWLAxiom> justification = explanation.getAxioms();
-	
-		
+			
 		if (justification.contains(conclusion.getAxiomWithoutAnnotations())) {
 			return true;
 			
@@ -142,7 +182,7 @@ public class ProcessOntology {
 			OWLSubClassOfAxiom subClassOfAxiom = (OWLSubClassOfAxiom) conclusion;
 			
 			if (subClassOfAxiom.getSubClass().isOWLNothing() ||
-					subClassOfAxiom.getSuperClass().isOWLThing()) {
+				subClassOfAxiom.getSuperClass().isOWLThing()) {
 				
 				return true;
 			}			

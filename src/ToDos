@@ -47,7 +47,10 @@ However, keep in mind that for exceptions you only need to pattern match, not ge
 "previous - new" with a defined transformation mapping "previous" to "new"
 
 
+- Refactor code to make the ontology dir and output dir input parameters, not hardcoded.
 
+- Test ontology processing by providing a sample ontology and investigating what files will be derived from it.
+Ensure to include edge cases of T <= A and A <= F.
 
 
 
