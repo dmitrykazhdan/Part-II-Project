@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
+// Thread for computing all subsumption entailments from a given ontology.
 public class SubSumptionComputationThread implements Callable<List<OWLAxiom>>{
 
 	private OWLDataFactory dataFactory;
@@ -39,15 +40,15 @@ public class SubSumptionComputationThread implements Callable<List<OWLAxiom>>{
 
 		// For every class "A" in allClasses, compute all subsumption entailments of the form
 		// B <= A for some other class B.
-		for (OWLClass currentSuperclass : allClasses) {
+		for (OWLClass superClass : allClasses) {
 
 			// For every class, compute all of its (non-strict) subclasses.
-			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, currentSuperclass);
+			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, superClass);
 
-			for (OWLClass currentSubclass : subClasses) {
+			for (OWLClass subClass : subClasses) {
 
 				// Generate a subsumption entailment from the (subclass, superclass) pair.
-				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, currentSuperclass);				
+				OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(subClass, superClass);				
 				allSubsumptions.add(entailment);
 			}		
 		}		
@@ -62,8 +63,8 @@ public class SubSumptionComputationThread implements Callable<List<OWLAxiom>>{
 		OWLClass owlNothing = dataFactory.getOWLNothing();
 		Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, owlNothing);
 
-		for (OWLClass currentSubclass : subClasses) {
-			OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(currentSubclass, owlNothing);				
+		for (OWLClass subClass : subClasses) {
+			OWLAxiom entailment = dataFactory.getOWLSubClassOfAxiom(subClass, owlNothing);				
 			allOWLNothingSubsumptions.add(entailment);
 		}		
 		return allOWLNothingSubsumptions;

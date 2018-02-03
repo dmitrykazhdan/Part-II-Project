@@ -40,15 +40,9 @@ public class CorpusProcessing {
 				System.out.println("Could not process ontology: " + ontologyFileName);
 				e.printStackTrace();
 				
-			} catch (IOException e) {
+			} catch (InterruptedException | ExecutionException | IOException e) {
 				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+			}
 		}		
 	}
 	

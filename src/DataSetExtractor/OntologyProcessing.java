@@ -88,7 +88,7 @@ public class OntologyProcessing {
 		for (OWLAxiom entailment : allSubsumptions) {
 
 			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
-			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new LaconicExplanationGeneratorThread(entailment, explanationGen));
+			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new ExplanationGeneratorThread(entailment, explanationGen));
 			
 			// Set a time limit of 10 minutes to the computation of all justifications.
 			try {
@@ -126,7 +126,7 @@ public class OntologyProcessing {
 		// Write all non-trivial explanations in the given set to the output stream.
 		for (Explanation<OWLAxiom> explanation : explanationSet) {
 
-			if (!isTrivialExplanation(explanation)) {
+			if (!IsTrivialExplanation(explanation)) {
 				
 				// Generate unique identifier when naming the file
 				String uuid = UUID.randomUUID().toString();			
@@ -146,7 +146,7 @@ public class OntologyProcessing {
 	2) F <= X
 	3) A --> A
 	*/
-	private static boolean isTrivialExplanation(Explanation<OWLAxiom> explanation) {
+	private static boolean IsTrivialExplanation(Explanation<OWLAxiom> explanation) {
 
 		OWLAxiom conclusion = explanation.getEntailment();
 		Set<OWLAxiom> justification = explanation.getAxioms();
