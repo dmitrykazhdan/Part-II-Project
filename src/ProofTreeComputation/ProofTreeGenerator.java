@@ -90,6 +90,7 @@ public class ProofTreeGenerator {
 		}
 	}
 	
+	
 	/*
 	 Construction of the proof trees is done by exhaustive search of possible applications of the deduction rules. 
 	 First, superfluous parts in the justification are eliminated resulting in one or more initial trees,
@@ -335,11 +336,11 @@ public class ProofTreeGenerator {
 				} else {
 					
 					// Otherwise compute all partitions where there is at least one applicable rule.
-					List<PartitionWithRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(incompleteProofTree.getChildAxioms());
+					List<PartitionWithApplicableInfRules> partitionList = PartitionGenerator.generateAllPartitionsWithRules(incompleteProofTree.getChildAxioms());
 					
 					// Compute new incomplete trees by generating new lemma nodes from the applicable rules.
-					for (PartitionWithRules partition : partitionList) {
-						List<ProofTree> newProofTrees = computeProofByApplyingPartition(incompleteProofTree, partition);	
+					for (PartitionWithApplicableInfRules partition : partitionList) {
+						List<ProofTree> newProofTrees = addInferredNodesToTree(incompleteProofTree, partition);	
 						
 						if (newProofTrees != null) {
 							newIncompleteProofTreeList.addAll(newProofTrees);
@@ -373,17 +374,20 @@ public class ProofTreeGenerator {
 		return completedProofTrees;
 	}
 
-		
-	private static List<ProofTree> computeProofByApplyingPartition(ProofTree oldTree, PartitionWithRules partition) {
+	
+	// This method takes a proof tree and a partition of its root children.
+	// It then generates new intermediate nodes from the partition and creates a new tree by adding these nodes
+	// between the root node and the root child nodes of the given tree.
+	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partition) {
 
 		List<ProofTree> newTrees = new ArrayList<ProofTree>();
 		newTrees.add(new ProofTree(oldTree));
 
-		for (InstanceOfRule subSet : partition.getItems()) {
+		for (InstanceOfRule partitionSubSet : partition.getItems()) {
 
-			if (subSet.getRule() != null) {
+			if (partitionSubSet.getRule() != null) {
 				
-				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(subSet);
+				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
 
 				if (newInferences == null) {
 					return null;

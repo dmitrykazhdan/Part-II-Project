@@ -6,16 +6,16 @@ import java.util.List;
 import InferenceRules.InstanceOfRule;
 
 
-// Partition with rules that can be applied to the subsets.
-public class PartitionWithRules {
+// Partition with rules that can be applied to its subsets.
+public class PartitionWithApplicableInfRules {
 
 	private List<InstanceOfRule> elements;
 	
-	public PartitionWithRules(List<InstanceOfRule> elements) {
+	public PartitionWithApplicableInfRules(List<InstanceOfRule> elements) {
 		this.elements = elements;
 	}
 	
-	public PartitionWithRules(PartitionWithRules original) {
+	public PartitionWithApplicableInfRules(PartitionWithApplicableInfRules original) {
 		this.elements = new ArrayList<InstanceOfRule>(original.getItems());
 	}
 	

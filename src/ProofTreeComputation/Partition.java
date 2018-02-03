@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
-// A partition is simply a list of lists in this case. 
+// A partition of a set of owl axioms.
+// Here a partition is represented as a list of lists.
 public class Partition {
 
 	private List<List<OWLAxiom>> elements;
 	
-	public Partition(List<List<OWLAxiom>> el) {
-		elements = el;
+	public Partition(List<List<OWLAxiom>> elements) {
+		this.elements = elements;
 	}
 	
 	public List<List<OWLAxiom>> getElements() {
@@ -18,7 +19,7 @@ public class Partition {
 	}	
 	
 	// Create copy of the partition.
-	// Note that axioms themselves are not copied (not a full deep copy).
+	// Note that axioms themselves are not copied (a shallow copy).
 	public Partition(Partition partition) {
 		
 		elements = new ArrayList<List<OWLAxiom>>();

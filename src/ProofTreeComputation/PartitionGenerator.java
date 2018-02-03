@@ -12,17 +12,17 @@ import InferenceRules.RuleString;
 
 public class PartitionGenerator {
 	
-	public static List<PartitionWithRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
+	public static List<PartitionWithApplicableInfRules> generateAllPartitionsWithRules(List<OWLAxiom> nodes) {
 		
 		List<Partition> partitions = generateAllPartitions(nodes);
-		List<PartitionWithRules> allRuleApplications = new ArrayList<PartitionWithRules>();
+		List<PartitionWithApplicableInfRules> allRuleApplications = new ArrayList<PartitionWithApplicableInfRules>();
 		
 		boolean atLeastOneApplication = false;
 			
 		for (Partition partition : partitions) {
 			
-			List<PartitionWithRules> newPartitionsWithRules = new ArrayList<PartitionWithRules>();
-			newPartitionsWithRules.add(new PartitionWithRules(new ArrayList<InstanceOfRule>()));
+			List<PartitionWithApplicableInfRules> newPartitionsWithRules = new ArrayList<PartitionWithApplicableInfRules>();
+			newPartitionsWithRules.add(new PartitionWithApplicableInfRules(new ArrayList<InstanceOfRule>()));
 			atLeastOneApplication = false;
 			
 			// For now, we apply as much rules as we can to a partition.
@@ -41,14 +41,14 @@ public class PartitionGenerator {
 				}
 				
 				atLeastOneApplication = true;
-				List<PartitionWithRules> oldPartitionsWithRules = newPartitionsWithRules;		
-				newPartitionsWithRules = new ArrayList<PartitionWithRules>();
+				List<PartitionWithApplicableInfRules> oldPartitionsWithRules = newPartitionsWithRules;		
+				newPartitionsWithRules = new ArrayList<PartitionWithApplicableInfRules>();
 				
 				for (RuleString applicableRule : applicableRules) {
 					
-					for (PartitionWithRules newPartitionWithRules : oldPartitionsWithRules) {
+					for (PartitionWithApplicableInfRules newPartitionWithRules : oldPartitionsWithRules) {
 						
-						PartitionWithRules copiedPartition = new PartitionWithRules(newPartitionWithRules);
+						PartitionWithApplicableInfRules copiedPartition = new PartitionWithApplicableInfRules(newPartitionWithRules);
 						InstanceOfRule ruleApplication = new InstanceOfRule(subSet, null, applicableRule);
 						copiedPartition.getItems().add(ruleApplication);
 						newPartitionsWithRules.add(copiedPartition);
