@@ -2,6 +2,7 @@ package CoverageAnalysis;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -31,69 +32,101 @@ public class GenerateTrees {
 	
 	public static void main(String args[]) throws IOException, InterruptedException, ExecutionException {
 
-		
-		Path failedExplanationDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
+		// Declare path to the folder containing the explanation data set.
 		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/TestExplanations/");
 		File explanationDir = new File(explanationDirPath.toString());
 		
-		File[] explanationFiles = explanationDir.listFiles(new FilenameFilter() {
-		    @Override
-		    public boolean accept(File dir, String name) {
-		        return name.endsWith(".xml");
-		    }
-		});
+		// Declare a path to the folder that will contain all failed explanations.
+		Path failedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
+		
+		// Extract all explanations and evaluate the algorithm coverage.
+		File[] explanationFiles = extractExplanationFiles(explanationDir);		
+		evaluateCoverage(explanationFiles, failedExplanationsDirPath);
+	}
+	
+	// Method measures the number of explanations from which at least one proof tree has
+	// been computed successfully.
+	private static void evaluateCoverage(File[] explanationFiles, Path failedExplanationsDirPath) throws IOException, InterruptedException, ExecutionException {
 		
 		float totalJustifications = 0;
 		float totalTreesComputed = 0;
-		
+	
 		for (int i = 0; i < explanationFiles.length; i++) {
 			
-			totalJustifications++;
+			// Increment the justifications counter.
+			totalJustifications++;		
+			
+			// Compute proof trees for the next explanation.
 			Path explanationFilePath = Paths.get(explanationFiles[i].getAbsolutePath());		
-			InputStream fileInputStream = new FileInputStream(explanationFilePath.toString());
-			System.out.println(totalJustifications + " " + explanationFilePath.toString());
-			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
-			
-			ExecutorService executor = Executors.newCachedThreadPool();
-			Future<List<ProofTree>> futureCall = executor.submit(new TreeGeneratorThread(explanation));
-						
-			List<ProofTree> proofTrees = null;
+			List<ProofTree> proofTrees = computeProofTree(explanationFilePath);
 
-			try {
-				proofTrees = futureCall.get(10,TimeUnit.SECONDS);
-			} catch (TimeoutException e) {
-				System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
-			}
-			
+			// If at least one proof tree has been computed, increment the appropriate counter.
+			// Otherwise copy the failed explanation to the appropriate folder.
 			if (proofTrees != null && proofTrees.size() > 0) {
 				totalTreesComputed++;
 			} else {
 				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
-	//			copyFile(explanationFilePath, failedExplanationDirPath.resolve(explanationFilePath.getFileName()));
+				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
-		double coverage = (totalTreesComputed * 100.0f)/totalJustifications;
 		
-		System.out.println("Coverage is: " + coverage);
-		
+		// Output the computed statistics.
+		double coverage = (totalTreesComputed * 100.0f)/totalJustifications;	
+		System.out.println("Coverage is: " + coverage);	
 	}
 	
 	
+	
+	private static List<ProofTree> computeProofTree(Path explanationFilePath) throws InterruptedException, ExecutionException, IOException {
+
+		// Load the next explanation from the file.
+		InputStream fileInputStream = new FileInputStream(explanationFilePath.toString());
+		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
+		
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Future<List<ProofTree>> futureCall = executor.submit(new TreeGeneratorThread(explanation));				
+		List<ProofTree> proofTrees = null;
+
+		try {
+			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
+		} catch (TimeoutException e) {
+			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
+		}		
+		return proofTrees;
+	}
+	
+
 	private static void copyFile(Path source, Path dest) throws IOException {
+		
 	    InputStream is = null;
 	    OutputStream os = null;
+	    
 	    try {
 	        is = new FileInputStream(source.toAbsolutePath().toString());
 	        os = new FileOutputStream(dest.toAbsolutePath().toString());
 	        byte[] buffer = new byte[1024];
 	        int length;
+	        
 	        while ((length = is.read(buffer)) > 0) {
 	            os.write(buffer, 0, length);
 	        }
+	        
 	    } finally {
 	        is.close();
 	        os.close();
 	    }
+	}
+	
+	private static File[] extractExplanationFiles(File explanationsDir) {
+		
+		// Extract all files with ".xml" extension from the specified directory.
+		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {
+		    @Override
+		    public boolean accept(File dir, String name) {
+		        return name.endsWith(".xml");
+		    }
+		});		
+		return explanations;		
 	}
 	
 }

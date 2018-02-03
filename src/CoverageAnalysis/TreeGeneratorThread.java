@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
 
+// Thread that attempts to compute proof trees from a given explanation.
 public class TreeGeneratorThread implements Callable<List<ProofTree>> {
 
 	private Explanation<OWLAxiom> explanation;
