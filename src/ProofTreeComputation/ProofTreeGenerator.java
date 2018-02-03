@@ -376,7 +376,7 @@ public class ProofTreeGenerator {
 
 	
 	// This method takes a proof tree and a partition of its root children.
-	// It then generates new intermediate nodes from the partition and creates a new tree by adding these nodes
+	// It then generates new intermediate nodes from the partition and creates new trees by adding these nodes
 	// between the root node and the root child nodes of the given tree.
 	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partition) {
 
@@ -387,48 +387,69 @@ public class ProofTreeGenerator {
 
 			if (partitionSubSet.getRule() != null) {
 				
+				// Generate all conclusions from the partition subset.
 				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
 
+				// If there was no generated conclusion, even though the subset had an applicable rule,
+				// then there was an error and a null is returned.
 				if (newInferences == null) {
 					return null;
 				}
 
-				List<ProofTree> newNewTrees = new ArrayList<ProofTree>();
+				List<ProofTree> intermediateTrees = new ArrayList<ProofTree>();
 
-				for (ProofTree incompleteTree : newTrees) { 
-			
+				// Add all generated conclusions to all intermediate trees.
+				for (ProofTree incompleteTree : newTrees) { 		
 					for (InstanceOfRule newInference : newInferences) {
-
-						ProofTree copiedTree = new ProofTree(incompleteTree);
-						List<ProofTree> subTrees = copiedTree.getSubTrees();
-
-						ProofTree newSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
-
-						// Consider using a map ***
-						for (ProofTree subTree : subTrees) {
-							if (newInference.getPremises().contains(subTree.getAxiom())) {
-								newInference.getPremises().remove(subTree.getAxiom());
-								newSubTree.getSubTrees().add(subTree);
-							}
-						}
-
-						for (ProofTree subTree : newSubTree.getSubTrees()) {
-							subTrees.remove(subTree);
-						}
-
-						copiedTree.getSubTrees().add(newSubTree);							
-						newNewTrees.add(copiedTree);
+						
+						ProofTree proofTreeWithAddedLemmas = addLemmasToIntermediateTree(incompleteTree, newInference);
+						
+						if (proofTreeWithAddedLemmas == null) {
+							return null;
+						}					
+						intermediateTrees.add(proofTreeWithAddedLemmas);
 					}	
-				}
-				
-				newTrees = newNewTrees;
+				}			
+				newTrees = intermediateTrees;
 			}
 		}
-
 		return newTrees;
 	}
 	
+	
+	// Given an incomplete tree and an instance of a rule application,
+	// add a lemma node to the tree between the root node and its child axioms that represent the base axioms
+	// of the rule application.
+	private static ProofTree addLemmasToIntermediateTree(ProofTree incompleteTree, InstanceOfRule newInference ) {
+
+		// Create a copy of the given tree.
+		ProofTree copiedTree = new ProofTree(incompleteTree);
+		List<ProofTree> subTrees = copiedTree.getSubTrees();
+
+		ProofTree newLemmaSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
+
+		// Connect the lemma subtree root to appropriate subtrees in the original trees.
+		for (ProofTree subTree : subTrees) {
+			if (newInference.getPremises().contains(subTree.getAxiom())) {
+				newInference.getPremises().remove(subTree.getAxiom());
+				newLemmaSubTree.getSubTrees().add(subTree);
+			}
+		}
+		
+		// If not all premises of the inference have been matched, there has been an error and a null is returned.
+		if (newInference.getPremises().size() > 0) {
+			return null;
+		}
+
+		// Remove connections from these subtrees to the root.
+		for (ProofTree subTree : newLemmaSubTree.getSubTrees()) {
+			subTrees.remove(subTree);
+		}
+		copiedTree.getSubTrees().add(newLemmaSubTree);							
+		return copiedTree;
+	}
+	
 	/*
-	END OF COMPUTATION OF COMPLETE PROOF TREES
+		END OF COMPUTATION OF COMPLETE PROOF TREES
 	 */
 }
