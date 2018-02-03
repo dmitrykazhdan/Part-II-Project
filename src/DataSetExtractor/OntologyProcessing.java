@@ -79,8 +79,8 @@ public class OntologyProcessing {
 	
 	public void GenerateExplanations() throws IOException, InterruptedException, ExecutionException {
 		
-		// Compute all subsumption entailments.
-		List<OWLAxiom> allSubsumptions = ComputeAllSubsumptionEntailments();
+		// Compute all non-trivial subsumption entailments.
+		List<OWLAxiom> allSubsumptions = ComputeAllNonTrivialSubsumptionEntailments();
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		
@@ -105,9 +105,10 @@ public class OntologyProcessing {
 	}
 	
 	
-	private List<OWLAxiom> ComputeAllSubsumptionEntailments() throws InterruptedException, ExecutionException {
+	private List<OWLAxiom> ComputeAllNonTrivialSubsumptionEntailments() throws InterruptedException, ExecutionException {
 		
 		List<OWLAxiom> allSubsumptions = new ArrayList<OWLAxiom>();
+		List<OWLAxiom> allNonTrivialSubsumptions = new ArrayList<OWLAxiom>();
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Future<List<OWLAxiom>> subsumptionThreadCall = executor.submit(new SubSumptionComputationThread(dataFactory, ontology, reasoner));
 		
@@ -117,7 +118,16 @@ public class OntologyProcessing {
 		} catch (TimeoutException e) {
 			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFile.getName());
 		}		
-		return allSubsumptions;
+		
+		// Filter out all trivial subsumptions.
+		if (allSubsumptions != null) {
+			for (OWLAxiom subsumption : allSubsumptions) {
+				if (IsNonTrivialSubsumption(subsumption)) {
+					allNonTrivialSubsumptions.add(subsumption);
+				}
+			}
+		}	
+		return allNonTrivialSubsumptions;
 	}
 	
 
@@ -146,7 +156,25 @@ public class OntologyProcessing {
 	/* Currently it is assumed that trivial subsumptions are:
 	1) X <= T
 	2) F <= X
-	3) A --> A
+	*/
+	private static boolean IsNonTrivialSubsumption(OWLAxiom subsumption) {
+
+		if (subsumption.isOfType(AxiomType.SUBCLASS_OF)) {
+
+			OWLSubClassOfAxiom subClassOfAxiom = (OWLSubClassOfAxiom) subsumption;
+
+			if (!subClassOfAxiom.getSubClass().isOWLNothing() &&
+				!subClassOfAxiom.getSuperClass().isOWLThing()) {
+
+				return true;
+			}	
+		}
+		return false;
+	}
+	
+	
+	/* Currently it is assumed that trivial explanations are:
+	1) {A, [...]} --> A
 	*/
 	private static boolean IsTrivialExplanation(Explanation<OWLAxiom> explanation) {
 
@@ -154,18 +182,8 @@ public class OntologyProcessing {
 		Set<OWLAxiom> justification = explanation.getAxioms();
 			
 		if (justification.contains(conclusion.getAxiomWithoutAnnotations())) {
-			return true;
-			
-		} else if (conclusion.isOfType(AxiomType.SUBCLASS_OF)) {
-			
-			OWLSubClassOfAxiom subClassOfAxiom = (OWLSubClassOfAxiom) conclusion;
-			
-			if (subClassOfAxiom.getSubClass().isOWLNothing() ||
-				subClassOfAxiom.getSuperClass().isOWLThing()) {
-				
-				return true;
-			}			
-		} 			
+			return true;			
+		}			
 		return false;
 	}
 }
