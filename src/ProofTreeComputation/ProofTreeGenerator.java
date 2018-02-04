@@ -366,6 +366,7 @@ public class ProofTreeGenerator {
 		// If at least one such rule is found, return all trees with their inference rule set.
 		if (applicableRules != null && applicableRules.size() > 0) {					
 			for (RuleString applicableRule : applicableRules) {
+				
 				ProofTree copiedTree = new ProofTree(incompleteProofTree);
 				copiedTree.setInferenceRule(applicableRule);
 				completedProofTrees.add(copiedTree);
@@ -378,107 +379,129 @@ public class ProofTreeGenerator {
 	// This method takes a proof tree and a partition of its root children.
 	// It then generates new intermediate nodes from the partition and creates new trees by adding these nodes
 	// between the root node and the root child nodes of the given tree.
-	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partition) {
+	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partitionWithEmptyConclusions) {
 
-		List<List<InstanceOfRule>> allPartitionInferences = new ArrayList<List<InstanceOfRule>>();
+		List<PartitionWithApplicableInfRules> allPartitionInferences = generateConclusionsForPartitions(partitionWithEmptyConclusions);
+		
 		List<ProofTree> newTrees = new ArrayList<ProofTree>();
-		newTrees.add(new ProofTree(oldTree));
 		
-		// Compute all possible applications of rules.
-		for (InstanceOfRule partitionSubSet : partition.getItems()) {
-			if (partitionSubSet.getRule() != null) {
-
-				// Generate all conclusions from the partition subset.
-				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
-
-				// If no conclusion returned, this is an error. Return null.
-				if (newInferences == null) {
-					return null;
-				}			
-				allPartitionInferences.add(newInferences);
-			}
-		}
-		
-		
-		
-		
-		
-		for (InstanceOfRule partitionSubSet : partition.getItems()) {
-
-			if (partitionSubSet.getRule() != null) {
-				
-				// Generate all conclusions from the partition subset.
-				List<InstanceOfRule> newInferences = RuleFinder.generateInferences(partitionSubSet);
-
-				// If no conclusion returned, this is an error. Return null.
-				if (newInferences == null) {
-					return null;
-				}
-
-				List<ProofTree> intermediateTrees = new ArrayList<ProofTree>();
-
-				// Add all generated conclusions to all intermediate trees.
-				for (ProofTree incompleteTree : newTrees) { 		
-					for (InstanceOfRule newInference : newInferences) {
-						
-						ProofTree proofTreeWithAddedLemmas = addLemmasToIntermediateTree(incompleteTree, newInference);
-						
-						if (proofTreeWithAddedLemmas == null) {
-							return null;
-						}					
-						intermediateTrees.add(proofTreeWithAddedLemmas);
-					}	
-				}			
-				newTrees = intermediateTrees;
+		for (PartitionWithApplicableInfRules partition : allPartitionInferences) {
+			ProofTree newProofTree = addLemmasToIntermediateTree(new ProofTree(oldTree), partition);
+			
+			if (newProofTree != null) {
+				newTrees.add(newProofTree);
 			}
 		}
 		return newTrees;
 	}
 	
 	
-	
-	private static List<ProofTree> generateTreesFromPartitionApplications(List<ProofTree> originalSubTrees, List<List<InstanceOfRule>> partition) {
+	// This method takes as input a partition with applicable inference rules
+	// and with empty conclusions: [ {N1, N2, R1, []}, {N3, R2, []}, ...]
+	// Returns partitions with generated conclusions: [ {N1, N2, R1, C1}, {N3, R2, C2}, ...]
+	private static List<PartitionWithApplicableInfRules> generateConclusionsForPartitions (PartitionWithApplicableInfRules partitionWithEmptyConclusions) {
 		
-		List<InstanceOfRule> generatedLemmas = partition.remove(0);
-		List<ProofTree> generatedTrees = new ArrayList<ProofTree>();
+		List<PartitionWithApplicableInfRules> allPartitionInferences = new ArrayList<PartitionWithApplicableInfRules>();
 		
-		for (InstanceOfRule subSet : generatedLemmas) {
-			generatedTrees.addAll(generateTreesFromPartitionApplications(partition));
-		}
-		
-		return null;
+		for (InstanceOfRule partitionSubSet : partitionWithEmptyConclusions.getItems()) {
+			
+			List<InstanceOfRule> newInferences = new ArrayList<InstanceOfRule>();
+			
+			if (partitionSubSet.getRule() != null) {
+
+				// Generate all conclusions from the partition subset.
+				newInferences = RuleFinder.generateInferences(partitionSubSet);
+
+				// If no conclusion returned, this is an error. Return null.
+				if (newInferences == null) {
+					return null;
+				}	
+
+			// If the subset has no corresponding rule, then no conclusions need to be added.
+			} else {
+				newInferences.add(partitionSubSet);
+			}		
+			allPartitionInferences = addAllInferencesToAllPartitions(allPartitionInferences, newInferences);
+		}	
+		return allPartitionInferences;
 	}
 	
-	// Given an incomplete tree and an instance of a rule application,
-	// add a lemma node to the tree between the root node and its child axioms that represent the base axioms
-	// of the rule application.
-	private static ProofTree addLemmasToIntermediateTree(ProofTree incompleteTree, InstanceOfRule newInference ) {
+	
+	
+	private static List<PartitionWithApplicableInfRules> addAllInferencesToAllPartitions(List<PartitionWithApplicableInfRules> partitionInferences, List<InstanceOfRule> newInferences) {
 
-		// Create a copy of the given tree.
-		ProofTree copiedTree = new ProofTree(incompleteTree);
-		List<ProofTree> subTrees = copiedTree.getSubTrees();
+		List<PartitionWithApplicableInfRules> newPartitionInferences = new ArrayList<PartitionWithApplicableInfRules>();
 
-		ProofTree newLemmaSubTree = new ProofTree(newInference.getConclusion(), new ArrayList<ProofTree>(), newInference.getRule());
+		// Add all new inferences to all currently generated partitions.
+		for (InstanceOfRule inference : newInferences) {
+			
+			List<PartitionWithApplicableInfRules> allPartitionInferencesCopy = new ArrayList<PartitionWithApplicableInfRules>(partitionInferences);
 
-		// Connect the lemma subtree root to appropriate subtrees in the original trees.
-		for (ProofTree subTree : subTrees) {
-			if (newInference.getPremises().contains(subTree.getAxiom())) {
-				newInference.getPremises().remove(subTree.getAxiom());
-				newLemmaSubTree.getSubTrees().add(subTree);
+			for (PartitionWithApplicableInfRules partition : allPartitionInferencesCopy) {
+				partition.getItems().add(inference);
 			}
-		}
+			newPartitionInferences.addAll(allPartitionInferencesCopy);
+		}				
+		return newPartitionInferences;
+	}
+	
+	
+	// Given an incomplete tree and a partition with new conclusions,
+	// add the conclusions as new lemma nodes to the incomplete tree.
+	private static ProofTree addLemmasToIntermediateTree(ProofTree incompleteTree, PartitionWithApplicableInfRules partitionWithNewConclusions ) {
+	
+		ProofTree newProofTree = new ProofTree(incompleteTree.getAxiom(), new ArrayList<ProofTree>(), null);
+		List<ProofTree> oldSubTrees = new ArrayList<ProofTree>(incompleteTree.getSubTrees());
+		Map<OWLAxiom, ProofTree> premiseNodesToSubTreeMap = createNodeToTreeMap(oldSubTrees, partitionWithNewConclusions.getAllPremiseNodes());
 		
-		// If not all premises of the inference have been matched, there has been an error and a null is returned.
-		if (newInference.getPremises().size() > 0) {
+		if (premiseNodesToSubTreeMap == null) {
 			return null;
 		}
+		
+		for (InstanceOfRule partitionSubSet : partitionWithNewConclusions.getItems()) {
+			
+			ProofTree attachmentPoint = newProofTree;
+			
+			if (partitionSubSet.getRule() != null) {
+				ProofTree newLemmaSubTree = new ProofTree(partitionSubSet.getConclusion(), new ArrayList<ProofTree>(), partitionSubSet.getRule());
+				newProofTree.getSubTrees().add(newLemmaSubTree);
+				attachmentPoint = newLemmaSubTree;
+			}
+			
+			for (OWLAxiom premiseNode : partitionSubSet.getPremises()) {
+				attachmentPoint.getSubTrees().add(premiseNodesToSubTreeMap.get(premiseNode));
+			}			
+		}				
+		return newProofTree;
+	}
+	
+	
+	// Given a set of nodes and a set of trees, attempt to create a one-to-one mapping from a node to a tree 
+	// that has a root axiom equal to the node.
+	private static Map<OWLAxiom, ProofTree> createNodeToTreeMap(List<ProofTree> trees, List<OWLAxiom> nodes) {
+		
+		Map<OWLAxiom, ProofTree> nodeToTreeMap = new HashMap<OWLAxiom, ProofTree>();
 
-		// Remove connections from these subtrees to the root.
-		for (ProofTree subTree : newLemmaSubTree.getSubTrees()) {
-			subTrees.remove(subTree);
+		if (trees.size() != nodes.size()) {
+			return null;
 		}
-		copiedTree.getSubTrees().add(newLemmaSubTree);							
-		return copiedTree;
+		
+		for (OWLAxiom node : nodes) {
+			
+			for (ProofTree tree : trees) {
+				if (tree.getAxiom().equalsIgnoreAnnotations(node)) {
+					nodeToTreeMap.put(node, tree);
+					break;
+				}
+			}
+			
+			if (nodeToTreeMap.containsKey(node)) {
+				trees.remove(nodeToTreeMap.get(node));	
+			} else {
+				return null;
+			}
+		}		
+		return nodeToTreeMap;
 	}
 	
 	/*
