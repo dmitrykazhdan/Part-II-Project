@@ -76,6 +76,7 @@ public class GenerateTrees {
 		}
 		
 		// Output the computed statistics.
+		corpusStats.writeStatisticsToFile();
 		double coverage = (corpusStats.getTotalTreesComputed() * 100.0f)/corpusStats.getTotalJustifications();	
 		System.out.println("Coverage is: " + coverage);	
 	}

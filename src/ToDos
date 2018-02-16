@@ -1,76 +1,36 @@
-- Consider whether their "Object some values from" actually also includes "Object has value" or not...
-
-- Add check if laconic axiom contains conclusion
-
-- False Negatives are easier to test than false positives.
-
-- Edge case of rule 52 (and potentially others) if class expressions are equal.
-
-- Add restrictions on exceptions. Allow only a restricted input type.
-
-- Do disjointness of data ranges.
+Critical:
 
 - Implement exception rules.
 
+- Add restrictions on exceptions. Allow only a restricted input type.
+
+- Refactor code to make the ontology dir and output dir input parameters, not hardcoded.
+
+- Do disjointness of data ranges.
+
+- Edge case of rule 52 (and potentially others) if class expressions are equal.
+
 - Look at cases when intersection/union size = 1. Think about how to handle it.
 
-- Remove repeated code. Cleanup somehow.
+- Add check if laconic axiom contains conclusion
+in practice should not happen. If size of justification > 1, then laconic can only through away 
+parts, so must still have the same number of justification axioms
 
-- Have a "simple/atomic" expression group, and a more complex expression group.
-Matching and generation of class expressions only uses the atomic expression groups.
 
-- What happens if the entailment is already in the laconic justification?
-Currently we have a node with the same value, and so we fail.
 
-- Time limitation for a single proof tree was 60 seconds.
 
+
+Good-To-Have:
+
+- False Negatives are easier to test than false positives.
 
 - In "ProcessOntology", add a timeout for the "gen.getExplanations(entailment, 4);" step.
-
-- In "GenerateTrees" add a timeout for the tree generator.
 
 - In the "ProofTreeGenerator" class, in the "getLaconicJustifications" method, add a timeout step
 when computing laconic justifications.
 
-
-
-
-- Have a "Matcher" interface, with "RuleString" and "Exception" implementing it.
-
-- For rules, all "group expressions" are only atomic ones, with no inner patterns.
-Thus, have simple groups for rules, and more complex groups for exceptions, with inner patterns.
-However, keep in mind that for exceptions you only need to pattern match, not generate.
-
-- Perhaps have two types of "group expression" - flat and complex.
-
-- Potential thought: have multiple types of "group expressions", including "subset-superset", and also
-"previous - new" with a defined transformation mapping "previous" to "new"
-
-
-- Refactor code to make the ontology dir and output dir input parameters, not hardcoded.
-
 - Test ontology processing by providing a sample ontology and investigating what files will be derived from it.
 Ensure to include edge cases of T <= A and A <= F.
 
-- Add statistical tests to count the number of types of entailments (3 types altogether).
 
 
-Group is:
-
-- Name
-- boolean hasBaggage
-- ClsExp[] namedPattern
-
-
-0) If has no baggage, check that number of patterns = number of items in instance.
-1) Generate all possible orderings of the group.
-2) Attempt to match the given ordering to the pattern.
-
-MATCH:
-
-3) Check subset constraints (if any)
-
-
-GENERATE:
-
-3) Generate all possible variants matching the constraint.
