@@ -36,7 +36,14 @@ public class PartitionGenerator {
 				
 				List<RuleString> applicableRules = RuleFinder.findRuleAppWithoutConclusion(subSet);
 				
+				// If there is no applicable rule, simply add the subset without a conclusion to all
+				// partitions computed so far.
 				if (applicableRules == null || applicableRules.size() == 0) {
+					
+					for (PartitionWithApplicableInfRules partialPartition : newPartitionsWithRules) {
+						InstanceOfRule emptyConclusionSubSet = new InstanceOfRule(subSet, null, null);					
+						partialPartition.getItems().add(emptyConclusionSubSet);
+					}				
 					continue;
 				}
 				
@@ -59,8 +66,7 @@ public class PartitionGenerator {
 			if (atLeastOneApplication) {
 				allRuleApplications.addAll(newPartitionsWithRules);
 			}
-		}
-			
+		}		
 		return allRuleApplications;
 	}
 	
