@@ -48,14 +48,13 @@ public class GenerateTrees {
 	// been computed successfully.
 	private static void evaluateCoverage(File[] explanationFiles, Path failedExplanationsDirPath) throws IOException, InterruptedException, ExecutionException {
 		
-		float totalJustifications = 0;
-		float totalTreesComputed = 0;
+		CorpusStatistics corpusStats = new CorpusStatistics();
 	
 		for (int i = 0; i < explanationFiles.length; i++) {
 			
 			// Increment the justifications counter.
-			totalJustifications++;	
-			System.out.println("Justification number: "+ totalJustifications);
+			corpusStats.incrementTotalJustifications();
+			System.out.println("Justification number: "+ corpusStats.getTotalJustifications());
 			
 			// Compute proof trees for the next explanation.
 			Path explanationFilePath = Paths.get(explanationFiles[i].getAbsolutePath());		
@@ -64,15 +63,20 @@ public class GenerateTrees {
 			// If at least one proof tree has been computed, increment the appropriate counter.
 			// Otherwise copy the failed explanation to the appropriate folder.
 			if (proofTrees != null && proofTrees.size() > 0) {
-				totalTreesComputed++;
+				corpusStats.incrementTotalComputedTrees();
+				
+				for (ProofTree tree : proofTrees) {
+					corpusStats.updateStatistics(tree);
+				}
+				
 			} else {
-				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + totalJustifications + ")");
+				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + corpusStats.getTotalJustifications() + ")");
 			//	copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
 		
 		// Output the computed statistics.
-		double coverage = (totalTreesComputed * 100.0f)/totalJustifications;	
+		double coverage = (corpusStats.getTotalTreesComputed() * 100.0f)/corpusStats.getTotalJustifications();	
 		System.out.println("Coverage is: " + coverage);	
 	}
 	

@@ -63,6 +63,10 @@ public class ProofTree {
 		this.inferenceRule = rule;
 	}
 	
+	public RuleString getInferenceRule() {
+		return inferenceRule;
+	}
+	
 	// Return the root axioms of all direct children as a list.
 	public List<OWLAxiom> getChildAxioms() {
 		
