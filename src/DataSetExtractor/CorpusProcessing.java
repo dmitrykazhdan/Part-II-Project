@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
 
 
@@ -36,7 +37,7 @@ public class CorpusProcessing {
 				OntologyProcessing processOntology = new OntologyProcessing(ontology, outputDir);
 				processOntology.GenerateExplanations();
 				
-			} catch (OWLOntologyCreationException | InterruptedException | ExecutionException | IOException e) {				
+			} catch (OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | InterruptedException | ExecutionException | IOException e) {				
 				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
 			} 

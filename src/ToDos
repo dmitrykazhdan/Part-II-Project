@@ -1,5 +1,7 @@
 Critical:
 
+- Shutdown executor threads
+
 - Implement exception rules.
 
 - Add restrictions on exceptions. Allow only a restricted input type.

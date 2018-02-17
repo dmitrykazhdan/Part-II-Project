@@ -385,6 +385,10 @@ public class ProofTreeGenerator {
 		
 		List<ProofTree> newTrees = new ArrayList<ProofTree>();
 		
+		if (allPartitionInferences == null) {
+			return null;
+		}
+		
 		for (PartitionWithApplicableInfRules partition : allPartitionInferences) {
 			ProofTree newProofTree = addLemmasToIntermediateTree(new ProofTree(oldTree), partition);
 			
@@ -412,7 +416,6 @@ public class ProofTreeGenerator {
 				// Generate all conclusions from the partition subset.
 				newInferences = RuleFinder.generateInferences(partitionSubSet);
 
-				// If no conclusion returned, this is an error. Return null.
 				if (newInferences == null) {
 					return null;
 				}	

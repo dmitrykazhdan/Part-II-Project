@@ -62,9 +62,9 @@ public class CorpusStatistics {
 	
 	private void updateRuleCounts(ProofTree proofTree) {
 		
-		RuleString rule = proofTree.getInferenceRule();
-		ruleUsageCounts.put(rule, ruleUsageCounts.get(rule) + 1);
 		if (proofTree.getSubTrees() != null) {
+			RuleString rule = proofTree.getInferenceRule();
+			ruleUsageCounts.put(rule, ruleUsageCounts.get(rule) + 1);
 			for (ProofTree subTree : proofTree.getSubTrees()) {
 				updateRuleCounts(subTree);
 			}
