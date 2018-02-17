@@ -406,6 +406,7 @@ public class ProofTreeGenerator {
 	private static List<PartitionWithApplicableInfRules> generateConclusionsForPartitions (PartitionWithApplicableInfRules partitionWithEmptyConclusions) {
 		
 		List<PartitionWithApplicableInfRules> allPartitionInferences = new ArrayList<PartitionWithApplicableInfRules>();
+		allPartitionInferences.add(new PartitionWithApplicableInfRules( new ArrayList<InstanceOfRule>()));
 		
 		for (InstanceOfRule partitionSubSet : partitionWithEmptyConclusions.getItems()) {
 			
