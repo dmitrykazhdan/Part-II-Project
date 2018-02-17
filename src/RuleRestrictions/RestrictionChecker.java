@@ -131,9 +131,9 @@ public class RestrictionChecker {
 		Integer absoluteBound = instantiation.getCardinalityInstantiation().get(relativeBound);
 		
 		// Convert to an absolute cardinality restriction.
-		AbsCardinalityRestriction abssoluteCardinalityRestriction = new AbsCardinalityRestriction(restriction.getCardinality(), restriction.getCardinalityType(), absoluteBound);
+		AbsCardinalityRestriction absoluteCardinalityRestriction = new AbsCardinalityRestriction(restriction.getCardinality(), restriction.getCardinalityType(), absoluteBound);
 		
-		return checkAbsoluteCardinalityRestriction(abssoluteCardinalityRestriction);
+		return checkAbsoluteCardinalityRestriction(absoluteCardinalityRestriction);
 	}	
 	
 	

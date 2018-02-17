@@ -133,6 +133,7 @@ public class RuleString {
 	}
 
 
+	// Attempt to match the given set of axiom expressions to the given set of expression templates, given the restrictions
 	private boolean matchExpressions(List<OWLAxiom> expressions, List<OWLAxiomStr> expressionStr, RuleRestriction[] ruleRestrictions) {
 
 		PremiseMatcher matcher = new PremiseMatcher(expressions, expressionStr, ruleRestrictions);

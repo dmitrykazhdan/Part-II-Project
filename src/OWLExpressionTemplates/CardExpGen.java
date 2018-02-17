@@ -26,7 +26,6 @@ public class CardExpGen extends ClsExpStr {
 	
 	// Static methods used to generate the expressions.
 	
-	
 	// Data cardinality expressions:
 	public static CardExpGen createDataExactCard(String cardinality, String property, String expression) {
 		return createDataCardExp(ClassExpressionType.DATA_EXACT_CARDINALITY, cardinality, property, expression);			

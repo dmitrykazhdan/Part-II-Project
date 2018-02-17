@@ -421,7 +421,7 @@ public class ProofTreeGenerator {
 				// Generate all conclusions from the partition subset.
 				newInferences = RuleFinder.generateInferences(partitionSubSet);
 
-				if (newInferences == null) {
+				if (newInferences == null || newInferences.size() == 0) {
 					return null;
 				}	
 

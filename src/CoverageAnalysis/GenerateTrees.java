@@ -33,7 +33,7 @@ public class GenerateTrees {
 	public static void main(String args[]) throws IOException, InterruptedException, ExecutionException {
 
 		// Declare path to the folder containing the explanation data set.
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/Explanations/");
 		File explanationDir = new File(explanationDirPath.toString());
 		String outputFilePath = "/Users/AdminDK/Desktop/";
 		

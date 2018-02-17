@@ -18,12 +18,11 @@ public class RuleFinder {
 
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
 			for (RuleString rule : allRules) {
-				if (rule.matchPremises(premisePermutation) && !applicableRules.contains(rule)) {
+				if (!applicableRules.contains(rule) && rule.matchPremises(premisePermutation)) {
 					applicableRules.add(rule);
 				}
 			}
 		}
-		
 		return applicableRules;
 	}
 	
@@ -41,14 +40,12 @@ public class RuleFinder {
 		}
 
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
-
 			for (RuleString rule : allRules) {
-				if (rule.matchPremisesAndConclusion(premisePermutation, conclusion) && !applicableRules.contains(rule)) {
+				if (!applicableRules.contains(rule) && rule.matchPremisesAndConclusion(premisePermutation, conclusion)) {
 					applicableRules.add(rule);
 				}
 			}
 		}
-
 		return applicableRules;
 	}
 	
@@ -60,22 +57,22 @@ public class RuleFinder {
 		List<OWLAxiom> premises = incompleteRuleApplication.getPremises();
 		List<List<OWLAxiom>> premisePermutations = getPremisePermutations(premises);
 		RuleString rule = incompleteRuleApplication.getRule();
+		List<InstanceOfRule> appliedRules = new ArrayList<InstanceOfRule>();
 
+		if (rule == null) { return null; }
+		
 		for (List<OWLAxiom> premisePermutation : premisePermutations) {
 
 			List<OWLAxiom> conclusions = rule.generateConclusions(premisePermutation);	
 
-			if (conclusions != null) {
-
-				List<InstanceOfRule> appliedRules = new ArrayList<InstanceOfRule>();
-				
+			if (conclusions != null) {			
 				for (OWLAxiom conclusion : conclusions) {
 					appliedRules.add(new InstanceOfRule(premisePermutation, conclusion, rule));
 					return appliedRules;
 				}
 			}
 		}
-		return null;	
+		return appliedRules;	
 	}	
 	
 		
@@ -92,14 +89,13 @@ public class RuleFinder {
 		for (OWLAxiom premise : premises) {
 			List<OWLAxiom> premiseCopy = new ArrayList<OWLAxiom>(premises);
 			premiseCopy.remove(premise);			
-			List<List<OWLAxiom>> subPremises = getPremisePermutations(premiseCopy);
+			List<List<OWLAxiom>> subPermutations = getPremisePermutations(premiseCopy);
 			
-			for (List<OWLAxiom> subPermutation : subPremises) {
+			for (List<OWLAxiom> subPermutation : subPermutations) {
 				subPermutation.add(premise);
 				allPermutations.add(subPermutation);
 			}		
 		}
-		
 		return allPermutations;
 	}
 }
