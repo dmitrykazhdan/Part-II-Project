@@ -98,6 +98,7 @@ public class GenerateTrees {
 		} catch (TimeoutException e) {
 			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
 		}	finally {
+			executor.shutdown();
 			executor.shutdownNow();
 		}
 		return proofTrees;

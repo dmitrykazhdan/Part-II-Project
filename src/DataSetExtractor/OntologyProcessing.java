@@ -106,6 +106,7 @@ public class OntologyProcessing {
 			} catch (TimeoutException e) {
 			//	System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {
+				executor.shutdown();
 				executor.shutdownNow();
 			}
 			
@@ -130,6 +131,7 @@ public class OntologyProcessing {
 		} catch (TimeoutException e) {
 			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFile.getName());
 		}	finally {
+			executor.shutdown();
 			executor.shutdownNow();
 		}
 		
