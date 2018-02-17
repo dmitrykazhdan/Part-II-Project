@@ -77,25 +77,7 @@ public class RuleFinder {
 	
 		
 	private static List<List<OWLAxiom>> getPremisePermutations(List<OWLAxiom> premises) {
-		
-		List<List<OWLAxiom>> allPermutations = new ArrayList<List<OWLAxiom>>();
-		
-		if (premises.size() == 0) {
-			List<OWLAxiom> emptyPermutation = new ArrayList<OWLAxiom>();
-			allPermutations.add(emptyPermutation);
-			return allPermutations;
-		}
-		
-		for (OWLAxiom premise : premises) {
-			List<OWLAxiom> premiseCopy = new ArrayList<OWLAxiom>(premises);
-			premiseCopy.remove(premise);			
-			List<List<OWLAxiom>> subPermutations = getPremisePermutations(premiseCopy);
-			
-			for (List<OWLAxiom> subPermutation : subPermutations) {
-				subPermutation.add(premise);
-				allPermutations.add(subPermutation);
-			}		
-		}
-		return allPermutations;
+		PermutationGenerator<OWLAxiom> permGen = new PermutationGenerator<OWLAxiom>();
+		return permGen.generatePermutations(premises);
 	}
 }

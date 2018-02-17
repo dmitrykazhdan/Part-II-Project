@@ -17,8 +17,7 @@ public class PermutationGenerator<T> {
 		if (inputList.size() == 0) {
 			perms.add(new ArrayList<T>());
 			return perms;
-		}
-		
+		}		
 		
 		for (T item : inputList) {
 			List<T> copy = new ArrayList<T>(inputList);
@@ -26,12 +25,10 @@ public class PermutationGenerator<T> {
 			List<List<T>> subPermsList = generatePermutations(copy);
 			
 			for (List<T> subPerm : subPermsList) {
-				subPerm.add(item);			
-			}
-			
-			perms.addAll(subPermsList);			
-		}
-		
+				subPerm.add(item);		
+				perms.add(subPerm);
+			}					
+		}	
 		return perms;
 	}
 	

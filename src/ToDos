@@ -18,8 +18,6 @@ Critical:
 in practice should not happen. If size of justification > 1, then laconic can only through away 
 parts, so must still have the same number of justification axioms
 
-- Add writing of corpus statistics to file.
-
 
 
 
