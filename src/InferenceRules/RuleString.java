@@ -110,6 +110,10 @@ public class RuleString {
 		return ruleID;
 	}
 	
+	public String getRuleName() {
+		return ruleName;
+	}
+	
 	public RuleString(String ruleID, String ruleName, OWLAxiomStr conclusion, List<OWLAxiomStr> premisesStr) {
 		this.ruleID = ruleID;
 		this.ruleName = ruleName;

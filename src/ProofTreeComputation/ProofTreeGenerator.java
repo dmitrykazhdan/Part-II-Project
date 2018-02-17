@@ -321,6 +321,10 @@ public class ProofTreeGenerator {
 		incompleteProofTreeList.add(initialTree);
 		
 		while (!incompleteProofTreeList.isEmpty()) {
+			
+			if(Thread.currentThread().isInterrupted()){
+                return completeProofTreeList;
+              }
 					
 			List<ProofTree> newIncompleteProofTreeList = new ArrayList<ProofTree>();
 

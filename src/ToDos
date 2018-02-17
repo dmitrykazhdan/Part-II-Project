@@ -1,6 +1,6 @@
 Critical:
 
-- Shutdown executor threads
+- Shutdown executor threads (for both tree generation and (just, ent) generation)
 
 - Implement exception rules.
 

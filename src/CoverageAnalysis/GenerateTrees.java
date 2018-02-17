@@ -35,18 +35,19 @@ public class GenerateTrees {
 		// Declare path to the folder containing the explanation data set.
 		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
 		File explanationDir = new File(explanationDirPath.toString());
+		String outputFilePath = "/Users/AdminDK/Desktop/";
 		
 		// Declare a path to the folder that will contain all failed explanations.
 		Path failedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
 		
 		// Extract all explanations and evaluate the algorithm coverage.
 		File[] explanationFiles = extractExplanationFiles(explanationDir);		
-		evaluateCoverage(explanationFiles, failedExplanationsDirPath);
+		evaluateCoverage(explanationFiles, failedExplanationsDirPath, outputFilePath);
 	}
 	
 	// Method measures the number of explanations from which at least one proof tree has
 	// been computed successfully.
-	private static void evaluateCoverage(File[] explanationFiles, Path failedExplanationsDirPath) throws IOException, InterruptedException, ExecutionException {
+	private static void evaluateCoverage(File[] explanationFiles, Path failedExplanationsDirPath, String outputFilePath) throws IOException, InterruptedException, ExecutionException {
 		
 		CorpusStatistics corpusStats = new CorpusStatistics();
 	
@@ -54,53 +55,65 @@ public class GenerateTrees {
 			
 			// Increment the justifications counter.
 			corpusStats.incrementTotalJustifications();
-			System.out.println("Justification number: "+ corpusStats.getTotalJustifications());
+			System.out.println("Justification number: "+ corpusStats.getTotalJustifications() + " Thread count: " + Thread.activeCount());
 			
 			// Compute proof trees for the next explanation.
 			Path explanationFilePath = Paths.get(explanationFiles[i].getAbsolutePath());		
-			List<ProofTree> proofTrees = computeProofTree(explanationFilePath);
+			List<ProofTree> proofTrees = computeProofTree(explanationFilePath, corpusStats);
 
 			// If at least one proof tree has been computed, increment the appropriate counter.
 			// Otherwise copy the failed explanation to the appropriate folder.
 			if (proofTrees != null && proofTrees.size() > 0) {
-				corpusStats.incrementTotalComputedTrees();
-				
+							
 				for (ProofTree tree : proofTrees) {
-					corpusStats.updateStatistics(tree);
+					corpusStats.incrementTotalComputedTrees();
+					corpusStats.updateComputedTreeStatistics(tree);
 				}
 				
-			} else {
-				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + corpusStats.getTotalJustifications() + ")");
+			} else  {
 			//	copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
 		
 		// Output the computed statistics.
-		corpusStats.writeStatisticsToFile();
-		double coverage = (corpusStats.getTotalTreesComputed() * 100.0f)/corpusStats.getTotalJustifications();	
+		corpusStats.writeStatisticsToFile(outputFilePath);
+		double coverage = (corpusStats.getComputedJustifications() * 100.0f)/corpusStats.getTotalJustifications();	
 		System.out.println("Coverage is: " + coverage);	
 	}
 	
 	
 	
-	private static List<ProofTree> computeProofTree(Path explanationFilePath) throws InterruptedException, ExecutionException, IOException {
+	private static List<ProofTree> computeProofTree(Path explanationFilePath, CorpusStatistics corpusStats) throws InterruptedException, ExecutionException, IOException {
 
 		// Load the next explanation from the file.
 		InputStream fileInputStream = new FileInputStream(explanationFilePath.toString());
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
-		Future<List<ProofTree>> futureCall = executor.submit(new TreeGeneratorThread(explanation));				
+		TreeGeneratorThread treeThread = new TreeGeneratorThread(explanation);
+		Future<List<ProofTree>> futureCall = executor.submit(treeThread);		
+		
 		List<ProofTree> proofTrees = null;
+		boolean timeout = false;
 
 		try {
 			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
-			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
+			timeout = true;
+			
 		}	finally {
-			executor.shutdown();
+			futureCall.cancel(true);
 			executor.shutdownNow();
+			executor.awaitTermination(15, TimeUnit.SECONDS);
 		}
+		
+		if (proofTrees == null || proofTrees.size() == 0) {
+			if (timeout) {
+				corpusStats.updateFailsByTimeout(explanation.getEntailment());;
+			} else {
+				corpusStats.updateFailsByRuleCoverage(explanation.getEntailment());
+			}
+		}		
 		return proofTrees;
 	}
 	
