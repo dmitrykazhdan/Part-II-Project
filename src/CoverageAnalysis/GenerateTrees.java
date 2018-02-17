@@ -33,7 +33,7 @@ public class GenerateTrees {
 	public static void main(String args[]) throws IOException, InterruptedException, ExecutionException {
 
 		// Declare path to the folder containing the explanation data set.
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/TestExplanations/");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
 		File explanationDir = new File(explanationDirPath.toString());
 		
 		// Declare a path to the folder that will contain all failed explanations.
@@ -71,7 +71,7 @@ public class GenerateTrees {
 				
 			} else {
 				System.out.println("Could not compute Proof Tree." +" Filename " + explanationFilePath.toString() + " (Total: " + corpusStats.getTotalJustifications() + ")");
-				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
+			//	copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
 		
@@ -97,7 +97,9 @@ public class GenerateTrees {
 			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			System.out.println("TIMEOUT " +"Filename" + explanationFilePath.toString());
-		}		
+		}	finally {
+			executor.shutdownNow();
+		}
 		return proofTrees;
 	}
 	

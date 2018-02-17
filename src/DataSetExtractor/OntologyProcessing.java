@@ -84,17 +84,29 @@ public class OntologyProcessing {
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		
+		// tmp
+		int entcount = 0;
+		
 		// For every entailment, generate all of its justifications.
 		for (OWLAxiom entailment : allSubsumptions) {
 
+			// tmp
+			entcount++;
+			
+			if (entcount > 20) {
+				return;
+			}
+			
 			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
 			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new ExplanationGeneratorThread(entailment, explanationGen));
 			
 			// Set a time limit of 10 minutes to the computation of all justifications.
 			try {
-				explanationSet = explanationGenThreadCall.get(10, TimeUnit.MINUTES);
+				explanationSet = explanationGenThreadCall.get(2, TimeUnit.SECONDS);
 			} catch (TimeoutException e) {
-				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
+			//	System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
+			} finally {
+				executor.shutdownNow();
 			}
 			
 			if (explanationSet != null) {
@@ -114,10 +126,12 @@ public class OntologyProcessing {
 		
 		// Set a time limit of 10 minutes to the computation of all subsumption entailments.
 		try {
-			allSubsumptions = subsumptionThreadCall.get(10, TimeUnit.MINUTES);
+			allSubsumptions = subsumptionThreadCall.get(5, TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFile.getName());
-		}		
+		}	finally {
+			executor.shutdownNow();
+		}
 		
 		// Filter out all trivial subsumptions.
 		if (allSubsumptions != null) {
@@ -127,6 +141,11 @@ public class OntologyProcessing {
 				}
 			}
 		}	
+		
+		// Tmp
+		if (allNonTrivialSubsumptions.size() > 100) {
+			return allNonTrivialSubsumptions.subList(0, 99);
+		}
 		return allNonTrivialSubsumptions;
 	}
 	
