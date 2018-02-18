@@ -627,53 +627,32 @@ public class GenerateRules {
 		RuleString rule35 = new RuleString("35", "ObjDom-ObjSym", conclusion, premise1, premise2);
 
 	
-		// Rule 36	
-		
+		// Rule 36		
 		// 36.1
-		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", "Z");
-	
-		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-				
-		premise2 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
-
-		conclusion =  new SubClassStr(new AtomicCls("X"), new AtomicCls("Y"));
+		premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Z"));			
+		premise2 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("Y"));				
+		conclusion =  new SubClassStr("X", "Y");
 		RuleString rule36_1 = new RuleString("36.1", "ObjSom-ObjDom", conclusion, premise1, premise2);
 		
-
 		// 36.2
-		tmp = CardExpGen.createObjMinCard("n", "Ro", "Z");
-		RuleRestrictions ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
-		
-		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
+		RuleRestrictions ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
+		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Z"));
 		RuleString rule36_2 = new RuleString("36.2", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
-
 		
 		// 36.3
-		tmp = CardExpGen.createObjExactCard("n", "Ro", "Z");
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
-		
-		premise1 = new SubClassStr(new AtomicCls("X"), tmp);				
+		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Z"));				
 		RuleString rule36_3 = new RuleString("36.3", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
-		
-		
 		
 		
 		
 		// Rule 37
 		
-		// 37.1
-		tmp = ExistsOrForAll.createDataSomeValFrom("Rd", "Dr");
-				
-		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-				
-		premise2 = new OWLAxiomStr(AxiomType.DATA_PROPERTY_DOMAIN, 
-				new TemplateDataProperty("Rd"), new AtomicCls("Y"));
-
-		conclusion =  new SubClassStr(new AtomicCls("X"), new AtomicCls("Y"));
+		// 37.1		
+		premise1 = new SubClassStr("X", ExistsOrForAll.createDataSomeValFrom("Rd", "Dr"));				
+		premise2 = new OWLAxiomStr(AxiomType.DATA_PROPERTY_DOMAIN, new TemplateDataProperty("Rd"), new AtomicCls("Y"));
+		conclusion =  new SubClassStr("X", "Y");
 		RuleString rule37_1 = new RuleString("37.1", "DatSom-DatDom", conclusion, premise1, premise2);
 		
-
 		// 37.2
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");		
 		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
@@ -683,15 +662,13 @@ public class GenerateRules {
 		
 		// 37.3
 		tmp = CardExpGen.createDataExactCard("n", "Rd", "Dr");		
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
-				
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));				
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);				
 		RuleString rule37_3 = new RuleString("37.3", "DatSom-DatDom", conclusion, premise1, premise2);
 
 
 		
-		// Rule 38
-		
+		// Rule 38		
 		// 38.1
 		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y"), new AtomicCls("Z") });
 		premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Y"));
@@ -702,21 +679,18 @@ public class GenerateRules {
 			
 		// 38.2
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", 
-				InterUnion.createIntersectionExpression( tmpGroup1)));
-		RuleString rule38_2 = new RuleString("38.2", "ObjSom-ObjRng", conclusion, premise1, premise2);
+		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));				
+		RuleString rule38_2 = new RuleString("38.2", "ObjSom-ObjRng", ruleRestrictions, conclusion, premise1, premise2);
 		
 		
 		// 38.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
-		conclusion = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro",
-				InterUnion.createIntersectionExpression( tmpGroup1)));
-		RuleString rule38_3 = new RuleString("38.3", "ObjSom-ObjRng", conclusion, premise1, premise2);
+		conclusion = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));			
+		RuleString rule38_3 = new RuleString("38.3", "ObjSom-ObjRng", ruleRestrictions, conclusion, premise1, premise2);
 
-		
-		
-		// Rule 39
-			
+				
+		// Rule 39		
 		premise1 = new SubClassStr("X", "Y");
 		premise2 = new SubClassStr("Y", "Z");	
 		conclusion = new SubClassStr("X", "Z");
@@ -733,8 +707,7 @@ public class GenerateRules {
 		
 		
 		
-		// Rule 41
-		
+		// Rule 41		
 		// 41.1
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", "Y");
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
