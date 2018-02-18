@@ -24,6 +24,16 @@ import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
 
 /*
  This class processes expressions of the form:
+ 	C <= A --> C <= B.
+ 	
+ 	Where C <= A - laconic axiom,
+ 		  C <= B - justification axiom
+ 	
+ 	If includeEquivalentCase is enabled, the following case is included:
+ 	C <= A --> C <--> B
+ 	
+ 	If includeIntersectionCase is enabled, then 
+ 
  	C <= A --> C <= B
  	or of C <-> A --> C <= B 
  	where the class C must be the same between
@@ -37,9 +47,14 @@ public class RuleException {
 	protected OWLAxiomStr correctAxiomStr;
 	protected OWLAxiomStr laconicAxiomStr;
 	private OWLAxiomStr justificationAxiomStr;
+	
+	// Includes the case where the justification axiom is of the for C <--> B
 	private boolean includeEquivalentCase;
+	
+	// Includes the case where the laconic class expression is of the form A ^ B
 	private boolean includeIntersectionCase;
 
+	
 	public RuleException(OWLAxiomStr laconicAxiomStr,  OWLAxiomStr justificationAxiomStr, OWLAxiomStr correctAxiomStr, boolean includeEquivalentCase, boolean includeIntersectionCase) {
 		this.laconicAxiomStr = laconicAxiomStr;
 		this.justificationAxiomStr = justificationAxiomStr;
@@ -53,15 +68,19 @@ public class RuleException {
 			
 		if (!(laconicAxiom instanceof OWLSubClassOfAxiom)) {
 			return null;
-		}
-		
+		}		
 		OWLSubClassOfAxiom laconicSubClsAxiom = (OWLSubClassOfAxiom) laconicAxiom;
-		OWLSubClassOfAxiom justSubClsAxiom = convertJustificationToSubCls(laconicSubClsAxiom, justificationAxiom);
+		OWLSubClassOfAxiom justSubClsAxiom = null;
 		
-		if (justSubClsAxiom == null) {
-			return null;
+		if (justificationAxiom instanceof OWLEquivalentClassesAxiom) {
+			justSubClsAxiom = parseEqvClsAxiom(laconicSubClsAxiom, (OWLEquivalentClassesAxiom) justificationAxiom);
+		} else if (justificationAxiom instanceof OWLSubClassOfAxiom) {
+			justSubClsAxiom = (OWLSubClassOfAxiom) justificationAxiom;
 		}
-		
+						
+		if (justSubClsAxiom == null || !justSubClsAxiom.getSubClass().equals(laconicSubClsAxiom.getSubClass())) {
+			return null;
+		}		
 		OWLAxiom generatedConclusion = null;
 		
 		if (includeIntersectionCase && justSubClsAxiom.getSuperClass() instanceof OWLObjectIntersectionOf) {
@@ -74,58 +93,54 @@ public class RuleException {
 				return null;
 			}
 			
+			// Iterate over the two expressions in the intersection.
+			// Attempt to match each one.
 			for (OWLClassExpression innerExp : operands) {
 				OWLSubClassOfAxiom justSubCls = new OWLSubClassOfAxiomImpl(laconicSubClsAxiom.getSubClass(), innerExp, new ArrayList<OWLAnnotation>());
-
-				if (generateConclusion(laconicSubClsAxiom, justSubCls) != null) {
-					generatedConclusion = generateConclusion(laconicSubClsAxiom, justSubCls);
+				generatedConclusion = generateConclusion(laconicSubClsAxiom, justSubCls);
+				
+				if (generatedConclusion != null) {
 					break;
 				}
-			}
-			
-		
+			}			
 		} else {
 			generatedConclusion = generateConclusion(laconicSubClsAxiom, justSubClsAxiom);
 		}
 				
 		if (generatedConclusion == null) {
 			return null;
-		}	
-		
+		}		
 		return getCorrectedTree(generatedConclusion, justificationAxiom);
 	}
 	
 	
-	
+	// Given the laconic axiom A <= B, and the justification axiom in the form A <= D, generate
+	// the correct version of the axiom by creating a rule LA ^ JA --> CA and generating CA.
 	private OWLAxiom generateConclusion(OWLSubClassOfAxiom laconicSubClsAxiom, OWLSubClassOfAxiom justSubClsAxiom) {
 		
 		RuleString tmp = new RuleString("t", "t", correctAxiomStr, laconicAxiomStr, justificationAxiomStr);
 		List<OWLAxiom> generatedConclusions = tmp.generateConclusions(laconicSubClsAxiom, justSubClsAxiom);
 		
-		if (generatedConclusions == null || generatedConclusions.size() != 1) {
+		// Note that such generation should be unique.
+		if (generatedConclusions == null || generatedConclusions.size() == 0) {
 			return null;
-		}
-		
+		}	
 		return generatedConclusions.get(0);
 	}
 	
 	
-	private OWLSubClassOfAxiom convertJustificationToSubCls(OWLSubClassOfAxiom laconicSubClsAxiom, OWLAxiom justificationAxiom) {
+	// Given a laconic axiom C <= A, check that the equivalent classes justification
+	// axiom is of the form C <--> B for some B, and return the C <= B axiom.
+	private OWLSubClassOfAxiom parseEqvClsAxiom(OWLSubClassOfAxiom laconicSubClsAxiom, OWLEquivalentClassesAxiom justificationAxiom) {
 				
-		if (includeEquivalentCase && justificationAxiom instanceof OWLEquivalentClassesAxiom) {
-
-			OWLEquivalentClassesAxiom equivAxiom = (OWLEquivalentClassesAxiom) justificationAxiom;
-			List<OWLClassExpression> innerExpressions = equivAxiom.getClassExpressionsAsList();
+		if (includeEquivalentCase) {
+			List<OWLClassExpression> innerExpressions = justificationAxiom.getClassExpressionsAsList();
 			
 			if (!innerExpressions.contains(laconicSubClsAxiom.getSubClass()) || innerExpressions.size() != 2) {
 				return null;
 			}		
 			innerExpressions.remove(laconicSubClsAxiom.getSubClass());
-			return new OWLSubClassOfAxiomImpl(laconicSubClsAxiom.getSubClass(), innerExpressions.get(0), new ArrayList<OWLAnnotation>());
-			
-		} else if (justificationAxiom instanceof OWLSubClassOfAxiom) {
-			return (OWLSubClassOfAxiom) justificationAxiom;
-			
+			return new OWLSubClassOfAxiomImpl(laconicSubClsAxiom.getSubClass(), innerExpressions.get(0), new ArrayList<OWLAnnotation>());		
 		} 
 		return null;
 	}
@@ -143,7 +158,7 @@ public class RuleException {
 		ProofTree root = new ProofTree(correctedAxiom, Arrays.asList(new ProofTree[] {leaf}), null);
 		List<ProofTree> generatedTrees = ProofTreeGenerator.computeCompleteProofTrees(root);
 		
-		if (generatedTrees == null || generatedTrees.size() != 1) {
+		if (generatedTrees == null || generatedTrees.size() == 0) {
 			return null;
 		} else {
 			return generatedTrees.get(0);
