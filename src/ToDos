@@ -2,22 +2,17 @@ Critical:
 
 - Shutdown executor threads (for both tree generation and (just, ent) generation)
 
-- Implement exception rules.
-
-- Add restrictions on exceptions. Allow only a restricted input type.
-
 - Refactor code to make the ontology dir and output dir input parameters, not hardcoded.
 
 - Do disjointness of data ranges.
 
 - Edge case of rule 52 (and potentially others) if class expressions are equal.
 
-- Look at cases when intersection/union size = 1. Think about how to handle it.
-
-- Add check if laconic axiom contains conclusion
-in practice should not happen. If size of justification > 1, then laconic can only through away 
+- Add check if laconic axiom contains conclusion in practice should not happen. 
+If size of justification > 1, then laconic can only through away 
 parts, so must still have the same number of justification axioms
 
+- Rule 56, unequal literals
 
 
 
