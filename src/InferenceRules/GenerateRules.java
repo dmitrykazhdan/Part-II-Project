@@ -466,16 +466,15 @@ public class GenerateRules {
 		
 		// 20.2
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		RuleString rule20_2 = new RuleString("20.2", "ObjSom-Bot-1", conclusion, premise1, premise2);
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
+		RuleString rule20_2 = new RuleString("20.2", "ObjSom-Bot-1", restrictions, conclusion, premise1, premise2);
 
 		// 20.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
-		RuleString rule20_3 = new RuleString("20.3", "ObjSom-Bot-1", conclusion, premise1, premise2);
+		RuleString rule20_3 = new RuleString("20.3", "ObjSom-Bot-1", restrictions, conclusion, premise1, premise2);
 
-	
-		
-		/// Rule 21
-		
+			
+		/// Rule 21		
 		// 21.1
 		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("Y") }, "Z");
 		tmp = InterUnion.createIntersectionExpression( tmpGroup1);		
@@ -483,19 +482,17 @@ public class GenerateRules {
 		premise2 = new SubClassStr("Y", "F");
 		conclusion = new SubClassStr("X", "F");
 		RuleString rule21_1 = new RuleString("21.1", "ObjSom-Bot-2", conclusion, premise2, premise1);
-
 		
 		// 21.2
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", (ClsExpStr) tmp));
-		RuleString rule21_2 = new RuleString("21.2", "ObjSom-Bot-2", conclusion, premise2, premise1);
-
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
+		RuleString rule21_2 = new RuleString("21.2", "ObjSom-Bot-2", restrictions, conclusion, premise2, premise1);
 		
 		// 21.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", (ClsExpStr) tmp));
-		RuleString rule21_3 = new RuleString("21.3", "ObjSom-Bot-2", conclusion, premise2, premise1);
+		RuleString rule21_3 = new RuleString("21.3", "ObjSom-Bot-2", restrictions, conclusion, premise2, premise1);
 
-		
-		
+				
 		// Rule 22
 		
 		// 22.1
@@ -504,25 +501,19 @@ public class GenerateRules {
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
 		conclusion = new SubClassStr("X", "F");
-		restrictions = new RuleRestrictions(new SubSetRestriction("Y1", "Y2"));	
 		RuleString rule22_1 = new RuleString("22.1", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 		
-		
-		
+				
 		// 22.2
-		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro",
-							InterUnion.createIntersectionExpression( tmpGroup1)));
-		
+		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));		
+		restrictions = new RuleRestrictions(new SubSetRestriction("Y1", "Y2"), new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
 		RuleString rule22_2 = new RuleString("22.2", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 
 		
 		// 22.3
-		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", 
-							InterUnion.createIntersectionExpression( tmpGroup1)));
-		
+		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));	
 		RuleString rule22_3 = new RuleString("22.3", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 
-		
 		
 		// Rule 23
 		premise1 = new SubClassStr("X", "Y");
@@ -530,18 +521,15 @@ public class GenerateRules {
 		conclusion =  new SubClassStr("X", "F");
 		RuleString rule23 = new RuleString("23", "SubCls-ObjCom-1", conclusion, premise1, premise2);
 		
-	
-		
+			
 		// Rule 24
 		premise1 = new SubClassStr("X", "Y");
 		premise2 = new SubClassStr(new ComplementCls(new AtomicCls("X")), "Y");
 		conclusion =  new SubClassStr("T", "Y");
 		RuleString rule24 = new RuleString("24", "SubCls-ObjCom-2", conclusion, premise1, premise2);
 		
-	
 		
-		// Rule 25
-		
+		// Rule 25		
 		// 25.1
 		premise1 = createPrimitiveObjDomain("Ro", "X");
 		premise2 = new SubClassStr(ExistsOrForAll.createObjAllValFrom("Ro", "F"), "X");
@@ -570,11 +558,9 @@ public class GenerateRules {
 		RuleString rule26 = new RuleString("26", "SubObj-SubObj", conclusion, premise1, premise2);
 
 
-
 		// Rule 27
-		premise1 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"));
-
+		premise1 = new OWLAxiomStr(AxiomType.TRANSITIVE_OBJECT_PROPERTY, new TemplateObjectProperty("Ro"));
+				
 		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
 				new TemplateObjectProperty("Ro"), 
 				new TemplateObjectProperty("So"));
@@ -585,129 +571,62 @@ public class GenerateRules {
 		RuleString rule27 = new RuleString("27", "ObjTra-ObjInv", conclusion, premise1, premise2);
 
 
-
-
-
 		// Rule 28
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 		premise2 = new SubClassStr("X", "Y");
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
-
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("Y"));				
 		RuleString rule28 = new RuleString("28", "ObjDom-SubCls", conclusion, premise1, premise2);
 
 
-
-
 		// Rule 29
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("So"),
-				new TemplateObjectProperty("Ro"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("So"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));				
+		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new TemplateObjectProperty("So"), new TemplateObjectProperty("Ro"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("So"), new AtomicCls("X"));
 		RuleString rule29 = new RuleString("29", "ObjDom-SubObj", conclusion, premise1, premise2);
-
 
 		
 		// Rule 30
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("So"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("So"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X"));				
+		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, new TemplateObjectProperty("Ro"), new TemplateObjectProperty("So"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("So"), new AtomicCls("X"));		
 		RuleString rule30 = new RuleString("30", "ObjRng-ObjInv", conclusion, premise1, premise2);
 		
-
 	
-		
 		// Rule 31
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, new TemplateObjectProperty("Ro")); 
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 		RuleString rule31 = new RuleString("31", "ObjRng-ObjSym", conclusion, premise1, premise2);
 
 
-		
-
 		// Rule 32
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 		premise2 = new SubClassStr("X", "Y");
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
-
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("Y"));
 		RuleString rule32 = new RuleString("32", "ObjRng-SubCls", conclusion, premise1, premise2);
 
-
-		
 		
 		// Rule 33
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("So"),
-				new TemplateObjectProperty("Ro"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("So"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X")); 
+		premise2 = new OWLAxiomStr(AxiomType.SUB_OBJECT_PROPERTY, new TemplateObjectProperty("So"), new TemplateObjectProperty("Ro"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("So"), new AtomicCls("X"));
 		RuleString rule33 = new RuleString("33", "ObjRng-SubObj", conclusion, premise1, premise2);
 
-		
-		
-		
+				
 		// Rule 34
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, 
-				new TemplateObjectProperty("Ro"),
-				new TemplateObjectProperty("So"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("So"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+		premise2 = new OWLAxiomStr(AxiomType.INVERSE_OBJECT_PROPERTIES, new TemplateObjectProperty("Ro"), new TemplateObjectProperty("So"));							
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("So"), new AtomicCls("X"));
 		RuleString rule34 = new RuleString("34", "ObjDom-ObjInv", conclusion, premise1, premise2);
 		
-
-		
+	
 		// Rule 35
-		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
-		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, 
-				new TemplateObjectProperty("Ro"));
-
-		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, 
-				new TemplateObjectProperty("Ro"), new AtomicCls("X"));
-
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+		premise2 = new OWLAxiomStr(AxiomType.SYMMETRIC_OBJECT_PROPERTY, new TemplateObjectProperty("Ro"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
 		RuleString rule35 = new RuleString("35", "ObjDom-ObjSym", conclusion, premise1, premise2);
 
-
-		
-		
+	
 		// Rule 36	
 		
 		// 36.1
