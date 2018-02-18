@@ -26,6 +26,7 @@ import RuleRestrictions.RelCardinalityRestriction;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
+import RuleRestrictions.UnequalLiteralsRestriction;
 
 public class GenerateRules {
 
@@ -1010,12 +1011,10 @@ public class GenerateRules {
 		RuleString rule56_1 = new RuleString("56.1", "DatVal-DatVal-DatFun", restrictions, conclusion, premise1, premise2, premise3);
 
 		// 56.2 - Handle the case of the other restriction
-		restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("l0", "l1"));
+		restrictions = new RuleRestrictions(new UnequalLiteralsRestriction("l0", "l1"));
 		RuleString rule56_2 = new RuleString("56.2", "DatVal-DatVal-DatFun", restrictions, conclusion, premise1, premise2, premise3);
 		
-		
-	
-		
+			
 		rules.get(3).add(rule52);
 		rules.get(3).add(rule53);
 		rules.get(3).add(rule54);

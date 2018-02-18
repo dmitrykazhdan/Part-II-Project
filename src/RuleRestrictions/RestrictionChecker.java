@@ -49,11 +49,30 @@ public class RestrictionChecker {
 		} else if (restriction instanceof GroupContainsRestriction) {
 			return checkGroupContainsRestriction((GroupContainsRestriction) restriction);
 			
+		} else if (restriction instanceof UnequalLiteralsRestriction) {
+			return checkUnequalLiteralsRestriction((UnequalLiteralsRestriction) restriction);
+			
 		} else {
 			return false;
 		}
 	}
 	
+	
+	private boolean checkUnequalLiteralsRestriction(UnequalLiteralsRestriction restriction) {
+		
+		String firstLiteral = restriction.getFirstLiteral();
+		String secondLiteral = restriction.getSecondLiteral();
+		
+		if (!instantiation.getVariableInstantiation().containsKey(firstLiteral) ||
+			!instantiation.getVariableInstantiation().containsKey(secondLiteral)) {
+				
+			return false;
+		}
+		
+		OWLLiteral l0 = (OWLLiteral) instantiation.getVariableInstantiation().get(firstLiteral);
+		OWLLiteral l1 = (OWLLiteral) instantiation.getVariableInstantiation().get(secondLiteral);		
+		return l0.equals(l1);
+	}
 	
 	private boolean checkGroupContainsRestriction(GroupContainsRestriction restriction) {
 		
