@@ -349,6 +349,10 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		List<OWLObjectMaxCardinality> maxCardinalityExpressions = generateObjMaxCardinality(cardinalityExpression);	
 		List<OWLObjectExactCardinality> exactCardinalityExpressions = new ArrayList<OWLObjectExactCardinality>();
 
+		if (maxCardinalityExpressions == null) {
+			return exactCardinalityExpressions;
+		}
+		
 		for (OWLObjectMaxCardinality maxCardExp : maxCardinalityExpressions) {
 			exactCardinalityExpressions.add(new OWLObjectExactCardinalityImpl(maxCardExp.getProperty(), maxCardExp.getCardinality(), maxCardExp.getFiller()));
 		}	
@@ -361,6 +365,10 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		List<OWLObjectMaxCardinality> maxCardinalityExpressions = generateObjMaxCardinality(cardinalityExpression);	
 		List<OWLObjectMinCardinality> minCardinalityExpressions = new ArrayList<OWLObjectMinCardinality>();
 
+		if (maxCardinalityExpressions == null) {
+			return minCardinalityExpressions;
+		}
+		
 		for (OWLObjectMaxCardinality maxCardExp : maxCardinalityExpressions) {
 			minCardinalityExpressions.add(new OWLObjectMinCardinalityImpl(maxCardExp.getProperty(), maxCardExp.getCardinality(), maxCardExp.getFiller()));
 		}	
@@ -552,7 +560,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	private List<OWLObject> generate(ClsExpStr conclusionExp) {
 
 		List<OWLObject> generatedExpressions = new ArrayList<OWLObject>();
-		OWLObject generatedExpression = null;
 
 		if (conclusionExp.getExpressionType() == null) {
 			generatedExpressions.addAll(generateAtomicCls((AtomicCls) conclusionExp));
@@ -586,11 +593,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF)) {
 				generatedExpressions.addAll(generateIntersectionExpressions((InterUnion) conclusionExp));
 			}
-		}
-		
-		if (generatedExpression != null) {
-			generatedExpressions.add(generatedExpression);
-		}
+		}	
 		return generatedExpressions;
 	}
 
