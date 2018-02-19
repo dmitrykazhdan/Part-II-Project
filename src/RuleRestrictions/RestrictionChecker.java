@@ -178,18 +178,18 @@ public class RestrictionChecker {
 	private boolean evaluateInequality(Integer cardinality, CardinalitySign type, Integer bound) {
 		
 		switch(type) {
-			case L:
-				return cardinality < bound;
-			case G:
-				return cardinality > bound;
-			case EQ:
-				return cardinality == bound;
-			case LEQ:
-				return cardinality <= bound;
-			case GEQ:
-				return cardinality >= bound;
-			default:
-				return false;			
+		case L:
+			return cardinality < bound;
+		case G:
+			return cardinality > bound;
+		case EQ:
+			return cardinality == bound;
+		case LEQ:
+			return cardinality <= bound;
+		case GEQ:
+			return cardinality >= bound;
+		default:
+			return false;			
 		}
 	}
 }

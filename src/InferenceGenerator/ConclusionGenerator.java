@@ -42,7 +42,11 @@ import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
 import OWLExpressionTemplates.TemplatePrimitive;
 import OWLExpressionTemplates.UninstantiatedCardinalityException;
+import RuleRestrictions.AbsCardinalityRestriction;
+import RuleRestrictions.CardinalityRestriction;
+import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.GroupContainsRestriction;
+import RuleRestrictions.RelCardinalityRestriction;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
@@ -381,6 +385,10 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		return currentInstantiation.getVariableInstantiation().get(conclusionExp.getAtomic());
 	}
 	
+	// If the cardinality is instantiated, return it.
+	// Otherwise attempt to find its upper and lower bound, in which case generate all cardinalities in the range
+	// [LB, min(LB + 5), UB].
+	// If bounds don't exist- throw exception.
 	private List<Integer> generateCardinalities(String pattern) throws UninstantiatedCardinalityException {
 		
 		List<Integer> cardinalities = new ArrayList<Integer>();
@@ -388,12 +396,97 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		if (currentInstantiation.getCardinalityInstantiation().containsKey(pattern)) {
 			cardinalities.add(currentInstantiation.getCardinalityInstantiation().get(pattern));
 			return cardinalities;
-		} else {		
-			// Need to decide on how to generate non-defined cardinalities
-			throw new UninstantiatedCardinalityException();
+			
+		} else {	
+			
+			List<Integer> cardinalityBounds = findCardinalityBounds(pattern);
+			
+			if (cardinalityBounds == null || cardinalityBounds.size() != 2) {
+				throw new UninstantiatedCardinalityException();
+			}			
+			return generateCardinalitiesInRange(cardinalityBounds.get(0), cardinalityBounds.get(1));			
+		}
+	}
+	
+	
+	// Given [LB, UB] generate all integers in the range [LB, min(UB, LB + 5)]
+	private List<Integer> generateCardinalitiesInRange(int lowerBound, int upperBound) {
+		
+		List<Integer> cardinalities = new ArrayList<Integer>();
+		
+		if ((lowerBound > upperBound) || (lowerBound < 0)) {
+			return cardinalities;
+		}	
+		upperBound = Math.min(upperBound, lowerBound + 5);
+		
+		for (int i = lowerBound; i <= upperBound; i++) {
+			cardinalities.add(i);
+		}	
+		return cardinalities;
+	}
+	
+	// This assumes that the cardinality of interest has been defined as a "cardinality", not as
+	// a relative bound. Thus the rules will have to be defined appropriately.
+	private List<Integer> findCardinalityBounds(String cardinality) {
+		
+		List<Integer> upperAndLowerBounds = new ArrayList<Integer>();
+		upperAndLowerBounds.add(Integer.MIN_VALUE);
+		upperAndLowerBounds.add(Integer.MAX_VALUE);
+		Integer bound = -1;
+		CardinalitySign type;
+		
+		for (RuleRestriction restriction : ruleRestrictions.conclusionRestrictions()){
+			if (restriction instanceof CardinalityRestriction &&
+				((CardinalityRestriction) restriction).getCardinality().equals(cardinality)) {
+				
+				if (restriction instanceof AbsCardinalityRestriction) {
+					bound = ((AbsCardinalityRestriction) restriction).getAbsoluteBound();
+			
+				} else if (restriction instanceof RelCardinalityRestriction) {
+					String relBound = ((RelCardinalityRestriction) restriction).getRelativeBound();
+					
+					if (currentInstantiation.getCardinalityInstantiation().containsKey(relBound)) {
+						bound = currentInstantiation.getCardinalityInstantiation().get(relBound);					
+					} else {
+						continue;
+					}				
+				}				
+				type = ((CardinalityRestriction) restriction).getCardinalityType();
+				updateBounds(upperAndLowerBounds, bound, type);
+			}
+		}
+		
+		if (upperAndLowerBounds.get(0) == Integer.MIN_VALUE || upperAndLowerBounds.get(1) == Integer.MAX_VALUE) {
+			return null;
+		} else {
+			return upperAndLowerBounds;
 		}
 	}
 
+	
+	private void updateBounds(List<Integer> currentBounds, Integer newBound, CardinalitySign boundType) {
+		Integer lowerBound = currentBounds.get(0);
+		Integer upperBound = currentBounds.get(1);
+
+		switch(boundType) {
+		case L:
+			upperBound = Math.min(newBound - 1, upperBound);
+			break;
+		case LEQ:
+			upperBound = Math.min(newBound, upperBound);
+			break;
+		case G:
+			lowerBound = Math.max(newBound + 1, lowerBound);
+			break;
+		case GEQ:
+			lowerBound = Math.max(newBound, lowerBound);
+			break;
+		default:
+		}	
+		currentBounds.set(0, lowerBound);
+		currentBounds.set(1, upperBound);		
+	}
+	
 
 	private Set<OWLClassExpression> generateFullyNamedGroup(ExpressionGroup expGroupStr) {
 
