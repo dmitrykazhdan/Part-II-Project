@@ -264,7 +264,7 @@ public class GenerateRules {
 		restrictions = new RuleRestrictions(
 				new RuleRestriction[] { new AbsCardinalityRestriction("n1", CardinalitySign.GEQ, 0) },
 				new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), 
-				new RelCardinalityRestriction("n1", CardinalitySign.GEQ, "n2") });
+									    new RelCardinalityRestriction("n1", CardinalitySign.GEQ, "n2") });
 		RuleString rule6_1 = new RuleString("6.1", "ObjExt", restrictions, conclusion, premise1);
 
 		// 6.2
@@ -279,7 +279,7 @@ public class GenerateRules {
 		restrictions = new RuleRestrictions(
 				new RuleRestriction[] { new AbsCardinalityRestriction("n1", CardinalitySign.GEQ, 0) },
 				new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), 
-				new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") });
+										new RelCardinalityRestriction("n1",CardinalitySign.GEQ, "n2") });
 		RuleString rule6_3 = new RuleString("6.3", "ObjExt", restrictions, conclusion, premise1);
 	
 
@@ -637,13 +637,13 @@ public class GenerateRules {
 		RuleString rule36_1 = new RuleString("36.1", "ObjSom-ObjDom", conclusion, premise1, premise2);
 		
 		// 36.2
-		RuleRestrictions ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));	
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Z"));
-		RuleString rule36_2 = new RuleString("36.2", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule36_2 = new RuleString("36.2", "ObjSom-ObjDom", restrictions, conclusion, premise1, premise2);
 		
 		// 36.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Z"));				
-		RuleString rule36_3 = new RuleString("36.3", "ObjSom-ObjDom", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule36_3 = new RuleString("36.3", "ObjSom-ObjDom", restrictions, conclusion, premise1, premise2);
 		
 		
 		
@@ -657,14 +657,14 @@ public class GenerateRules {
 		
 		// 37.2
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");		
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-		RuleString rule37_2 = new RuleString("37.2", "DatSom-DatDom", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule37_2 = new RuleString("37.2", "DatSom-DatDom", restrictions, conclusion, premise1, premise2);
 
 		
 		// 37.3
 		tmp = CardExpGen.createDataExactCard("n", "Rd", "Dr");		
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));				
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));				
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);				
 		RuleString rule37_3 = new RuleString("37.3", "DatSom-DatDom", conclusion, premise1, premise2);
 
@@ -681,15 +681,15 @@ public class GenerateRules {
 			
 		// 38.2
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));				
-		RuleString rule38_2 = new RuleString("38.2", "ObjSom-ObjRng", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule38_2 = new RuleString("38.2", "ObjSom-ObjRng", restrictions, conclusion, premise1, premise2);
 		
 		
 		// 38.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", InterUnion.createIntersectionExpression( tmpGroup1)));			
-		RuleString rule38_3 = new RuleString("38.3", "ObjSom-ObjRng", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule38_3 = new RuleString("38.3", "ObjSom-ObjRng", restrictions, conclusion, premise1, premise2);
 
 		
 				
@@ -717,24 +717,24 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise2 = new SubClassStr(tmp, new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
 		conclusion = new SubClassStr(new AtomicCls("X"), new AtomicCls("Z"));
-		RuleString rule41_1 = new RuleString("41.1", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule41_1 = new RuleString("41.1", "ObjSom-ObjMin", restrictions, conclusion, premise1, premise2);
 
 		
 		// 41.2
 		tmp = CardExpGen.createObjMinCard("n", "Ro", "Y");
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		tmp = ExistsOrForAll.createObjSomeValFrom("Ro", "Y");
 		premise2 = new SubClassStr(tmp, new AtomicCls("Z"));
-		RuleString rule41_2 = new RuleString("41.2", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule41_2 = new RuleString("41.2", "ObjSom-ObjMin", restrictions, conclusion, premise1, premise2);
 
 		
 		// 41.3
 		tmp = CardExpGen.createObjExactCard("n", "Ro", "Y");	
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-		RuleString rule41_3 = new RuleString("41.3", "ObjSom-ObjMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule41_3 = new RuleString("41.3", "ObjSom-ObjMin", restrictions, conclusion, premise1, premise2);
 
 		
 		
@@ -745,9 +745,9 @@ public class GenerateRules {
 
 		tmp = CardExpGen.createDataMinCard("n", "Rd", "Dr");
 		premise2 = new SubClassStr(tmp, new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.EQ, 1));
 		conclusion = new SubClassStr(new AtomicCls("X"), new AtomicCls("Z"));
-		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule42_1 = new RuleString("42.1", "DatSom-DatMin", restrictions, conclusion, premise1, premise2);
 
 
 		// 42.2
@@ -755,15 +755,15 @@ public class GenerateRules {
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
 		tmp = ExistsOrForAll.createDataSomeValFrom("Rd", "Dr");	
 		premise2 = new SubClassStr(tmp, new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		conclusion = new SubClassStr(new AtomicCls("X"), new AtomicCls("Z"));
-		RuleString rule42_2 = new RuleString("42.2", "DatSom-DatMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule42_2 = new RuleString("42.2", "DatSom-DatMin", restrictions, conclusion, premise1, premise2);
 
 
 		// 42.3
 		tmp = CardExpGen.createDataExactCard("n", "Rd", "Dr");
 		premise1 = new SubClassStr(new AtomicCls("X"), tmp);
-		RuleString rule42_3 = new RuleString("42.3", "DatSom-DatMin", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule42_3 = new RuleString("42.3", "DatSom-DatMin", restrictions, conclusion, premise1, premise2);
 
 				
 			
@@ -778,16 +778,16 @@ public class GenerateRules {
 		// 43.2
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		premise2 = new SubClassStr(new AtomicCls("Y"), new AtomicCls("Z"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
 		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Z"));
-		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
 
 		
 		// 43.3
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		premise2 = new SubClassStr(new AtomicCls("Y"), new AtomicCls("Z"));
 		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Z"));
-		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
 
 		
 			
@@ -800,14 +800,14 @@ public class GenerateRules {
 		
 		// 44.2
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
 		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "So", "Y"));
-		RuleString rule44_2 = new RuleString("44.2", "ObjSom-SubObj", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule44_2 = new RuleString("44.2", "ObjSom-SubObj", restrictions, conclusion, premise1, premise2);
 
 		// 44.3
 		premise1 = new SubClassStr("X", CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = new SubClassStr("X", CardExpGen.createObjExactCard("n", "So", "Y"));
-		RuleString rule44_3 = new RuleString("44.3", "ObjSom-SubObj", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule44_3 = new RuleString("44.3", "ObjSom-SubObj", restrictions, conclusion, premise1, premise2);
 
 	
 		
@@ -856,9 +856,9 @@ public class GenerateRules {
 		tmp = CardExpGen.createObjMinCard("n", "Ro", CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		premise1 = new SubClassStr("X", (ClsExpStr) tmp);
 		premise2 = createPrimitiveTransObjProp("Ro");
-		ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
-		RuleString rule49_2 = new RuleString("49.2", "ObjSom-ObjTra", ruleRestrictions, conclusion, premise1, premise2);
+		RuleString rule49_2 = new RuleString("49.2", "ObjSom-ObjTra", restrictions, conclusion, premise1, premise2);
 
 		
 		
@@ -995,9 +995,9 @@ public class GenerateRules {
 		premise1 = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		premise2 = new SubClassStr("Y", CardExpGen.createObjMinCard("n", "Ro", "Z"));
 		premise3 = createPrimitiveTransObjProp("Ro");
-		RuleRestrictions ruleRestrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
+		RuleRestrictions restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.G, 0));
 		conclusion = new SubClassStr("X", CardExpGen.createObjMinCard("n", "Ro", "Z"));
-		RuleString rule55_2 = new RuleString("55.2", "ObjSom-ObjSom-ObjTra", ruleRestrictions, conclusion, premise1, premise2, premise3);
+		RuleString rule55_2 = new RuleString("55.2", "ObjSom-ObjSom-ObjTra", restrictions, conclusion, premise1, premise2, premise3);
 		
 
 			
@@ -1007,7 +1007,7 @@ public class GenerateRules {
 		premise1 = new SubClassStr("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l0"));
 		premise2 = new SubClassStr("X", ExistsOrForAll.createLiteralSomeValFrom("Rd", "l1"));
 		premise3 = new OWLAxiomStr(AxiomType.FUNCTIONAL_DATA_PROPERTY, new TemplateDataProperty("Rd"));
-		RuleRestrictions restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("l0", "l1"));
+		restrictions = new RuleRestrictions(new DisjointDatatypesRestriction("l0", "l1"));
 		conclusion = new SubClassStr("X", "F");
 		RuleString rule56_1 = new RuleString("56.1", "DatVal-DatVal-DatFun", restrictions, conclusion, premise1, premise2, premise3);
 
