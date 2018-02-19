@@ -501,6 +501,7 @@ public class GenerateRules {
 		premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", InterUnion.createIntersectionExpression( tmpGroup1)));
 		ExpressionGroup tmpGroup2 = new ExpressionGroup("C2", new ClsExpStr[] {}, "Y2");
 		premise2 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup2);
+		restrictions = new RuleRestrictions(new SubSetRestriction("Y1", "Y2"));	
 		conclusion = new SubClassStr("X", "F");
 		RuleString rule22_1 = new RuleString("22.1", "ObjInt-DisCls", restrictions, conclusion, premise1, premise2);
 		

@@ -71,7 +71,7 @@ public class RestrictionChecker {
 		
 		OWLLiteral l0 = (OWLLiteral) instantiation.getVariableInstantiation().get(firstLiteral);
 		OWLLiteral l1 = (OWLLiteral) instantiation.getVariableInstantiation().get(secondLiteral);		
-		return l0.equals(l1);
+		return !l0.equals(l1);
 	}
 	
 	private boolean checkGroupContainsRestriction(GroupContainsRestriction restriction) {
