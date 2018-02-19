@@ -81,9 +81,7 @@ public class OntologyProcessing {
 		
 		// Compute all non-trivial subsumption entailments.
 		List<OWLAxiom> allSubsumptions = ComputeAllNonTrivialSubsumptionEntailments();
-		
-		ExecutorService executor = Executors.newCachedThreadPool();
-		
+				
 		// tmp
 		int entcount = 0;
 		
@@ -97,6 +95,7 @@ public class OntologyProcessing {
 				return;
 			}
 			
+			ExecutorService executor = Executors.newCachedThreadPool();
 			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
 			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new ExplanationGeneratorThread(entailment, explanationGen));
 			
@@ -106,7 +105,6 @@ public class OntologyProcessing {
 			} catch (TimeoutException e) {
 			//	System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {
-				executor.shutdown();
 				executor.shutdownNow();
 			}
 			
@@ -131,7 +129,6 @@ public class OntologyProcessing {
 		} catch (TimeoutException e) {
 			System.out.println("Timeout on computing all subsumption entailments. Ontology: " + ontologyFile.getName());
 		}	finally {
-			executor.shutdown();
 			executor.shutdownNow();
 		}
 		

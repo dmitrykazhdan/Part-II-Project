@@ -42,6 +42,10 @@ public class SubSumptionComputationThread implements Callable<List<OWLAxiom>>{
 		// B <= A for some other class B.
 		for (OWLClass superClass : allClasses) {
 
+			if(Thread.currentThread().isInterrupted()){
+                return allSubsumptions;
+             }
+			
 			// For every class, compute all of its (non-strict) subclasses.
 			Set<OWLClass> subClasses = GetNonStrictSubclasses(reasoner, superClass);
 
