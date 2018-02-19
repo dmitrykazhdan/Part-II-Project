@@ -2,7 +2,6 @@ Critical:
 
 - Do disjointness of data ranges.
 
-- Implement exception for rule 6 ("generateCardinality" method).
 
 
 - Add tests of generated trees (complicated cases).
