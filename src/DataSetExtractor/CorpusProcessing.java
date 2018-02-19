@@ -22,8 +22,22 @@ public class CorpusProcessing {
 	
 	public static void main(String args[])   {
 		
-		File corpusDir = new File("/Users/AdminDK/Desktop/TestOntology");
-		File outputDir = new File("/Users/AdminDK/Desktop/Explanations");
+		String corpusDirStr = "";
+		String outputDirStr = "";
+		
+		if (args.length == 2) {
+			corpusDirStr = args[0];
+			outputDirStr = args[1];
+			
+		} else {		
+			System.out.println("Input the following arguments: ");
+			System.out.println("1) Path to folder containing the ontology corpus.");
+			System.out.println("2) Path to folder where the (entailment, justification) data should be placed.");
+			return;
+		}
+		
+		File corpusDir = new File(corpusDirStr);
+		File outputDir = new File(outputDirStr);
 		
 		// Extract all ontologies from the specified directory.
 		File[] ontologies = extractOntologyFiles(corpusDir);

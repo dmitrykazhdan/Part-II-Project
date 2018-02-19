@@ -31,19 +31,36 @@ import ProofTreeComputation.ProofTreeGenerator;
 public class GenerateTrees {
 	
 	public static void main(String args[]) throws IOException, InterruptedException, ExecutionException {
-
+		
+		String explanationDirPathStr = "";
+		String outputFilePathStr = "";
+		String failedExplDirPathStr = "";
+		
+		if (args.length == 3) {
+			explanationDirPathStr = args[0];
+			outputFilePathStr = args[1];
+			failedExplDirPathStr = args[2];
+			
+		} else {		
+			System.out.println("Input the following arguments: ");
+			System.out.println("1) Path to folder containing (entailment, justification) data.");
+			System.out.println("2) Path where the output.txt statistics file should be created.");
+			System.out.println("3) Path to where failed explanation files should be copied.");
+			return;
+		}
+			
 		// Declare path to the folder containing the explanation data set.
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/Explanations/");
+		Path explanationDirPath = Paths.get(explanationDirPathStr);
 		File explanationDir = new File(explanationDirPath.toString());
-		String outputFilePath = "/Users/AdminDK/Desktop/";
 		
 		// Declare a path to the folder that will contain all failed explanations.
-		Path failedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations/");
+		Path failedExplanationsDirPath = Paths.get(failedExplDirPathStr);
 		
 		// Extract all explanations and evaluate the algorithm coverage.
 		File[] explanationFiles = extractExplanationFiles(explanationDir);		
-		evaluateCoverage(explanationFiles, failedExplanationsDirPath, outputFilePath);
+		evaluateCoverage(explanationFiles, failedExplanationsDirPath, outputFilePathStr);
 	}
+	
 	
 	// Method measures the number of explanations from which at least one proof tree has
 	// been computed successfully.
