@@ -8,22 +8,20 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     ontologyIRI="urn:absolute:testingOntology">
  
- <SubClassOf>
-     <Class IRI="urn:absolute:testingOntology#ClassX"/>
-     
-     <ObjectExactCardinality cardinality="3">
-         <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
-         <Class IRI="urn:absolute:testingOntology#ClassY"/>
-     </ObjectExactCardinality>
- </SubClassOf>
 
     <SubClassOf>
         <Annotation>
             <AnnotationProperty IRI="http://owl.cs.manchester.ac.uk/explanation/vocabulary#entailment"/>
             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#boolean">true</Literal>
         </Annotation>
+        
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
-        <Class IRI="urn:absolute:testingOntology#ClassY"/>
+        
+        <ObjectMinCardinality cardinality="1">
+            <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
+            <Class IRI="urn:absolute:testingOntology#ClassY"/>
+        </ObjectMinCardinality>
+
     </SubClassOf>
 
 
