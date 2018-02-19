@@ -230,15 +230,16 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	
 	// Assumption: all free variables in the template have been instantiated.
 	private OWLDisjointClassesAxiom generateDisjointClassesAxiom() {
-		return new OWLDisjointClassesAxiomImpl(generateGroup(conclusionStr.getExpressionGroup()), new HashSet<OWLAnnotation>());			
+		return new OWLDisjointClassesAxiomImpl(generateFullyNamedGroup(conclusionStr.getExpressionGroup()), new HashSet<OWLAnnotation>());			
 	}
 
 	private boolean checkExpressionIsObjSomeOrAllValuesFrom(ExistsOrForAll existsOrForAll) {
 		
 		OWLObject generatedProperty = generate(existsOrForAll.getProperty());
 		
-		if (!(generatedProperty instanceof OWLObjectPropertyExpression) || 
-			!(existsOrForAll.getExpression() instanceof ClsExpStr) || generatedProperty == null) {
+		if (generatedProperty == null ||
+			!(generatedProperty instanceof OWLObjectPropertyExpression) || 
+			!(existsOrForAll.getExpression() instanceof ClsExpStr)) {
 			
 			return false;
 		}
@@ -352,7 +353,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		if (genericCardinalityExpr == null) {
 			return null;
 		}
-
 		return new OWLObjectMinCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
 	}
 
@@ -373,14 +373,13 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	}
 
 
-	private Set<OWLClassExpression> generateGroup(ExpressionGroup expGroupStr) {
+	private Set<OWLClassExpression> generateFullyNamedGroup(ExpressionGroup expGroupStr) {
 
 		Set<OWLClassExpression> expGroup = new HashSet<OWLClassExpression>();
 
 		for (GenericExpStr namedExpression : expGroupStr.getNamedExpressions()) {		
 			expGroup.add((OWLClassExpression) currentInstantiation.getVariableInstantiation().get(((AtomicCls) namedExpression).getPlaceholder()));
 		}
-
 		return expGroup;
 	}
 
@@ -477,6 +476,8 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	}
 	
 	
+	// If the template has been instantiated, that template is returned.
+	// Otherwise the "group contains restriction" is used to generate the different possible classes.
 	private List<OWLObject> generateAtomicCls(AtomicCls atomicCls) {
 		
 		List<OWLObject> generatedExpressions = new ArrayList<OWLObject>();
@@ -488,6 +489,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		}
 		return generatedExpressions;
 	}
+	
 	
 	private List<OWLObject> getContainedClasses(AtomicCls atomicCls) {
 		
@@ -575,7 +577,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		if (generatedExpression != null) {
 			generatedExpressions.add(generatedExpression);
 		}
-
 		return generatedExpressions;
 	}
 
@@ -597,6 +598,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		for (Set<OWLClassExpression> group : allGroups) {
 			
 			// Here we assume that an intersection and a union should contain > 1 class.
+			// The case of a single class is handled in the atomic class generation.
 			if (group.size() > 1) {
 				OWLClassExpression union = null;
 				
@@ -635,6 +637,4 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		}	
 		return allGroups;
 	}
-	
-
 }

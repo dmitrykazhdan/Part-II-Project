@@ -1,10 +1,8 @@
 Critical:
 
-- Shutdown executor threads (for both tree generation and (just, ent) generation)
-
-- Refactor code to make the ontology dir and output dir input parameters, not hardcoded.
-
 - Do disjointness of data ranges.
+
+- Implement exception for rule 6 ("generateCardinality" method).
 
 
 - Add tests of generated trees (complicated cases).
