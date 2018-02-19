@@ -9,7 +9,6 @@ import InferenceRules.Instantiation;
 import OWLExpressionTemplates.OWLAxiomStr;
 import RuleRestrictions.RestrictionChecker;
 import RuleRestrictions.RuleRestriction;
-import RuleRestrictions.RuleRestrictions;
 
 public abstract class RuleMatcherGenerator {
 

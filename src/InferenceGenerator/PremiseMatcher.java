@@ -52,14 +52,11 @@ import OWLExpressionTemplates.TemplateIndividual;
 import OWLExpressionTemplates.TemplateLiteral;
 import OWLExpressionTemplates.TemplateObjectProperty;
 import OWLExpressionTemplates.TemplatePrimitive;
-import RuleRestrictions.RestrictionChecker;
 import RuleRestrictions.RuleRestriction;
-import RuleRestrictions.RuleRestrictions;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class PremiseMatcher extends RuleMatcherGenerator{
 
-	// Rule restrictions to check.
 	private RuleRestriction[] ruleRestrictions;
 	private Instantiation currentInstantiation;
 	private List<Instantiation> allInstantiations;
@@ -89,8 +86,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 					allInstantiations.add(currentInstantiation);
 				}
 			}
-		}
-		
+		}		
 		cleanupInstantiations();
 		
 		return allInstantiations;
@@ -165,8 +161,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 				
 				return matchPrimitive(axiomWithProperty.getProperty(), primitiveProperty);
 			}
-		}
-		
+		}		
 		return false;
 	}
 
@@ -210,51 +205,39 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 	private boolean matchRBoxAxiom(OWLAxiom rBoxAxiom, OWLAxiomStr pattern) {
 		
 		if (rBoxAxiom.isOfType(AxiomType.SUB_OBJECT_PROPERTY)) {
-			OWLSubObjectPropertyOfAxiom subObjPropAxiom = (OWLSubObjectPropertyOfAxiom) rBoxAxiom;
-			return matchSubObjectProperty(subObjPropAxiom, pattern);
+			return matchSubObjectProperty((OWLSubObjectPropertyOfAxiom) rBoxAxiom, pattern);
 
 		} else if (rBoxAxiom.isOfType(AxiomType.INVERSE_OBJECT_PROPERTIES)) {
-			OWLInverseObjectPropertiesAxiom invObjPropAxiom = (OWLInverseObjectPropertiesAxiom) rBoxAxiom;
-			return matchInverseObjectProperty(invObjPropAxiom, pattern);
+			return matchInverseObjectProperty((OWLInverseObjectPropertiesAxiom) rBoxAxiom, pattern);
 			
 		} else if (rBoxAxiom.isOfType(AxiomType.FUNCTIONAL_OBJECT_PROPERTY) ||
-				rBoxAxiom.isOfType(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) ||
-				rBoxAxiom.isOfType(AxiomType.SYMMETRIC_OBJECT_PROPERTY) ||
-				rBoxAxiom.isOfType(AxiomType.TRANSITIVE_OBJECT_PROPERTY) ||
-				rBoxAxiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
+				   rBoxAxiom.isOfType(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY) ||
+				   rBoxAxiom.isOfType(AxiomType.SYMMETRIC_OBJECT_PROPERTY) ||
+				   rBoxAxiom.isOfType(AxiomType.TRANSITIVE_OBJECT_PROPERTY) ||
+				   rBoxAxiom.isOfType(AxiomType.FUNCTIONAL_DATA_PROPERTY)) {
 
-			HasProperty<OWLProperty> axiomWithProperty = (HasProperty<OWLProperty>) rBoxAxiom;
-			return matchAxiomWithProperty(axiomWithProperty, pattern);
-			
+			return matchAxiomWithProperty((HasProperty<OWLProperty>) rBoxAxiom, pattern);		
 		} 
 		return false;
 	}
 
 
 	private boolean matchObjectPropertyDomain(OWLObjectPropertyDomainAxiom objPropDomAxiom, TemplateObjectProperty property, AtomicCls domain) {
-
-		return match(objPropDomAxiom.getDomain(), domain) &&
-				matchPrimitive(objPropDomAxiom.getProperty(), property);
+		return match(objPropDomAxiom.getDomain(), domain) && matchPrimitive(objPropDomAxiom.getProperty(), property);				
 	}
 	
 	
 	private boolean matchObjectPropertyRange(OWLObjectPropertyRangeAxiom objRngDomAxiom, TemplateObjectProperty property, AtomicCls range) {
-
-		return match(objRngDomAxiom.getRange(), range) &&
-				matchPrimitive(objRngDomAxiom.getProperty(), property);
+		return match(objRngDomAxiom.getRange(), range) && matchPrimitive(objRngDomAxiom.getProperty(), property);				
 	}
 	
 	private boolean matchDataPropertyRange(OWLDataPropertyRangeAxiom dataRngDomAxiom, TemplateDataProperty property, TemplateDataRange range) {
-
-		return matchPrimitive(dataRngDomAxiom.getRange(), range) &&
-				matchPrimitive(dataRngDomAxiom.getProperty(), property);
+		return matchPrimitive(dataRngDomAxiom.getRange(), range) && matchPrimitive(dataRngDomAxiom.getProperty(), property);				
 	}
 	
 	
 	private boolean matchDataPropertyDomain(OWLDataPropertyDomainAxiom dataPropDomAxiom, TemplateDataProperty property, AtomicCls range) {
-
-		return match(dataPropDomAxiom.getDomain(), range) &&
-				matchPrimitive(dataPropDomAxiom.getProperty(), property);
+		return match(dataPropDomAxiom.getDomain(), range) && matchPrimitive(dataPropDomAxiom.getProperty(), property);			
 	}
 
 	
@@ -290,10 +273,8 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 	}
 	
 	
-	private boolean matchSubClassAxiom(OWLSubClassOfAxiom subClsAxiom, SubClassStr pattern) {
-	
-		return match(subClsAxiom.getSubClass(), pattern.getSubClassStr()) && 
-			   match(subClsAxiom.getSuperClass(), pattern.getSuperClassStr());
+	private boolean matchSubClassAxiom(OWLSubClassOfAxiom subClsAxiom, SubClassStr pattern) {	
+		return match(subClsAxiom.getSubClass(), pattern.getSubClassStr()) && match(subClsAxiom.getSuperClass(), pattern.getSuperClassStr());	   
 	}
 
 	
@@ -303,12 +284,10 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 			return matchSubClassAxiom((OWLSubClassOfAxiom) tBoxAxiom, (SubClassStr) pattern);
 
 		} else if (tBoxAxiom.isOfType(AxiomType.EQUIVALENT_CLASSES)) {
-
 			OWLEquivalentClassesAxiom eqvClassesAxiom = (OWLEquivalentClassesAxiom) tBoxAxiom;
 			return matchGroupAxiomNonUniquely(eqvClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
 
 		} else if (tBoxAxiom.isOfType(AxiomType.DISJOINT_CLASSES)){
-
 			OWLDisjointClassesAxiom disjClassesAxiom = (OWLDisjointClassesAxiom) tBoxAxiom;
 			return matchGroupAxiomNonUniquely(disjClassesAxiom.getClassExpressions(), pattern.getExpressionGroup());
 
@@ -339,8 +318,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 			TemplateLiteral i = (TemplateLiteral) patternExpressions.get(0);
 			TemplateLiteral j = (TemplateLiteral) patternExpressions.get(1);
 			
-			// Check that both individuals have been instantiated and
-			// attempt to match the two possible orderings.
+			// Check that both individuals have been instantiated and attempt to match the two possible orderings.
 			if (currentInstantiation.getVariableInstantiation().containsKey(i.getAtomic()) &&
 				currentInstantiation.getVariableInstantiation().containsKey(j.getAtomic())) {
 				
@@ -351,12 +329,12 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 		return false;
 	}
 	
+	
 	private boolean matchABoxAxiom(OWLAxiom aBoxAxiom, OWLAxiomStr pattern) {
 
 		// Currently only a "Different Individuals" axiom that has only two individuals is matched.
 		if (aBoxAxiom.isOfType(AxiomType.DIFFERENT_INDIVIDUALS)) {
-			OWLDifferentIndividualsAxiom diffIndividualsAxiom = (OWLDifferentIndividualsAxiom) aBoxAxiom;				
-			return matchDifferentIndividuals(diffIndividualsAxiom, pattern);
+			return matchDifferentIndividuals((OWLDifferentIndividualsAxiom) aBoxAxiom, pattern);
 		}	
 		return false;
 	}
@@ -433,8 +411,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 
 	
 	
-	// Matches an intersection or union expression, provided that there is a single
-	// unique matching available.
+	// Matches an intersection or union expression, provided that there is a single unique matching available.
 	private boolean matchGroupExpressionUniquely(OWLClassExpression classExp, ClsExpStr pattern) {
 		
 		if (!(pattern instanceof InterUnion)) {
@@ -512,8 +489,7 @@ public class PremiseMatcher extends RuleMatcherGenerator{
 		}
 
 		ClassExpressionType classExpType = classExp.getClassExpressionType();
-		
-		
+			
 		if (classExpType.equals(pattern.getExpressionType())) {
 
 			if (classExpType.equals(ClassExpressionType.OBJECT_INTERSECTION_OF) || 
