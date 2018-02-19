@@ -300,7 +300,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		
 		// Check whether the cardinality value is instantiated.
 		try {
-			generateCardinality(cardinalityExpression.getCardinality());
+			generateCardinalities(cardinalityExpression.getCardinality());
 		} catch (UninstantiatedCardinalityException e) {
 			return false;
 		}
@@ -308,25 +308,27 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		OWLObject objPropExp =  generate(cardinalityExpression.getProperty());
 		List<OWLObject> classExpressions =  generate((ClsExpStr) cardinalityExpression.getExpression());			
 		
+		// For now assume that the class expression in a cardinality expression is always unique.
+		// Potentially can drop this assumption, if required.
 		if (!(objPropExp instanceof OWLObjectPropertyExpression) || classExpressions.size() != 1 ||
-			!(classExpressions.get(0) instanceof OWLClassExpression)) {
-			
+				!(classExpressions.get(0) instanceof OWLClassExpression)) {		
 			return false;
 		}		
 		return true;	
 	}
 	
 		
-	private OWLObjectMaxCardinality generateObjMaxCardinality(CardExpGen cardinalityExpression) {
+	private List<OWLObjectMaxCardinality> generateObjMaxCardinality(CardExpGen cardinalityExpression) {
 		
 		if (!checkExpressionIsObjCardinality(cardinalityExpression)) {
 			return null;
 		}
 		
-		int cardinality;
+		List<OWLObjectMaxCardinality> cardinalityExpressions = new ArrayList<OWLObjectMaxCardinality>();
+		List<Integer> cardinalities;
 		
 		try {
-			cardinality = generateCardinality(cardinalityExpression.getCardinality());
+			cardinalities = generateCardinalities(cardinalityExpression.getCardinality());
 		} catch (UninstantiatedCardinalityException e) {
 			e.printStackTrace();
 			return null;
@@ -335,25 +337,34 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		OWLObjectPropertyExpression objPropExp =  (OWLObjectPropertyExpression) generate(cardinalityExpression.getProperty());
 		OWLClassExpression classExp =  (OWLClassExpression) generate((ClsExpStr) cardinalityExpression.getExpression()).get(0);			
 		
-		return new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp );
+		for (Integer cardinality : cardinalities) {
+			cardinalityExpressions.add(new OWLObjectMaxCardinalityImpl(objPropExp, cardinality, classExp));
+		}		
+		return cardinalityExpressions;
 	}
 	
 	
-	private OWLObjectExactCardinality generateObjExactCardinality(CardExpGen cardinalityExpression) {
+	private List<OWLObjectExactCardinality> generateObjExactCardinality(CardExpGen cardinalityExpression) {
 		
-		OWLObjectCardinalityRestriction genericCardinalityExpr = generateObjMaxCardinality(cardinalityExpression);	
-		return new OWLObjectExactCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
-	}
-	
-	
-	private OWLObjectMinCardinality generateObjMinCardinality(CardExpGen cardinalityExpression) {
-		
-		OWLObjectCardinalityRestriction genericCardinalityExpr = generateObjMaxCardinality(cardinalityExpression);	
+		List<OWLObjectMaxCardinality> maxCardinalityExpressions = generateObjMaxCardinality(cardinalityExpression);	
+		List<OWLObjectExactCardinality> exactCardinalityExpressions = new ArrayList<OWLObjectExactCardinality>();
 
-		if (genericCardinalityExpr == null) {
-			return null;
-		}
-		return new OWLObjectMinCardinalityImpl(genericCardinalityExpr.getProperty(), genericCardinalityExpr.getCardinality(), genericCardinalityExpr.getFiller());
+		for (OWLObjectMaxCardinality maxCardExp : maxCardinalityExpressions) {
+			exactCardinalityExpressions.add(new OWLObjectExactCardinalityImpl(maxCardExp.getProperty(), maxCardExp.getCardinality(), maxCardExp.getFiller()));
+		}	
+		return exactCardinalityExpressions;
+	}
+	
+	
+	private List<OWLObjectMinCardinality> generateObjMinCardinality(CardExpGen cardinalityExpression) {
+		
+		List<OWLObjectMaxCardinality> maxCardinalityExpressions = generateObjMaxCardinality(cardinalityExpression);	
+		List<OWLObjectMinCardinality> minCardinalityExpressions = new ArrayList<OWLObjectMinCardinality>();
+
+		for (OWLObjectMaxCardinality maxCardExp : maxCardinalityExpressions) {
+			minCardinalityExpressions.add(new OWLObjectMinCardinalityImpl(maxCardExp.getProperty(), maxCardExp.getCardinality(), maxCardExp.getFiller()));
+		}	
+		return minCardinalityExpressions;	
 	}
 
 	
@@ -362,11 +373,14 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		return currentInstantiation.getVariableInstantiation().get(conclusionExp.getAtomic());
 	}
 	
-	private int generateCardinality(String pattern) throws UninstantiatedCardinalityException {
+	private List<Integer> generateCardinalities(String pattern) throws UninstantiatedCardinalityException {
+		
+		List<Integer> cardinalities = new ArrayList<Integer>();
+		
 		if (currentInstantiation.getCardinalityInstantiation().containsKey(pattern)) {
-			return currentInstantiation.getCardinalityInstantiation().get(pattern);
-		} else {
-			
+			cardinalities.add(currentInstantiation.getCardinalityInstantiation().get(pattern));
+			return cardinalities;
+		} else {		
 			// Need to decide on how to generate non-defined cardinalities
 			throw new UninstantiatedCardinalityException();
 		}
@@ -558,13 +572,13 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 				generatedExpressions.addAll(generateObjAllValuesFrom((ExistsOrForAll) conclusionExp));
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_MIN_CARDINALITY)) {
-				generatedExpression = generateObjMinCardinality((CardExpGen) conclusionExp);
+				generatedExpressions.addAll(generateObjMinCardinality((CardExpGen) conclusionExp));
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_EXACT_CARDINALITY)) {
-				generatedExpression = generateObjExactCardinality((CardExpGen) conclusionExp);
+				generatedExpressions.addAll(generateObjExactCardinality((CardExpGen) conclusionExp));
 				
 			}else if (classExpType.equals(ClassExpressionType.OBJECT_MAX_CARDINALITY)) {
-				generatedExpression = generateObjMaxCardinality((CardExpGen) conclusionExp);
+				generatedExpressions.addAll(generateObjMaxCardinality((CardExpGen) conclusionExp));
 				
 			} else if (classExpType.equals(ClassExpressionType.OBJECT_UNION_OF)) {
 				generatedExpressions.addAll(generateUnionExpressions((InterUnion) conclusionExp));				
