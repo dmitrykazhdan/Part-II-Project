@@ -90,8 +90,7 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 		// Iterate over all possible instantiations and attempt to generate a conclusion from each one.
 		for (Instantiation instantiation : allInstantiations) {
 			currentInstantiation = instantiation;
-			List<OWLAxiom> newGeneratedConclusions = generateConclusionsFromCurrentInstantiation();
-			
+			List<OWLAxiom> newGeneratedConclusions = generateConclusionsFromCurrentInstantiation();		
 			conclusions.addAll(newGeneratedConclusions);	
 		}
 		return conclusions;
@@ -99,9 +98,6 @@ public class ConclusionGenerator extends RuleMatcherGenerator{
 	
 
 
-
-	
-	
 	private OWLSubObjectPropertyOfAxiom generateSubObjectPropertyAxiom() {
 		
 		OWLObject subProperty = generate((TemplatePrimitive) conclusionStr.getExpressions().get(0));
