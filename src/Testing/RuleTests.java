@@ -43,13 +43,11 @@ public class RuleTests {
 				for (int i = 1; i <= premiseNumber; i++) {
 					String premiseFilename = ruleTestFolderName + "Premise" + i + ".xml";
 					premises.addAll(loadPremises(premiseFilename));
-				}
-				
+				}			
 				System.out.println(rule.getRuleID());
 				assertTrue(rule.matchPremises(premises));
 							
-				Set<OWLAxiom> generatedConclusions = new HashSet<OWLAxiom>(rule.generateConclusions(premises));		
-				
+				Set<OWLAxiom> generatedConclusions = new HashSet<OWLAxiom>(rule.generateConclusions(premises));						
 				File testFolderDir = new File(ruleTestFolderName);
 				File[] conclusionFiles = testFolderDir.listFiles((FileFilter) new PrefixFileFilter("Conclusion", IOCase.INSENSITIVE));
 				Set<OWLAxiom> conclusions = new HashSet<OWLAxiom>();
@@ -57,11 +55,10 @@ public class RuleTests {
 				for (File file : conclusionFiles) {
 					conclusions.add(loadConclusion(file.getAbsolutePath()));
 				}	
-
+				
 				for (OWLAxiom conclusion : conclusions) {
 					assertTrue(rule.matchPremisesAndConclusion(premises, conclusion));
-				}
-				
+				}			
 				assertTrue(conclusions.equals(generatedConclusions));						
 			}
 		}	
@@ -86,6 +83,21 @@ public class RuleTests {
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 		fileInputStream.close();
 		return explanation;
+	}
+	
+	
+	
+	
+	@Test 
+	public void testCorrectExceptionApplication() throws IOException {
+		
+	}
+	
+	
+	
+	@Test
+	public void testCorrectTreeGeneration() throws IOException {
+		
 	}
 
 }

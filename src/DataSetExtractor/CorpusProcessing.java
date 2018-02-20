@@ -45,7 +45,7 @@ public class CorpusProcessing {
 		// Process all of the extracted ontologies.
 		for (File ontology : ontologies) {
 			
-			System.out.println("Processing ontology: " + ontology.getName());
+			System.out.println("Processing ontology: " + ontology.getName() + " Thread count: " + Thread.activeCount());
 			
 			try {											
 				OntologyProcessing processOntology = new OntologyProcessing(ontology, outputDir);

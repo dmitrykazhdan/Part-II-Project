@@ -88,7 +88,7 @@ public class GenerateTrees {
 				}
 				
 			} else  {
-			//	copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
+				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}				
 		}
 		
