@@ -127,9 +127,9 @@ public class CorpusStatistics {
 			writer.println("Failures by coverage: " + failedByRuleCoverage );	
 			writer.println("");
 			writer.println("[Passed, Failed by coverage, Failed by Timeout]");
-			writer.println(passedEntailments.get(1) + "," + failedCoverageEntailments.get(1) + "," + failedTimeOutEntailments.get(1));
-			writer.println(passedEntailments.get(2) + "," + failedCoverageEntailments.get(2) + "," + failedTimeOutEntailments.get(2));
-			writer.println(passedEntailments.get(3) + "," + failedCoverageEntailments.get(3) + "," + failedTimeOutEntailments.get(3));
+			writer.println(passedEntailments.get(1) + ",		" + failedCoverageEntailments.get(1) + ",		" + failedTimeOutEntailments.get(1));
+			writer.println(passedEntailments.get(2) + ",		" + failedCoverageEntailments.get(2) + ",		" + failedTimeOutEntailments.get(2));
+			writer.println(passedEntailments.get(3) + ",		" + failedCoverageEntailments.get(3) + ",		" + failedTimeOutEntailments.get(3));
 			writer.println("");
 			writer.println("");
 			writer.println("Rule Coverage Statistics: ");
