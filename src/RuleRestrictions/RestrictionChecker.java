@@ -92,29 +92,32 @@ public class RestrictionChecker {
 	}
 	
 	
-	
+	// Currently only built-in datatypes are checked for disjointness.
 	private boolean checkDisjointDatatypesRestriction(DisjointDatatypesRestriction restriction) {
 		
-		OWLDataRange dataRange1 = getDataRange(restriction.getFirstDataProperty());
-		OWLDataRange dataRange2 = getDataRange(restriction.getSecondDataProperty());
-		// Complete checking:
-		return true;
+		OWLDatatype datatype1 = getDatatype(restriction.getFirstDataProperty());
+		OWLDatatype datatype2 = getDatatype(restriction.getSecondDataProperty());
 		
+		if (datatype1 == null || datatype2 == null) {
+			return false;
+		}		
+		return datatype1.isBuiltIn() && datatype2.isBuiltIn() && 
+				!datatype1.getBuiltInDatatype().equals(datatype2.getBuiltInDatatype());
 	}
 	
-	// Attempt to retrieve an object given a name.
-	// The name can either be a datatype identifier, or a literal identifier.
-	private OWLDataRange getDataRange(String name) {
+	
+	// Attempt to retrieve a datatype, given its name.
+	private OWLDatatype getDatatype(String name) {
 		
+		if (!instantiation.getVariableInstantiation().containsKey(name)) {
+			return null; 
+		} 
 		OWLObject object = instantiation.getVariableInstantiation().get(name);
 		
-		if (object instanceof OWLLiteral) {
-			return ((OWLLiteral) object).getDatatype();
-		} else if (object instanceof OWLDatatype) {
-			return (OWLDataRange) object;
-		} else {
-			return null;
-		}
+		if (object instanceof OWLDatatype) {
+			return (OWLDatatype) object;
+		} 
+		return null;
 	}
 	
 	
