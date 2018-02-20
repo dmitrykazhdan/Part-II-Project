@@ -1,37 +1,21 @@
 package ProofTreeComputation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owl.explanation.api.ExplanationGenerator;
 import org.semanticweb.owl.explanation.api.ExplanationGeneratorFactory;
 import org.semanticweb.owl.explanation.api.ExplanationManager;
-import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGenerator;
-import org.semanticweb.owl.explanation.impl.laconic.LaconicExplanationGeneratorFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
@@ -145,11 +129,16 @@ public class ProofTreeGenerator {
 			List<ProofTree> subTreesWithRules = findRulesForLemmas(subTrees);
 			
 			if (subTreesWithRules != null) {
-				
-				// Create this initial tree with the entailment as the root
-				// and the lemmas/axioms as the subtrees and leaves.
+							
+				// Create this initial tree with the entailment as the root and the lemmas/axioms as the subtrees and leaves.
 				ProofTree initialTree = new ProofTree(entailment, subTreesWithRules, null);
 			
+				// Check edge case for when the laconic justification is the entailment.
+				if (laconicJustification.getAxioms().size() == 1 && laconicJustification.getAxioms().contains(entailment)
+					&& justification.size() == 1 && subTreesWithRules.size() == 1) {
+					
+					initialTree = subTreesWithRules.get(0);
+				}			
 				// Add this initial tree to the list of all initial trees.
 				initialTrees.add(initialTree);
 			}
@@ -329,6 +318,12 @@ public class ProofTreeGenerator {
 			List<ProofTree> newIncompleteProofTreeList = new ArrayList<ProofTree>();
 
 			for (ProofTree incompleteProofTree : incompleteProofTreeList) {
+				
+				// Case where initial tree is already complete
+				if (incompleteProofTree.getInferenceRule() != null) {
+					completeProofTreeList.add(incompleteProofTree);
+					continue;
+				}
 				
 				// Attempt to match the current root children to the root.
 				List<ProofTree> matchedTrees = matchEntailmentToChildAxioms(incompleteProofTree);
