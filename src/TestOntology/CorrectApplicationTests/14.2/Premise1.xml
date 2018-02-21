@@ -17,7 +17,7 @@
          
          <DataHasValue>
              <DataProperty IRI="urn:absolute:testingOntology#PropertyRd"/>
-             <Literal datatypeIRI="urn:absolute:testingOntology#DatatypeDt0">literal0</Literal>
+             <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#integer">10</Literal>
          </DataHasValue>
      </ObjectSomeValuesFrom>
 

@@ -17,7 +17,7 @@
         
         <Class IRI="urn:absolute:testingOntology#ClassX"/>
         
-        <ObjectMinCardinality cardinality="1">
+        <ObjectMinCardinality cardinality="0">
             <ObjectProperty IRI="urn:absolute:testingOntology#PropertyRo"/>
             <Class IRI="urn:absolute:testingOntology#ClassY"/>
         </ObjectMinCardinality>

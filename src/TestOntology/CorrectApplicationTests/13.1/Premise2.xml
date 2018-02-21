@@ -11,7 +11,7 @@
 
      <DataPropertyRange>
          <DataProperty IRI="urn:absolute:testingOntology#PropertyRd"/>
-         <Datatype IRI="urn:absolute:testingOntology#DatatypeDt1"/>
+         <Datatype IRI="http://www.w3.org/2001/XMLSchema#string"/>
      </DataPropertyRange>
 
 

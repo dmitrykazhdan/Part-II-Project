@@ -1,19 +1,33 @@
-Critical:
+Tests:
 
-- Add tests of generated trees (complicated cases).
+Exception Tests:
 
-- Add exception tests.
-
-- Add tests where there should be no tree returned.
-
+- Test correct application of exception rules.
+- Test that "false" does not apply exception rule in exception case
 
 
-Good-To-Have:
 
-- False Negatives are easier to test than false positives.
+Rule Tests:
 
-- Test ontology processing by providing a sample ontology and investigating what files will be derived from it.
-Ensure to include edge cases of T <= A and A <= F.
+- Test "different literals" and "different data ranges" edge cases of rule applications
+
+
+
+Tree Tests:
+
+- Check that justification of size 0 is ignored.
+
+- Check that justification of size 1 which is the entailment is ignored.
+
+- Check that justification of size 1 can still generate a tree.
+
+- Test complicated cases that use lots of rules.
+
+- Test complicated cases that should fail.
+
+
+
+
 
 
 

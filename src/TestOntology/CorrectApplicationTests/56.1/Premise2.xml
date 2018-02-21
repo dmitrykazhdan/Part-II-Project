@@ -12,7 +12,7 @@
      <Class IRI="urn:absolute:testingOntology#ClassX"/>
      <DataHasValue>
          <DataProperty IRI="urn:absolute:testingOntology#PropertyRd"/>
-         <Literal datatypeIRI="urn:absolute:testingOntology#DatatypeDt1">literal1</Literal>
+         <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">acbc</Literal>
      </DataHasValue>
  </SubClassOf>
 
