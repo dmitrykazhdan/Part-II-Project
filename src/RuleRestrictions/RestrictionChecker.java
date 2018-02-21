@@ -116,7 +116,9 @@ public class RestrictionChecker {
 		
 		if (object instanceof OWLDatatype) {
 			return (OWLDatatype) object;
-		} 
+		} else if (object instanceof OWLLiteral) {
+			return (OWLDatatype) ((OWLLiteral) object).getDatatype();
+		}
 		return null;
 	}
 	

@@ -264,7 +264,7 @@ public class GenerateRules {
 		restrictions = new RuleRestrictions(
 				new RuleRestriction[] { new AbsCardinalityRestriction("n1", CardinalitySign.GEQ, 0) },
 				new RuleRestriction[] { new AbsCardinalityRestriction("n2", CardinalitySign.GEQ, 0), 
-									    new RelCardinalityRestriction("n2", CardinalitySign.LEQ, "n1") });
+									    new RelCardinalityRestriction("n2", CardinalitySign.L, "n1") });
 		RuleString rule6_1 = new RuleString("6.1", "ObjExt", restrictions, conclusion, premise1);
 
 		// 6.2
