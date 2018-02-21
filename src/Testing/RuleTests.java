@@ -42,7 +42,7 @@ public class RuleTests {
 				// Add all premises
 				for (int i = 1; i <= premiseNumber; i++) {
 					String premiseFilename = ruleTestFolderName + "Premise" + i + ".xml";
-					premises.addAll(loadPremises(premiseFilename));
+					premises.addAll(TestDataLoader.loadPremises(premiseFilename));
 				}			
 				System.out.println(rule.getRuleID());
 				assertTrue(rule.matchPremises(premises));
@@ -53,7 +53,7 @@ public class RuleTests {
 				Set<OWLAxiom> conclusions = new HashSet<OWLAxiom>();
 				
 				for (File file : conclusionFiles) {
-					conclusions.add(loadConclusion(file.getAbsolutePath()));
+					conclusions.add(TestDataLoader.loadConclusion(file.getAbsolutePath()));
 				}	
 				
 				for (OWLAxiom conclusion : conclusions) {
@@ -64,36 +64,7 @@ public class RuleTests {
 		}	
 	}
 	
-	
-	
-	private List<OWLAxiom> loadPremises(String explanationFilename) throws IOException {
-		Explanation<OWLAxiom> explanation = loadExplanation(explanationFilename);
-		List<OWLAxiom> premises = new ArrayList<OWLAxiom>(explanation.getAxioms());
-		return premises;
-	}
-	
-	private OWLAxiom loadConclusion(String explanationFilename) throws IOException {
-		Explanation<OWLAxiom> explanation = loadExplanation(explanationFilename);
-		return explanation.getEntailment();
-	}
-	
-	private Explanation<OWLAxiom> loadExplanation(String explanationFilename) throws IOException {
 		
-		InputStream fileInputStream = new FileInputStream(explanationFilename);
-		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
-		fileInputStream.close();
-		return explanation;
-	}
-	
-	
-	
-	
-	@Test 
-	public void testCorrectExceptionApplication() throws IOException {
-		
-	}
-	
-	
 	
 	@Test
 	public void testCorrectTreeGeneration() throws IOException {
