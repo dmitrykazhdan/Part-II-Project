@@ -44,6 +44,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLSubClassOfAxiomImpl;
  */
 public class RuleException {
 
+	private String exceptionID;
 	protected OWLAxiomStr correctAxiomStr;
 	protected OWLAxiomStr laconicAxiomStr;
 	private OWLAxiomStr justificationAxiomStr;
@@ -55,7 +56,9 @@ public class RuleException {
 	private boolean includeIntersectionCase;
 
 	
-	public RuleException(OWLAxiomStr laconicAxiomStr,  OWLAxiomStr justificationAxiomStr, OWLAxiomStr correctAxiomStr, boolean includeEquivalentCase, boolean includeIntersectionCase) {
+	public RuleException(String exceptionID, OWLAxiomStr laconicAxiomStr,  OWLAxiomStr justificationAxiomStr, OWLAxiomStr correctAxiomStr, boolean includeEquivalentCase, boolean includeIntersectionCase) {
+		
+		this.exceptionID = exceptionID;
 		this.laconicAxiomStr = laconicAxiomStr;
 		this.justificationAxiomStr = justificationAxiomStr;
 		this.correctAxiomStr = correctAxiomStr;

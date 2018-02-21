@@ -45,24 +45,24 @@ public class GenerateExceptions {
 		// Case 1	
 		OWLAxiomStr justificationAxiomStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "D"));
 		OWLAxiomStr laconicStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));		
-		RuleException case1 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
+		RuleException case1 = new RuleException("1", laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
 			
 		// Case 2
 		justificationAxiomStr = new SubClassStr("C", ExistsOrForAll.createIndividualSomeValFrom("Ro", "i"));
 		laconicStr = new SubClassStr("C", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));		
-		RuleException case2 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
+		RuleException case2 = new RuleException("2", laconicStr, justificationAxiomStr, justificationAxiomStr, true, true);
 					
 		// Case 3	
 		// 3.1
 		justificationAxiomStr = new SubClassStr("C", CardExpGen.createObjMinCard("n", "Ro", "D"));
 		laconicStr = new SubClassStr("C", CardExpGen.createObjMinCard("n", "Ro", "T"));		
-		RuleException case3_1 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, false, false);
+		RuleException case3_1 = new RuleException("3.1", laconicStr, justificationAxiomStr, justificationAxiomStr, false, false);
 		
 		// 3.2
 		justificationAxiomStr = new SubClassStr("C", CardExpGen.createObjExactCard("n1", "Ro", "D"));
 		laconicStr = new SubClassStr("C", CardExpGen.createObjMinCard("n2", "Ro", "T"));		
 		OWLAxiomStr correctedConclusion = new SubClassStr("C", CardExpGen.createObjMinCard("n2", "Ro", "D"));
-		RuleException case3_2 = new RuleException(laconicStr, justificationAxiomStr, correctedConclusion, true, true);
+		RuleException case3_2 = new RuleException("3.2", laconicStr, justificationAxiomStr, correctedConclusion, true, true);
 
 		
 		// Case 4
@@ -70,17 +70,17 @@ public class GenerateExceptions {
 		// 4.1
 		justificationAxiomStr = new SubClassStr("C", CardExpGen.createObjMaxCard("n", "Ro", "D"));
 		laconicStr = new SubClassStr("C", CardExpGen.createObjMaxCard("n", "Ro", "T"));		
-		RuleException case4_1 = new RuleException(laconicStr, justificationAxiomStr, justificationAxiomStr, false, false);
+		RuleException case4_1 = new RuleException("4.1", laconicStr, justificationAxiomStr, justificationAxiomStr, false, false);
 				
 		// 4.2
 		justificationAxiomStr = new SubClassStr("C", CardExpGen.createObjExactCard("n", "Ro", "D"));
 		laconicStr = new SubClassStr("C", CardExpGen.createObjMaxCard("n", "Ro", "T"));		
 		correctedConclusion = new SubClassStr("C", CardExpGen.createObjMaxCard("n", "Ro", "D"));
-		RuleException case4_2 = new RuleException(laconicStr, justificationAxiomStr, correctedConclusion, true, true);
+		RuleException case4_2 = new RuleException("4.2", laconicStr, justificationAxiomStr, correctedConclusion, true, true);
 
 				
 		// Case 5
-		RuleException case5 = new RuleException(null, null, null, false, false) {
+		RuleException case5 = new RuleException("5", null, null, null, false, false) {
 			
 			@Override
 			public ProofTree matchException(OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
@@ -113,7 +113,7 @@ public class GenerateExceptions {
 		
 		
 		// Case 6
-		RuleException case6 = new RuleException(null, null, null, false, false) {
+		RuleException case6 = new RuleException("6", null, null, null, false, false) {
 			
 			@Override
 			public ProofTree matchException(OWLAxiom laconicAxiom, OWLAxiom justificationAxiom) {
