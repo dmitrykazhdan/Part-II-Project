@@ -81,6 +81,28 @@ public class ProofTree {
 		}	
 		return childAxioms;		
 	}
+	
+	
+	
+	@Override 
+	public boolean equals(Object obj) {
+		
+		if (obj instanceof ProofTree) {
+			ProofTree tree = (ProofTree) obj;
+			
+			if (tree.getAxiom().equalsIgnoreAnnotations(this.axiom)) {
+				if (tree.getSubTrees() != null && this.getSubTrees() != null) {
+					
+					return tree.getInferenceRule().getRuleID().equals(this.inferenceRule.getRuleID()) &&
+							tree.getSubTrees().equals(this.subTrees);
+					
+				} else if (tree.getSubTrees() == null && this.getSubTrees() == null) {
+					return true;
+				}
+			}
+		}
+		return false;			
+	}
 
 }
 

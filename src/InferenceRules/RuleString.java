@@ -131,6 +131,18 @@ public class RuleString {
 		this(ruleID, ruleName, conclusion, premises);
 		this.ruleRestrictions = ruleRestrictions;
 	}
+	
+	
+	// Rules are compared based on their ID.
+	@Override 
+	public boolean equals(Object obj) {
+		if (obj instanceof RuleString) {
+			RuleString ruleString = (RuleString) obj;
+			return ruleString.getRuleID().equals(this.ruleID);
+		} else {
+			return false;
+		}			
+	}
 
 
 	// Attempt to match the given set of axiom expressions to the given set of expression templates, given the restrictions
