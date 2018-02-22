@@ -23,7 +23,11 @@ public class PartitionWithApplicableInfRules {
 	}
 	
 	public PartitionWithApplicableInfRules(PartitionWithApplicableInfRules original) {
-		this.elements = new ArrayList<InstanceOfRule>(original.getItems());
+		this.elements = new ArrayList<InstanceOfRule>();
+		
+		for (InstanceOfRule instanceOfRule : original.getItems()) {
+			elements.add(new InstanceOfRule(instanceOfRule));
+		}		
 	}
 	
 	public List<InstanceOfRule> getItems() {

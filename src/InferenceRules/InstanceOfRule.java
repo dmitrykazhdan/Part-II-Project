@@ -1,5 +1,6 @@
 package InferenceRules;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
@@ -17,6 +18,13 @@ public class InstanceOfRule {
 		this.rule = rule;
 	}
 	
+	public InstanceOfRule(InstanceOfRule instanceOfRule) {
+		
+		this.premises = new ArrayList<OWLAxiom>(instanceOfRule.getPremises());
+		this.conclusion = instanceOfRule.getConclusion();
+		this.rule = instanceOfRule.getRule();
+	}
+
 	public List<OWLAxiom> getPremises() {
 		return premises;
 	}

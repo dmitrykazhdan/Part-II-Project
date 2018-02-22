@@ -176,7 +176,6 @@ public class RestrictionChecker {
 		Integer cardinality = instantiation.getCardinalityInstantiation().get(cardinalityName);
 		
 		return evaluateInequality(cardinality, restriction.getCardinalityType(), absoluteBound);
-
 	}
 	
 	

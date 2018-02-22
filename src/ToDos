@@ -1,12 +1,5 @@
 Tests:
 
-Tree Tests:
-
-Partition Generator:
-- "GenerateAllPartitions" method tests.
-- "GenerateAllPartitionsWithRules" method tests.
-
-
 ProofTreeGenerator:
 - Test correct generation of permutations, addition of nodes, creation of lemma trees, etc.
 - Test complicated cases that use lots of rules.

@@ -104,8 +104,7 @@ public class PartitionGenerator {
 				newPartition.getElements().add(newSubSet);
 				allPartitions.add(newPartition);				
 			}		
-		}
-				
+		}				
 		return allPartitions;
 	}
 }
