@@ -101,7 +101,7 @@ public class GenerateExceptions {
 					OWLDataHasValue justDataVal = (OWLDataHasValue) justSubClsAxiom.getSuperClass();
 					
 					if (laconicDataVal.getProperty().equals(justDataVal.getProperty()) &&
-						laconicDataVal.getFiller().isTopEntity()) {
+						(laconicDataVal.getFiller().isRDFPlainLiteral() || laconicDataVal.getFiller().isTopEntity())){
 											
 						return new ProofTree(justificationAxiom, null, null);
 					}					
