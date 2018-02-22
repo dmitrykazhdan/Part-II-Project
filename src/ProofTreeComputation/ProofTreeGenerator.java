@@ -391,7 +391,7 @@ public class ProofTreeGenerator {
 	// This method takes a proof tree and a partition of its root children.
 	// It then generates new intermediate nodes from the partition and creates new trees by adding these nodes
 	// between the root node and the root child nodes of the given tree.
-	private static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partitionWithEmptyConclusions) {
+	public static List<ProofTree> addInferredNodesToTree(ProofTree oldTree, PartitionWithApplicableInfRules partitionWithEmptyConclusions) {
 
 		List<PartitionWithApplicableInfRules> allPartitionInferences = generateConclusionsForPartitions(partitionWithEmptyConclusions);
 		
