@@ -74,6 +74,7 @@ public class RestrictionChecker {
 		return !l0.equals(l1);
 	}
 	
+	
 	private boolean checkGroupContainsRestriction(GroupContainsRestriction restriction) {
 		
 		String groupName = restriction.getAnonymousGroupName();
@@ -130,7 +131,7 @@ public class RestrictionChecker {
 		
 		// If the subclass or the superclass were unmatched, then the check fails.
 		if (!instantiation.getGroupInstantiation().containsKey(subClassName) ||
-				!instantiation.getGroupInstantiation().containsKey(superClassName)) {
+			!instantiation.getGroupInstantiation().containsKey(superClassName)) {
 			
 			return false;
 		}

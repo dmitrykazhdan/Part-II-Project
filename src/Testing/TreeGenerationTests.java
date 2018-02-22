@@ -37,6 +37,8 @@ public class TreeGenerationTests {
 		assertTrue(proofTrees == null);
 	}
 	
+	
+	
 	@Test
 	public void testJustificationContainingConclusion() {
 				
@@ -67,12 +69,15 @@ public class TreeGenerationTests {
 		OWLDataFactory factory = manager.getOWLDataFactory();
 		OWLClass classX = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassX"));		
 		OWLClass classY = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassY"));
-		OWLClass classZ = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ"));
+		OWLObjectProperty propertyRo = factory.getOWLObjectProperty(IRI.create("urn:absolute:testingOntology#PropertyRo"));
 		
-		OWLAxiom entailment = factory.getOWLSubClassOfAxiom(classX, classY);		
 		Set<OWLAxiom> justification = new HashSet<OWLAxiom>();
-		justification.add(factory.getOWLSubClassOfAxiom(classX, classY));
-
+		justification.add(factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectExactCardinality(5, propertyRo, classY)));
+		OWLAxiom entailment = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(3, propertyRo, classY));	
+		Explanation<OWLAxiom> explanation = new Explanation<OWLAxiom>(entailment, justification);
+		List<ProofTree> proofTrees = ProofTreeGenerator.generateProofTrees(explanation);		
+				
+		assertTrue(proofTrees != null);		
 	}
 	
 	

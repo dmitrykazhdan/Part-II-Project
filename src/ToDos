@@ -2,19 +2,12 @@ Tests:
 
 Tree Tests:
 
-- Add a couple of basic restriction checker tests.
+Partition Generator:
+- "GenerateAllPartitions" method tests.
+- "GenerateAllPartitionsWithRules" method tests.
 
+
+ProofTreeGenerator:
 - Test correct generation of permutations, addition of nodes, creation of lemma trees, etc.
-
-- Check that justification of size 1 can still generate a tree.
-
 - Test complicated cases that use lots of rules.
-
 - Test complicated cases that should fail.
-
-
-
-
-
-
-

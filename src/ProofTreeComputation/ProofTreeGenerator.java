@@ -90,12 +90,11 @@ public class ProofTreeGenerator {
 			e.printStackTrace();
 		}
 		
-		List<ProofTree> allProofTrees = new ArrayList<ProofTree>();
-		
 		if (initialProofTreeList == null) {
 			return null;
-		}
-		
+		}		
+		List<ProofTree> allProofTrees = new ArrayList<ProofTree>();
+			
 		for (ProofTree initialTree : initialProofTreeList) {
 						
 			List<ProofTree> completedProofTrees = computeCompleteProofTrees(initialTree);
@@ -227,6 +226,11 @@ public class ProofTreeGenerator {
 	private static ProofTree matchLemmaToRule(ProofTree lemmaTree) {
 		
 		OWLAxiom laconicAxiom = lemmaTree.getAxiom();
+		
+		if (lemmaTree.getSubTrees() == null ||  lemmaTree.getSubTrees().size() != 1) {
+			return null;
+		}
+		
 		OWLAxiom justificationAxiom = lemmaTree.getSubTrees().get(0).getAxiom();
 		List<OWLAxiom> premises = new ArrayList<OWLAxiom>();					
 		premises.add(justificationAxiom);
@@ -251,14 +255,14 @@ public class ProofTreeGenerator {
 	private static List<ProofTree> matchLaconicToNonLaconicJust(Set<OWLAxiom> justification, Set<OWLAxiom> laconicJustification) throws OWLOntologyCreationException {
 		
 		// The set of sub-trees to be returned.
-		List<ProofTree> matchedAxiomTrees = new ArrayList<ProofTree>();
+		List<ProofTree> matchedLemmaTrees = new ArrayList<ProofTree>();
 		
 		for (OWLAxiom laconicAxiom : laconicJustification) {	
 			
 			if (justification.contains(laconicAxiom)) {
 				
 				// If the laconic axiom is equivalent to an existing one, add it directly.
-				matchedAxiomTrees.add(new ProofTree(laconicAxiom, null, null));
+				matchedLemmaTrees.add(new ProofTree(laconicAxiom, null, null));
 
 			} else {
 
@@ -273,7 +277,7 @@ public class ProofTreeGenerator {
 						leaves.add(leaf);
 						foundMatchingAxiom = true;
 						ProofTree lemma = new ProofTree(laconicAxiom, leaves, null);		
-						matchedAxiomTrees.add(lemma);
+						matchedLemmaTrees.add(lemma);
 						break;						
 					}
 				}
@@ -284,7 +288,7 @@ public class ProofTreeGenerator {
 				}
 			} 
 		}
-		return matchedAxiomTrees;
+		return matchedLemmaTrees;
 	}
 	
 	
