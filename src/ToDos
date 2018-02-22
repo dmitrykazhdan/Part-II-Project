@@ -3,13 +3,7 @@ Tests:
 Exception Tests:
 
 - Test correct application of exception rules.
-- Test that "false" does not apply exception rule in exception case
 
-
-
-Rule Tests:
-
-- Test "different literals" and "different data ranges" edge cases of rule applications
 
 
 
