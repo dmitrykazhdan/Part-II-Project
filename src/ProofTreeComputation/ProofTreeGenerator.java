@@ -436,14 +436,12 @@ public class ProofTreeGenerator {
 		List<PartitionWithApplicableInfRules> newPartitionInferences = new ArrayList<PartitionWithApplicableInfRules>();
 
 		// Add all new inferences to all currently generated partitions.
-		for (InstanceOfRule inference : newInferences) {
-			
-			List<PartitionWithApplicableInfRules> allPartitionInferencesCopy = new ArrayList<PartitionWithApplicableInfRules>(partitionInferences);
-
-			for (PartitionWithApplicableInfRules partition : allPartitionInferencesCopy) {
-				partition.getItems().add(inference);
+		for (InstanceOfRule inference : newInferences) {	
+			for (PartitionWithApplicableInfRules partition : partitionInferences) {
+				PartitionWithApplicableInfRules newPartition = new PartitionWithApplicableInfRules(partition);
+				newPartition.getItems().add(inference);
+				newPartitionInferences.add(newPartition);
 			}
-			newPartitionInferences.addAll(allPartitionInferencesCopy);
 		}				
 		return newPartitionInferences;
 	}

@@ -68,7 +68,6 @@ public class RuleFinder {
 			if (conclusions != null) {			
 				for (OWLAxiom conclusion : conclusions) {
 					appliedRules.add(new InstanceOfRule(premisePermutation, conclusion, rule));
-					return appliedRules;
 				}
 			}
 		}
