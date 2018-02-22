@@ -91,7 +91,11 @@ public class ProofTreeGenerator {
 		}
 		
 		List<ProofTree> allProofTrees = new ArrayList<ProofTree>();
-				
+		
+		if (initialProofTreeList == null) {
+			return null;
+		}
+		
 		for (ProofTree initialTree : initialProofTreeList) {
 						
 			List<ProofTree> completedProofTrees = computeCompleteProofTrees(initialTree);
@@ -111,6 +115,11 @@ public class ProofTreeGenerator {
 		
 		List<ProofTree> initialTrees = new ArrayList<ProofTree>();
 
+		// Ensure (justification, entailment) pair is non-trivial.
+		if (justification.size() == 0 || justification.contains(entailment)) {
+			return null;
+		}
+		
 		// Remove any non-logical axioms that have to be excluded from the proof trees.
 		justification = getLogicalAxioms(justification);
 		
