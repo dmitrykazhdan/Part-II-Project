@@ -102,7 +102,6 @@ public class ExceptionTests {
 		OWLObjectProperty propertyRo = factory.getOWLObjectProperty(IRI.create("urn:absolute:testingOntology#PropertyRo"));
 		OWLIndividual individual = factory.getOWLNamedIndividual(IRI.create("urn:absolute:testingOntology#Individual_i1"));
 		OWLClass classZ = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ"));
-
 		
 		OWLAxiom correctAxiom = factory.getOWLSubClassOfAxiom(classX, new OWLObjectHasValueImpl(propertyRo, individual));
 		
@@ -134,7 +133,6 @@ public class ExceptionTests {
 		exceptionTree = GenerateExceptions.matchException(laconicTree);
 		assertTrue(correctTree.equals(exceptionTree));
 
-	
 		
 		// Equivalence + Intersection Case
 		justificationAxiom = factory.getOWLEquivalentClassesAxiom(classX, inter);
@@ -146,6 +144,115 @@ public class ExceptionTests {
 	}
 	
 	
+	
+	@Test
+	public void testCase3() throws IOException, OWLOntologyCreationException {
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		int cardinality = 3;
+		OWLClass classX = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassX"));		
+		OWLClass classY = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassY"));
+		OWLObjectProperty propertyRo = factory.getOWLObjectProperty(IRI.create("urn:absolute:testingOntology#PropertyRo"));
+		OWLIndividual individual = factory.getOWLNamedIndividual(IRI.create("urn:absolute:testingOntology#Individual_i1"));
+		OWLClass classZ = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ"));
+		
+		OWLAxiom correctAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(cardinality, propertyRo, classY));
+		
+		// Base Case
+		OWLAxiom justificationAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(cardinality, propertyRo, classY));
+		OWLAxiom laconicAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(cardinality, propertyRo, factory.getOWLThing()));
+		ProofTree laconicTree = new ProofTree(laconicAxiom, Arrays.asList( new ProofTree(justificationAxiom, null, null)), null);
+		
+		ProofTree correctTree = new ProofTree(justificationAxiom, null, null);
+		ProofTree exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+		
+		
+		// Equivalence Case
+		justificationAxiom = factory.getOWLEquivalentClassesAxiom(classX, new OWLObjectHasValueImpl(propertyRo, individual));
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("1"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+		
+		
+		// Intersection Case
+		OWLObjectIntersectionOf inter = new OWLObjectIntersectionOfImpl(new HashSet<OWLClassExpression>(Arrays.asList(classZ, new OWLObjectHasValueImpl(propertyRo, individual))));
+		justificationAxiom = factory.getOWLSubClassOfAxiom(classX, inter);
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("3.2"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+
+		
+		// Equivalence + Intersection Case
+		justificationAxiom = factory.getOWLEquivalentClassesAxiom(classX, inter);
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("2.2"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));		
+	}
+	
+	
+	// Complete:
+	@Test
+	public void testCase3_2() throws IOException, OWLOntologyCreationException {
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		
+		int n1 = 3;
+		int n2 = 5;
+		OWLClass classX = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassX"));		
+		OWLClass classY = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassY"));
+		OWLObjectProperty propertyRo = factory.getOWLObjectProperty(IRI.create("urn:absolute:testingOntology#PropertyRo"));
+		OWLIndividual individual = factory.getOWLNamedIndividual(IRI.create("urn:absolute:testingOntology#Individual_i1"));
+		OWLClass classZ = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ"));
+		
+		OWLAxiom correctAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(n2, propertyRo, classY));
+		
+		// Base Case
+		OWLAxiom justificationAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectExactCardinality(n1, propertyRo, classY));
+		OWLAxiom laconicAxiom = factory.getOWLSubClassOfAxiom(classX, factory.getOWLObjectMinCardinality(n2, propertyRo, factory.getOWLThing()));
+		ProofTree laconicTree = new ProofTree(laconicAxiom, Arrays.asList( new ProofTree(justificationAxiom, null, null)), null);
+		
+		ProofTree correctTree = new ProofTree(justificationAxiom, null, null);
+		ProofTree exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+		
+		
+		// Equivalence Case
+		justificationAxiom = factory.getOWLEquivalentClassesAxiom(classX, new OWLObjectHasValueImpl(propertyRo, individual));
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("1"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+		
+		
+		// Intersection Case
+		OWLObjectIntersectionOf inter = new OWLObjectIntersectionOfImpl(new HashSet<OWLClassExpression>(Arrays.asList(classZ, new OWLObjectHasValueImpl(propertyRo, individual))));
+		justificationAxiom = factory.getOWLSubClassOfAxiom(classX, inter);
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("3.2"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));
+
+		
+		// Equivalence + Intersection Case
+		justificationAxiom = factory.getOWLEquivalentClassesAxiom(classX, inter);
+		laconicTree = new ProofTree(laconicAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), null);
+		
+		correctTree = new ProofTree(correctAxiom, Arrays.asList(new ProofTree(justificationAxiom, null, null)), GenerateRules.getRule("2.2"));
+		exceptionTree = GenerateExceptions.matchException(laconicTree);
+		assertTrue(correctTree.equals(exceptionTree));		
+	}
 	
 	
 	
@@ -193,10 +300,4 @@ public class ExceptionTests {
 		assertTrue(correctTree.equals(exceptionTree));
 	}
 
-	
-	
-	
-	
-
-	
 }
