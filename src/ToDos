@@ -1,19 +1,10 @@
 Tests:
 
-Exception Tests:
-
-- Test correct application of exception rules.
-
-
-
-
 Tree Tests:
 
+- Add a couple of basic restriction checker tests.
+
 - Test correct generation of permutations, addition of nodes, creation of lemma trees, etc.
-
-- Check that justification of size 0 is ignored.
-
-- Check that justification of size 1 which is the entailment is ignored.
 
 - Check that justification of size 1 can still generate a tree.
 
