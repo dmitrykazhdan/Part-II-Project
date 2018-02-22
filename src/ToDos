@@ -9,6 +9,8 @@ Exception Tests:
 
 Tree Tests:
 
+- Test correct generation of permutations, addition of nodes, creation of lemma trees, etc.
+
 - Check that justification of size 0 is ignored.
 
 - Check that justification of size 1 which is the entailment is ignored.

@@ -36,7 +36,7 @@ import ProofTreeComputation.ProofTree;
 public class RuleTests {
 
 
-	//@Test 
+	@Test 
 	public void testCorrectRuleApplication() throws IOException {
 
 		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
