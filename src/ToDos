@@ -3,6 +3,3 @@ Tests:
 ProofTreeGenerator:
 - Test complicated cases that use lots of rules.
 - Test complicated cases that should fail.
-
-Methods:
-addInferredNodesToTree

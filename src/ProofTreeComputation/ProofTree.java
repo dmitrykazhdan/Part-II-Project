@@ -1,7 +1,10 @@
 package ProofTreeComputation;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import InferenceRules.RuleString;
@@ -105,7 +108,11 @@ public class ProofTree {
 		}
 
 		if (tree.getSubTrees() != null && this.getSubTrees() != null) {
-			return tree.getSubTrees().equals(this.subTrees);
+				
+			return tree.getSubTrees().size() == this.subTrees.size() &&
+					tree.getSubTrees().containsAll(this.getSubTrees()) &&
+					this.getSubTrees().containsAll(tree.getSubTrees());
+			
 		} else if (!(tree.getSubTrees() == null && this.getSubTrees() == null)) {
 			return false;
 		}
