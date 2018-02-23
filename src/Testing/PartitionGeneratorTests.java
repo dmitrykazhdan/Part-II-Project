@@ -97,13 +97,12 @@ public class PartitionGeneratorTests {
 		
 		for (List<OWLAxiom> subSet : p1.getElements()) {
 			contains = false;
-			Set<OWLAxiom> s1 = new HashSet<OWLAxiom>(subSet);
-			
+
 			for (List<OWLAxiom> secondSubSet : p2.getElements()) {
-					
-				Set<OWLAxiom> s2 = new HashSet<OWLAxiom>(secondSubSet);
 				
-				if (s1.equals(s2)) {
+				if (subSet.size() == secondSubSet.size() && subSet.containsAll(secondSubSet) &&
+						secondSubSet.containsAll(subSet)) {
+					
 					contains = true;
 					break;
 				}				

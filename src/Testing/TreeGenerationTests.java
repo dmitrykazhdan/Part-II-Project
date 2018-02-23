@@ -2,6 +2,7 @@ package Testing;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +89,7 @@ public class TreeGenerationTests {
 	
 	
 	@Test
-	public void addInferredNodesToTreeTest() {
+	public void addInferredNodesToTreeTest_1() {
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLDataFactory factory = manager.getOWLDataFactory();
@@ -108,9 +109,6 @@ public class TreeGenerationTests {
 		ProofTree sampleProofTree1 = new ProofTree(sampleNode1, null, null);
 		ProofTree sampleProofTree2 = new ProofTree(sampleNode3, Arrays.asList(new ProofTree(sampleNode2, null, null), sampleProofTree1), sampleRule);
 		
-		
-		
-		// Test case 1:
 		OWLAxiom entailment = factory.getOWLSubClassOfAxiom(classZ, classY);
 		OWLAxiom testAxiom1 = factory.getOWLEquivalentClassesAxiom(classX, factory.getOWLObjectAllValuesFrom(propertyRo, classY));
 		OWLAxiom testAxiom2_1 = factory.getOWLSubClassOfAxiom(classX, classY); 
@@ -142,6 +140,70 @@ public class TreeGenerationTests {
 		assertTrue(generatedTrees.size() == 1);
 		assertTrue(generatedTrees.get(0).equals(correctTree));
 	}
+	
+	
+	
+	
+	@Test
+	public void addInferredNodesToTreeTest_2() {
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLClass classX = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassX"));		
+		OWLClass classY = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassY"));
+		OWLClass classY1 = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassY1"));
+		OWLClass classZ = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ"));
+		OWLClass classZ1 = factory.getOWLClass(IRI.create("urn:absolute:testingOntology#ClassZ1"));
+
+
+		OWLAxiom entailment = factory.getOWLSubClassOfAxiom(classZ, classY);
+		
+		OWLAxiom testAxiom1 = factory.getOWLEquivalentClassesAxiom(factory.getOWLObjectIntersectionOf(classX, classY), factory.getOWLObjectIntersectionOf(classZ, classY1, classZ1));
+		OWLAxiom testAxiom2_1 = factory.getOWLSubClassOfAxiom(classX, classY); 
+		OWLAxiom testAxiom2_2 = factory.getOWLSubClassOfAxiom(classY, classZ);
+		OWLAxiom testAxiom3 = factory.getOWLSubClassOfAxiom(classX, classX); 
+		
+		
+		InstanceOfRule instance1 = new InstanceOfRule(Arrays.asList(testAxiom1), null, GenerateRules.getRule("2.1"));
+		InstanceOfRule instance2 = new InstanceOfRule(Arrays.asList(testAxiom2_1, testAxiom2_2), null, GenerateRules.getRule("39"));
+		InstanceOfRule instance3 = new InstanceOfRule(Arrays.asList(testAxiom3), null, null);
+		PartitionWithApplicableInfRules partitionWithRules = new PartitionWithApplicableInfRules(Arrays.asList(instance1, instance2, instance3));
+		
+		
+		ProofTree tmpTree1 = new ProofTree(testAxiom1, null, null);
+		ProofTree tmpTree2 = new ProofTree(testAxiom2_1, null, null);
+		ProofTree tmpTree3 = new ProofTree(testAxiom2_2, null, null);
+		ProofTree tmpTree4 = new ProofTree(testAxiom3, null, null);
+		ProofTree originalProofTree = new ProofTree(entailment, Arrays.asList(tmpTree1, tmpTree2, tmpTree3, tmpTree4), null);
+
+		
+		List<ProofTree> correctTrees = new ArrayList<ProofTree>();
+	
+		OWLAxiom generatedAxiom2 = factory.getOWLSubClassOfAxiom(classX, classZ);
+		ProofTree t2 = new ProofTree(generatedAxiom2, Arrays.asList(tmpTree2, tmpTree3), GenerateRules.getRule("39"));
+			
+		OWLAxiom generatedAxiom1 = factory.getOWLSubClassOfAxiom(factory.getOWLObjectIntersectionOf(classX, classY), factory.getOWLObjectIntersectionOf(classZ, classY1));		
+		ProofTree t1 = new ProofTree(generatedAxiom1, Arrays.asList(tmpTree1), GenerateRules.getRule("2.1"));
+		ProofTree correctTree = new ProofTree(entailment, Arrays.asList(t1, t2, tmpTree4), null);		
+		correctTrees.add(correctTree);
+		
+		generatedAxiom1 = factory.getOWLSubClassOfAxiom(factory.getOWLObjectIntersectionOf(classX, classY), factory.getOWLObjectIntersectionOf(classZ, classZ1));		
+		t1 = new ProofTree(generatedAxiom1, Arrays.asList(tmpTree1), GenerateRules.getRule("2.1"));
+		correctTree = new ProofTree(entailment, Arrays.asList(t1, t2, tmpTree4), null);		
+		correctTrees.add(correctTree);
+
+		
+		generatedAxiom1 = factory.getOWLSubClassOfAxiom(factory.getOWLObjectIntersectionOf(classX, classY), factory.getOWLObjectIntersectionOf(classY1, classZ1));		
+		t1 = new ProofTree(generatedAxiom1, Arrays.asList(tmpTree1), GenerateRules.getRule("2.1"));
+		correctTree = new ProofTree(entailment, Arrays.asList(t1, t2, tmpTree4), null);		
+		correctTrees.add(correctTree);
+
+		List<ProofTree> generatedTrees = ProofTreeGenerator.addInferredNodesToTree(originalProofTree, partitionWithRules);		
+		assertTrue(generatedTrees.size() == 3);
+		
+		assertTrue(generatedTrees.containsAll(correctTrees) && correctTrees.containsAll(generatedTrees));
+	}
+
 	
 	
 	
