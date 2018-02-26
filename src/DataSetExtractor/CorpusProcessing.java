@@ -54,7 +54,9 @@ public class CorpusProcessing {
 			} catch (OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | InterruptedException | ExecutionException | IOException e) {				
 				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
-			} 
+			} finally {
+				ontology.delete();
+			}
 		}	
 		System.out.println("All ontologies processed successfully.");
 	}
