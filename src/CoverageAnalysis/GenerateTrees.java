@@ -114,7 +114,7 @@ public class GenerateTrees {
 		boolean timeout = false;
 
 		try {
-			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
+			proofTrees = futureCall.get(30,TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			timeout = true;
 			
