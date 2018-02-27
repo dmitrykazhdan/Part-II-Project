@@ -84,7 +84,7 @@ public class OntologyProcessing {
 		List<OWLAxiom> allSubsumptions = ComputeAllNonTrivialSubsumptionEntailments();
 		
 		Collections.shuffle(allSubsumptions);
-		allSubsumptions = allSubsumptions.subList(0, Math.min(allSubsumptions.size(), 200));
+		allSubsumptions = allSubsumptions.subList(0, Math.min(allSubsumptions.size(), 250));
 		
 		// For every entailment, generate all of its justifications.
 		for (OWLAxiom entailment : allSubsumptions) {
