@@ -20,6 +20,6 @@ public class ExplanationGeneratorThread implements Callable<Set<Explanation<OWLA
 	
 	@Override
 	public Set<Explanation<OWLAxiom>> call() throws Exception {
-		return explanationGen.getExplanations(entailment);
+		return explanationGen.getExplanations(entailment, 1);
 	}
 }

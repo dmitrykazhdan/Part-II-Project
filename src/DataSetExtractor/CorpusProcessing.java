@@ -55,7 +55,7 @@ public class CorpusProcessing {
 				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
 			} finally {
-				ontology.delete();
+				// ontology.delete();
 			}
 		}	
 		System.out.println("All ontologies processed successfully.");

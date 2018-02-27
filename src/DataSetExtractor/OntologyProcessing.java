@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,7 +82,10 @@ public class OntologyProcessing {
 		
 		// Compute all non-trivial subsumption entailments.
 		List<OWLAxiom> allSubsumptions = ComputeAllNonTrivialSubsumptionEntailments();
-				
+		
+		Collections.shuffle(allSubsumptions);
+		allSubsumptions = allSubsumptions.subList(0, Math.min(allSubsumptions.size(), 200));
+		
 		// For every entailment, generate all of its justifications.
 		for (OWLAxiom entailment : allSubsumptions) {
 
@@ -91,7 +95,7 @@ public class OntologyProcessing {
 			
 			// Set a time limit of 10 minutes to the computation of all justifications.
 			try {
-				explanationSet = explanationGenThreadCall.get(10, TimeUnit.MINUTES);
+				explanationSet = explanationGenThreadCall.get(1, TimeUnit.MINUTES);
 			} catch (TimeoutException e) {
 				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {

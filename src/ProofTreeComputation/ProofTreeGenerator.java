@@ -322,7 +322,7 @@ public class ProofTreeGenerator {
 		List<ProofTree> incompleteProofTreeList = new ArrayList<ProofTree>();
 		incompleteProofTreeList.add(initialTree);
 		
-		while (!incompleteProofTreeList.isEmpty()) {
+		while (completeProofTreeList.isEmpty() && (!incompleteProofTreeList.isEmpty())) {
 			
 			if(Thread.currentThread().isInterrupted()){
                 return completeProofTreeList;
