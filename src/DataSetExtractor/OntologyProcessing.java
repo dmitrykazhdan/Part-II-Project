@@ -84,7 +84,7 @@ public class OntologyProcessing {
 		List<OWLAxiom> allSubsumptions = ComputeAllNonTrivialSubsumptionEntailments();
 		
 		Collections.shuffle(allSubsumptions);
-		allSubsumptions = allSubsumptions.subList(0, Math.min(allSubsumptions.size(), 250));
+		allSubsumptions = allSubsumptions.subList(0, Math.min(allSubsumptions.size(), 150));
 		
 		// For every entailment, generate all of its justifications.
 		for (OWLAxiom entailment : allSubsumptions) {
@@ -95,7 +95,7 @@ public class OntologyProcessing {
 			
 			// Set a time limit of 10 minutes to the computation of all justifications.
 			try {
-				explanationSet = explanationGenThreadCall.get(5, TimeUnit.MINUTES);
+				explanationSet = explanationGenThreadCall.get(15, TimeUnit.SECONDS);
 			} catch (TimeoutException e) {
 				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {

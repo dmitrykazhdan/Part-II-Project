@@ -4,6 +4,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import org.semanticweb.HermiT.datatypes.MalformedLiteralException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
@@ -51,7 +52,7 @@ public class CorpusProcessing {
 				OntologyProcessing processOntology = new OntologyProcessing(ontology, outputDir);
 				processOntology.GenerateExplanations();
 				
-			} catch (OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | InterruptedException | ExecutionException | IOException e) {				
+			} catch (OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | MalformedLiteralException |  InterruptedException | NoClassDefFoundError | ExecutionException | IOException e) {				
 				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
 			} finally {
