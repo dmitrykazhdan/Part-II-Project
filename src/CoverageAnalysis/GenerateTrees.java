@@ -121,7 +121,6 @@ public class GenerateTrees {
 		}	finally {
 			futureCall.cancel(true);
 			executor.shutdownNow();
-			executor.awaitTermination(15, TimeUnit.SECONDS);
 		}
 		
 		if (proofTrees == null || proofTrees.size() == 0) {

@@ -95,7 +95,7 @@ public class OntologyProcessing {
 			
 			// Set a time limit of 10 minutes to the computation of all justifications.
 			try {
-				explanationSet = explanationGenThreadCall.get(1, TimeUnit.MINUTES);
+				explanationSet = explanationGenThreadCall.get(5, TimeUnit.MINUTES);
 			} catch (TimeoutException e) {
 				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {
