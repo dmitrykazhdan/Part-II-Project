@@ -115,7 +115,7 @@ public class GenerateTrees {
 
 		try {
 			proofTrees = futureCall.get(20,TimeUnit.SECONDS);
-		} catch (TimeoutException e) {
+		} catch (OutOfMemoryError | TimeoutException e) {
 			timeout = true;
 			
 		}	finally {

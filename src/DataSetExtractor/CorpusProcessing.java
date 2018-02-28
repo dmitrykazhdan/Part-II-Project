@@ -52,7 +52,7 @@ public class CorpusProcessing {
 				OntologyProcessing processOntology = new OntologyProcessing(ontology, outputDir);
 				processOntology.GenerateExplanations();
 				
-			} catch (OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | MalformedLiteralException |  InterruptedException | NoClassDefFoundError | ExecutionException | IOException e) {				
+			} catch (OutOfMemoryError | OWLOntologyCreationException | InconsistentOntologyException | IllegalArgumentException | MalformedLiteralException |  InterruptedException | NoClassDefFoundError | ExecutionException | IOException e) {				
 				System.out.println("Could not process ontology: " + ontology.getName());
 				e.printStackTrace();
 			} finally {
