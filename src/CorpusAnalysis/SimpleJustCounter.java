@@ -10,19 +10,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owl.explanation.api.Explanation;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 public class SimpleJustCounter {
 
 	
 	public static void main(String args[]) {
 		
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/Explanations");
-		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialExplanations");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/LargeExplanations");
+//		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialExplanations");
 		File explanationsDir = new File(explanationDirPath.toString());
 		
 		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {
@@ -37,14 +42,19 @@ public class SimpleJustCounter {
 		for (File explanationFile : explanations) {
 			InputStream fileInputStream;
 			try {
+				
+				Path explanationFilePath = Paths.get(explanationFile.getAbsolutePath());
 				fileInputStream = new FileInputStream(explanationFile.getAbsolutePath());
 				Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 				Set<OWLAxiom> justification = explanation.getAxioms();
+				OWLAxiom entailment = explanation.getEntailment();
 				
-				if (isNonTrivialJustification(justification)) {
+//				if (countLogicalAxioms(justification) < 5) {
+
+				if (isRule39Only(justification, entailment)) {
 					nonTrivialCounter++;
 					System.out.println("counter: " + nonTrivialCounter);
-					copyFile(Paths.get(explanationFile.getAbsolutePath()), nonTrivialExplanationsDirPath);
+//					copyFile(explanationFilePath, nonTrivialExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 				}
 				fileInputStream.close();
 				
@@ -56,28 +66,74 @@ public class SimpleJustCounter {
 	
 	
 	
-	private static boolean isNonTrivialJustification(Set<OWLAxiom> justification) {
+	private static boolean subClassAxiomsOnly(Set<OWLAxiom> justification) {
 				
 		for (OWLAxiom ax : justification) {
 			if (ax.isLogicalAxiom() && !ax.isOfType(AxiomType.SUBCLASS_OF)) {
-				return true;
+				return false;
 			}
 		}
+		return true;
+	}
+	
+	
+	private static boolean isRule39Only(Set<OWLAxiom> justification, OWLAxiom entailment) {
+		
+		Set<OWLAxiom> logicalSet = getLogicalAxioms(justification);
+		
+		if (!subClassAxiomsOnly(logicalSet)) {
+			return false;
+		}
+		
+		OWLSubClassOfAxiom subClsEntailment = (OWLSubClassOfAxiom) entailment;
+		OWLClassExpression start = subClsEntailment.getSubClass();
+		OWLClassExpression end = subClsEntailment.getSuperClass();
+		
+		List<OWLClassExpression> chain = new ArrayList<OWLClassExpression>();
+		chain.add(start);
+		
+		boolean added = true;
+		
+		while (added) {
+			added = false;
+			OWLSubClassOfAxiom subClsAx = null;
+			
+			for (OWLAxiom ax : logicalSet) {
+				subClsAx = (OWLSubClassOfAxiom) ax;
+				if (subClsAx.getSubClass().equals(chain.get(chain.size()-1))) {
+					chain.add(subClsAx.getSuperClass());
+					added = true;
+					break;
+				}
+			}			
+			
+			if (added) {
+				logicalSet.remove(subClsAx);
+			}
+		}
+		
+		if (logicalSet.size() == 0 && chain.get(chain.size() - 1).equals(subClsEntailment.getSuperClass())) {
+			return true;
+		}		
 		return false;
 	}
 	
 	
-	private static int countLogicalAxiom(Set<OWLAxiom> justification) {
+	
+	private static Set<OWLAxiom> getLogicalAxioms(Set<OWLAxiom> justification) {
 		
-		int logicalCount = 0;
+		Set<OWLAxiom> logicalSet = new HashSet<OWLAxiom>();
 		
 		for (OWLAxiom ax : justification) {
-			if (ax.isLogicalAxiom()){
-				logicalCount++;
-			}
+			if (ax.isLogicalAxiom()) {
+				logicalSet.add(ax);
+			}			
 		}
-		return logicalCount;
+		return logicalSet;
 	}
+	
+	
+
 	
 	
 	private static void copyFile(Path source, Path dest) throws IOException {
