@@ -20,7 +20,7 @@ public class UnusedAxiomCount {
 
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/Refined (06.03.2018)/FailedExplanations");
+		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/FailedExplanations");
 		File justificationFiles = new File(justificationFolderPath.toString());
 
 		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {
@@ -30,22 +30,21 @@ public class UnusedAxiomCount {
 			}
 		});	
 		
-		Map<AxiomType, Integer> typeCounts = getUnusedAxioms();
-		int count = 0; //dlt me
+		Map<AxiomType, Integer> typeCounts = getUnusedAxiomsMap();
+
 		for (File explanationFile : allFiles) {
 			
 			InputStream fileInputStream;
 			fileInputStream = new FileInputStream(explanationFile.getAbsolutePath());
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
-			Set<OWLAxiom> justification = explanation.getAxioms();
-			
+			Set<OWLAxiom> justification = explanation.getAxioms();			
 			processJustification(justification, typeCounts);
-			
-			count++; // dlt us
-			System.out.println(count);
+			fileInputStream.close();
 		}
-
-		System.out.println("Counts computed successfully...");
+		
+		for (AxiomType type : typeCounts.keySet()) {
+			System.out.println("Type: " + type.toString() + " 	Count: " + typeCounts.get(type));
+		}		
 	}
 	
 	
@@ -60,7 +59,7 @@ public class UnusedAxiomCount {
 	
 	
 	
-	private static Map<AxiomType, Integer> getUnusedAxioms() {
+	private static Map<AxiomType, Integer> getUnusedAxiomsMap() {
 		
 		Map<AxiomType, Integer> typeCounts = new HashMap<AxiomType, Integer>();
 		
