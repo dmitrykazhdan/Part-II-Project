@@ -11,14 +11,13 @@ public class MoveComputed {
 
 	public static void main(String args[]) throws IOException {
 		
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/PartitionedExplanations/set4");
-		Path failedExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/FailedExplanations");
-		Path computedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/ComputedExplanations");
-				
-		File explanationsDir = new File(explanationDirPath.toString());
+		Path computedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/Renamed");
+		Path failedExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/Refined (06.03.2018)/FailedExplanations");
+		
+		File computedExplanationsDir = new File(computedExplanationsDirPath.toString());
 		
 		
-		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {
+		File[] explanations = computedExplanationsDir.listFiles(new FilenameFilter() {
 		    @Override
 		    public boolean accept(File dir, String name) {
 		        return name.endsWith(".xml");
@@ -28,22 +27,15 @@ public class MoveComputed {
 		for (File explanationFile : explanations) {
 				
 			Path explanationFilePath = Paths.get(explanationFile.getAbsolutePath());
+
 			Path computedFilePath = failedExplanationsDirPath.resolve(explanationFilePath.getFileName());
 			File computedFile = new File(computedFilePath.toString());
-			
-			
+					
 			if (computedFile.exists()) {
-//				explanationFile.renameTo(new File());
-				Files.move(explanationFile.toPath(), computedExplanationsDirPath.resolve(explanationFile.getName()));
+				Files.move(explanationFile.toPath(), computedFilePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("Moving...");
 			}
 			
-		}
-		
-		
-		
-		
-		
-			
+		}	
 	}
 }

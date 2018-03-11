@@ -8,6 +8,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public class SimpleJustCounter {
 	
 	public static void main(String args[]) {
 		
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/LargeExplanations");
-//		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialExplanations");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
+		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
 		File explanationsDir = new File(explanationDirPath.toString());
 		
 		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {
@@ -54,7 +55,7 @@ public class SimpleJustCounter {
 				if (isRule39Only(justification, entailment)) {
 					nonTrivialCounter++;
 					System.out.println("counter: " + nonTrivialCounter);
-//					copyFile(explanationFilePath, nonTrivialExplanationsDirPath.resolve(explanationFilePath.getFileName()));
+				//	Files.move(explanationFile.toPath(), nonTrivialExplanationsDirPath.resolve(explanationFilePath.getFileName()), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 				}
 				fileInputStream.close();
 				
