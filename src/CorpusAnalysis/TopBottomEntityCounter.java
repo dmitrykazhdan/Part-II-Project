@@ -10,15 +10,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
+import InferenceRules.GenerateRules;
 import InferenceRules.RuleString;
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpGen;
@@ -28,6 +32,8 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
+import ProofTreeComputation.ProofTree;
+import ProofTreeComputation.ProofTreeGenerator;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
@@ -47,6 +53,7 @@ public class TopBottomEntityCounter {
 			}
 		});	
 		
+		int cmpTed = 0;
 		int edgeEntityCount = 0;
 		List<OWLAxiom> expressions = new ArrayList<OWLAxiom>();
 		
@@ -56,30 +63,61 @@ public class TopBottomEntityCounter {
 			fileInputStream = new FileInputStream(explanationFile.getAbsolutePath());
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 			Set<OWLAxiom> justification = explanation.getAxioms();
+
 			
-			boolean has = processJustification(justification, expressions);
-			
+//			addRules();
+			boolean has = extraRule(justification);
+//			boolean has = processJustification(justification, expressions);
+
 			if (has) {
-				System.out.println(edgeEntityCount);
+//				List<ProofTree> trees = ProofTreeGenerator.generateProofTrees(explanation);
+//				
+//				if (trees != null && trees.size() > 0) {
+//					cmpTed++;
+//					System.out.println(cmpTed);
+//				}	
 				edgeEntityCount++;
-			}		
+			}
+					
 			fileInputStream.close();
 		}		
 		System.out.println(edgeEntityCount);
 		
-		Collections.shuffle(expressions);
-		for (OWLAxiom exp : expressions.subList(0, 200)) {
-			System.out.println(exp.toString());
-		}
+//		Collections.shuffle(expressions);
+//		for (OWLAxiom exp : expressions.subList(0, 200)) {
+//			System.out.println(exp.toString());
+//		}
 	}
 
+	
+	private static void addRules() {
+		
+		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
+		
+		OWLAxiomStr premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Z"));
+		OWLAxiomStr conclusion = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));
+		RuleString rule43_1 = new RuleString("ext1", "ObjSom-SubCls", conclusion, premise1);
+		rules.get(1).add(rule43_1);
+	}
+	
+	
+	private static boolean extraRule(Set<OWLAxiom> justification) {
+		
+		for (OWLAxiom axiom : justification) {
+			
+			if (matchesRule(axiom)) {
+				return true;				
+			} 
+		}
+		return false;
+	}
 	
 	
 	private static boolean processJustification(Set<OWLAxiom> justification, List<OWLAxiom> expressionStrings) {
 		
 		for (OWLAxiom axiom : justification) {
 			
-			if (axiom.isLogicalAxiom() && !matchesRule(axiom)) {
+			if (axiom.isLogicalAxiom()) {
 				Set<OWLClass> expressions = axiom.getClassesInSignature();	
 				
 				for (OWLClass cls : expressions) {
@@ -88,7 +126,7 @@ public class TopBottomEntityCounter {
 						return true;
 					}
 				}				
-			}		
+			} 
 		}
 		return false;
 	}
@@ -97,10 +135,13 @@ public class TopBottomEntityCounter {
 	private static boolean matchesRule(OWLAxiom axiom) {
 		
 		List<RuleString> rules = new ArrayList<RuleString>();
+		ExpressionGroup tmpGroup1;
+		OWLAxiomStr premise1;
+		RuleString r1;
 		
-		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("T")}, "Z" );
-		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
-		RuleString r1 = new RuleString("X", "", premise1, premise1);
+		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("T")}, "Z" );
+		premise1 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
+		r1 = new RuleString("X", "", premise1, premise1);
 		rules.add(r1);
 
 		premise1 = new SubClassStr(ExistsOrForAll.createObjSomeValFrom("Ro", "T"), "X");
@@ -127,5 +168,4 @@ public class TopBottomEntityCounter {
 		}	
 		return false;
 	}
-	
 }
