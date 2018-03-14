@@ -65,18 +65,19 @@ public class TopBottomEntityCounter {
 			Set<OWLAxiom> justification = explanation.getAxioms();
 
 			
-//			addRules();
+			addRules();
 			boolean has = extraRule(justification);
 //			boolean has = processJustification(justification, expressions);
-
+//			System.out.println("eh");
+			
 			if (has) {
-//				List<ProofTree> trees = ProofTreeGenerator.generateProofTrees(explanation);
-//				
-//				if (trees != null && trees.size() > 0) {
-//					cmpTed++;
-//					System.out.println(cmpTed);
-//				}	
-				edgeEntityCount++;
+				List<ProofTree> trees = ProofTreeGenerator.generateProofTrees(explanation);
+				
+				if (trees != null && trees.size() > 0) {
+					cmpTed++;
+					System.out.println(cmpTed);
+				}			
+//				edgeEntityCount++;
 			}
 					
 			fileInputStream.close();
@@ -98,6 +99,12 @@ public class TopBottomEntityCounter {
 		OWLAxiomStr conclusion = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));
 		RuleString rule43_1 = new RuleString("ext1", "ObjSom-SubCls", conclusion, premise1);
 		rules.get(1).add(rule43_1);
+
+//		OWLAxiomStr premise1 = new SubClassStr("X", "Y");
+//		OWLAxiomStr conclusion = new SubClassStr("X", "T");
+//		RuleString rule43_1 = new RuleString("ext1", "ObjSom-SubCls", conclusion, premise1);
+//		rules.get(1).add(rule43_1);
+
 	}
 	
 	
