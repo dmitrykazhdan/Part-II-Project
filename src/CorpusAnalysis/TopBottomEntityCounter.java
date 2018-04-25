@@ -46,7 +46,7 @@ public class TopBottomEntityCounter {
 	
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/Refined (06.03.2018)/FailedExplanations");
+		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After AWS/FailedExplanations");
 		File justificationFiles = new File(justificationFolderPath.toString());
 
 		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {
@@ -129,18 +129,23 @@ public class TopBottomEntityCounter {
 		// 43.2 extension
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		RuleRestrictions restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
-		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Z"));
-		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
+		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "T"));
+		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", restrictions, conclusion, premise1);
 
 		
 		// 43.3 extension
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Y"));
-		premise2 = new SubClassStr(new AtomicCls("Y"), new AtomicCls("Z"));
-		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Z"));
-		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
+		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "T"));
+		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", restrictions, conclusion, premise1);
 
 		
-
+	
+		rules.get(1).add(rule15);
+		rules.get(1).add(rule28);
+		rules.get(1).add(rule32);
+		rules.get(1).add(rule43_1);
+		rules.get(1).add(rule43_2);
+		rules.get(1).add(rule43_3);
 	}
 	
 	
