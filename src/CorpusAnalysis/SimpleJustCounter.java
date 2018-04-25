@@ -27,8 +27,8 @@ public class SimpleJustCounter {
 	
 	public static void main(String args[]) {
 		
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
-		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
+		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/tmp/Original (07.03.2018)/FailedExplanations");
+//		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
 		File explanationsDir = new File(explanationDirPath.toString());
 		
 		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {

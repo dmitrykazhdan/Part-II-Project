@@ -17,16 +17,16 @@ public class FileMover {
 		Path filesDirPath = Paths.get("/Users/AdminDK/Desktop/NonTrivialTimedOut");	
 		File filesDir = new File(filesDirPath.toString());
 		
-		int partitions = 40;
+		int partitions = 19;
 		int partitionSize = 70;
 		
 		// Create directories
-//		for (int i = 0; i < partitions; i++) {
-//			Path partitionPath = partitionFolder.resolve("set" + (i+1));
-//			File newPartition = new File(partitionPath.toAbsolutePath().toString());
-//			newPartition.mkdir();
-//			System.out.println(i);
-//		}
+		for (int i = 0; i < partitions; i++) {
+			Path partitionPath = partitionFolder.resolve("set" + (i+40+1));
+			File newPartition = new File(partitionPath.toAbsolutePath().toString());
+			newPartition.mkdir();
+			System.out.println(i);
+		}
 		
 		
 		File[] allFiles = filesDir.listFiles(new FilenameFilter() {
@@ -38,7 +38,7 @@ public class FileMover {
 		
 
 		for (int i = 0; i < partitions; i++) {
-			Path partitionPath = partitionFolder.resolve("set" + (i+1));
+			Path partitionPath = partitionFolder.resolve("set" + (i+40+1));
 			
 			for (int j = 0; j < partitionSize; j++) {
 							

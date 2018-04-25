@@ -11,8 +11,11 @@ public class MoveComputed {
 
 	public static void main(String args[]) throws IOException {
 		
-		Path computedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/Renamed");
-		Path failedExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/Refined (06.03.2018)/FailedExplanations");
+		// source
+		Path computedExplanationsDirPath = Paths.get("/Users/AdminDK/Desktop/NonTrivialTimedOut");
+		
+		// dest
+		Path failedExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/FailedExplanations");
 		
 		File computedExplanationsDir = new File(computedExplanationsDirPath.toString());
 		

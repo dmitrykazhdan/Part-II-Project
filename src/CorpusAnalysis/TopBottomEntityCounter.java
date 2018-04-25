@@ -32,8 +32,11 @@ import OWLExpressionTemplates.ExpressionGroup;
 import OWLExpressionTemplates.InterUnion;
 import OWLExpressionTemplates.OWLAxiomStr;
 import OWLExpressionTemplates.SubClassStr;
+import OWLExpressionTemplates.TemplateObjectProperty;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
+import RuleRestrictions.AbsCardinalityRestriction;
+import RuleRestrictions.CardinalitySign;
 import RuleRestrictions.RuleRestriction;
 import RuleRestrictions.RuleRestrictions;
 import RuleRestrictions.SubSetRestriction;
@@ -94,16 +97,49 @@ public class TopBottomEntityCounter {
 	private static void addRules() {
 		
 		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
-		
-		OWLAxiomStr premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Z"));
-		OWLAxiomStr conclusion = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));
-		RuleString rule43_1 = new RuleString("ext1", "ObjSom-SubCls", conclusion, premise1);
-		rules.get(1).add(rule43_1);
 
-//		OWLAxiomStr premise1 = new SubClassStr("X", "Y");
-//		OWLAxiomStr conclusion = new SubClassStr("X", "T");
-//		RuleString rule43_1 = new RuleString("ext1", "ObjSom-SubCls", conclusion, premise1);
-//		rules.get(1).add(rule43_1);
+		
+		// Rule 15 extension
+		ExpressionGroup tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("X"), new AtomicCls("T") }, "Z");
+		OWLAxiomStr premise1 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
+		OWLAxiomStr conclusion = new SubClassStr("X", "F");
+		RuleString rule15 = new RuleString("15.top", "SubCls-DisCls", conclusion, premise1);
+
+		
+		// Rule 28 extension
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_DOMAIN, new TemplateObjectProperty("Ro"), new AtomicCls("T"));				
+		RuleString rule28 = new RuleString("28.top", "ObjDom-SubCls", conclusion, premise1);
+
+		
+		// Rule 32 extension
+		premise1 = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("X"));
+		conclusion = new OWLAxiomStr(AxiomType.OBJECT_PROPERTY_RANGE, new TemplateObjectProperty("Ro"), new AtomicCls("T"));
+		RuleString rule32 = new RuleString("32.top", "ObjRng-SubCls", conclusion, premise1);
+		
+		
+		
+		// Rule 43		
+		// 43.1 extension
+		premise1 = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "Y"));
+		conclusion = new SubClassStr("X", ExistsOrForAll.createObjSomeValFrom("Ro", "T"));
+		RuleString rule43_1 = new RuleString("43.1.top", "ObjSom-SubCls", conclusion, premise1);
+
+
+		// 43.2 extension
+		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Y"));
+		RuleRestrictions restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
+		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Z"));
+		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
+
+		
+		// 43.3 extension
+		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Y"));
+		premise2 = new SubClassStr(new AtomicCls("Y"), new AtomicCls("Z"));
+		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Z"));
+		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", restrictions, conclusion, premise1, premise2);
+
+		
 
 	}
 	
