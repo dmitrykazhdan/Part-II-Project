@@ -25,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import CorpusAnalysis.TopBottomEntityCounter;
 import ProofTreeComputation.ProofTree;
 import ProofTreeComputation.ProofTreeGenerator;
 
@@ -71,6 +72,8 @@ public class GenerateTrees {
 	// been computed successfully.
 	private static void evaluateCoverage(File[] explanationFiles, Path timeoutExplDirPath, Path failedExplanationsDirPath, String outputFilePath) throws IOException, InterruptedException, ExecutionException {
 		
+		int c = 0;
+		
 		CorpusStatistics corpusStats = new CorpusStatistics();
 	
 		for (int i = 0; i < explanationFiles.length; i++) {
@@ -86,7 +89,10 @@ public class GenerateTrees {
 			// If at least one proof tree has been computed, increment the appropriate counter.
 			// Otherwise copy the failed explanation to the appropriate folder.
 			if (proofTrees != null && proofTrees.size() > 0) {
-							
+
+				c++;
+				System.out.println("Computed: " + c);
+				
 				for (ProofTree tree : proofTrees) {
 					corpusStats.incrementTotalComputedTrees();
 					corpusStats.updateComputedTreeStatistics(tree);
@@ -108,6 +114,12 @@ public class GenerateTrees {
 		InputStream fileInputStream = new FileInputStream(explanationFilePath.toString());
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 		
+		if (!TopBottomEntityCounter.extraRule(explanation.getAxioms())) {
+			corpusStats.updateFailsByRuleCoverage(explanation.getEntailment());
+			return null;
+		}
+		
+		
 		ExecutorService executor = Executors.newCachedThreadPool();
 		TreeGeneratorThread treeThread = new TreeGeneratorThread(explanation);
 		Future<List<ProofTree>> futureCall = executor.submit(treeThread);		
@@ -116,7 +128,7 @@ public class GenerateTrees {
 		boolean timeout = false;
 
 		try {
-			proofTrees = futureCall.get(120,TimeUnit.SECONDS);
+			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
 		} catch (OutOfMemoryError | TimeoutException e) {
 			timeout = true;
 			
@@ -129,11 +141,11 @@ public class GenerateTrees {
 		if (proofTrees == null || proofTrees.size() == 0) {
 			if (timeout) {
 				corpusStats.updateFailsByTimeout(explanation.getEntailment());
-				copyFile(explanationFilePath, timeoutExplDirPath.resolve(explanationFilePath.getFileName()));
+//				copyFile(explanationFilePath, timeoutExplDirPath.resolve(explanationFilePath.getFileName()));
 
 			} else {
 				corpusStats.updateFailsByRuleCoverage(explanation.getEntailment());
-				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
+//				copyFile(explanationFilePath, failedExplanationsDirPath.resolve(explanationFilePath.getFileName()));
 			}
 		}		
 		return proofTrees;

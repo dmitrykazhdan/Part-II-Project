@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.semanticweb.owlapi.model.AxiomType;
+
+import CorpusAnalysis.TopBottomEntityCounter;
 import OWLExpressionTemplates.AtomicCls;
 import OWLExpressionTemplates.CardExpGen;
 import OWLExpressionTemplates.ClsExpStr;
@@ -36,6 +38,7 @@ public class GenerateRules {
 
 		if (rules == null) {
 			generateRules();
+			TopBottomEntityCounter.addRules();
 		} 
 		return rules;
 	}

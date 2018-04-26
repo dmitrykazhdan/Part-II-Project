@@ -21,6 +21,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import InferenceRules.GenerateRules;
 import InferenceRules.RuleString;
@@ -46,7 +47,7 @@ public class TopBottomEntityCounter {
 	
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After AWS/FailedExplanations");
+		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After_AWS/NonTrivialComputedExplanations");
 		File justificationFiles = new File(justificationFolderPath.toString());
 
 		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {
@@ -68,24 +69,24 @@ public class TopBottomEntityCounter {
 			Set<OWLAxiom> justification = explanation.getAxioms();
 
 			
-			addRules();
+//			addRules();
 			boolean has = extraRule(justification);
 //			boolean has = processJustification(justification, expressions);
 //			System.out.println("eh");
 			
 			if (has) {
-				List<ProofTree> trees = ProofTreeGenerator.generateProofTrees(explanation);
-				
-				if (trees != null && trees.size() > 0) {
+//				List<ProofTree> trees = ProofTreeGenerator.generateProofTrees(explanation);
+//				
+//				if (trees != null && trees.size() > 0) {
 					cmpTed++;
 					System.out.println(cmpTed);
-				}			
+//				}			
 //				edgeEntityCount++;
 			}
 					
 			fileInputStream.close();
 		}		
-		System.out.println(edgeEntityCount);
+		System.out.println(cmpTed);
 		
 //		Collections.shuffle(expressions);
 //		for (OWLAxiom exp : expressions.subList(0, 200)) {
@@ -94,7 +95,7 @@ public class TopBottomEntityCounter {
 	}
 
 	
-	private static void addRules() {
+	public static void addRules() {
 		
 		Map<Integer, List<RuleString>> rules = GenerateRules.getRules();
 
@@ -130,13 +131,13 @@ public class TopBottomEntityCounter {
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "Y"));
 		RuleRestrictions restrictions = new RuleRestrictions(new AbsCardinalityRestriction("n", CardinalitySign.GEQ, 0));
 		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjMinCard("n", "Ro", "T"));
-		RuleString rule43_2 = new RuleString("43.2", "ObjSom-SubCls", restrictions, conclusion, premise1);
+		RuleString rule43_2 = new RuleString("43.2.top", "ObjSom-SubCls", restrictions, conclusion, premise1);
 
 		
 		// 43.3 extension
 		premise1 = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "Y"));
 		conclusion = new SubClassStr(new AtomicCls("X"), CardExpGen.createObjExactCard("n", "Ro", "T"));
-		RuleString rule43_3 = new RuleString("43.3", "ObjSom-SubCls", restrictions, conclusion, premise1);
+		RuleString rule43_3 = new RuleString("43.3.top", "ObjSom-SubCls", restrictions, conclusion, premise1);
 
 		
 	
@@ -149,7 +150,7 @@ public class TopBottomEntityCounter {
 	}
 	
 	
-	private static boolean extraRule(Set<OWLAxiom> justification) {
+	public static boolean extraRule(Set<OWLAxiom> justification) {
 		
 		for (OWLAxiom axiom : justification) {
 			
@@ -186,6 +187,14 @@ public class TopBottomEntityCounter {
 		ExpressionGroup tmpGroup1;
 		OWLAxiomStr premise1;
 		RuleString r1;
+		
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLDataFactory factory = manager.getOWLDataFactory();
+        	
+		if (axiom.getClassesInSignature().contains(factory.getOWLThing())) {
+			return true;
+		}
 		
 		tmpGroup1 = new ExpressionGroup("C1", new ClsExpStr[] { new AtomicCls("T")}, "Z" );
 		premise1 = new OWLAxiomStr(AxiomType.DISJOINT_CLASSES, tmpGroup1);
