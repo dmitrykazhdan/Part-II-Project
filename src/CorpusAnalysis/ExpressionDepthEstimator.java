@@ -35,7 +35,7 @@ public class ExpressionDepthEstimator {
 
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After AWS/FailedExplanations");
+		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After_AWS/FailedExplanations");
 		File justificationFiles = new File(justificationFolderPath.toString());
 
 		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {

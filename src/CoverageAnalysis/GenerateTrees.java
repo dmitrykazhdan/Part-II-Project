@@ -72,7 +72,7 @@ public class GenerateTrees {
 	// been computed successfully.
 	private static void evaluateCoverage(File[] explanationFiles, Path timeoutExplDirPath, Path failedExplanationsDirPath, String outputFilePath) throws IOException, InterruptedException, ExecutionException {
 		
-		int c = 0;
+//		int c = 0;
 		
 		CorpusStatistics corpusStats = new CorpusStatistics();
 	
@@ -90,8 +90,8 @@ public class GenerateTrees {
 			// Otherwise copy the failed explanation to the appropriate folder.
 			if (proofTrees != null && proofTrees.size() > 0) {
 
-				c++;
-				System.out.println("Computed: " + c);
+//				c++;
+//				System.out.println("Computed: " + c);
 				
 				for (ProofTree tree : proofTrees) {
 					corpusStats.incrementTotalComputedTrees();
@@ -114,10 +114,10 @@ public class GenerateTrees {
 		InputStream fileInputStream = new FileInputStream(explanationFilePath.toString());
 		Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 		
-		if (!TopBottomEntityCounter.extraRule(explanation.getAxioms())) {
-			corpusStats.updateFailsByRuleCoverage(explanation.getEntailment());
-			return null;
-		}
+//		if (!TopBottomEntityCounter.extraRule(explanation.getAxioms())) {
+//			corpusStats.updateFailsByRuleCoverage(explanation.getEntailment());
+//			return null;
+//		}
 		
 		
 		ExecutorService executor = Executors.newCachedThreadPool();
@@ -128,7 +128,7 @@ public class GenerateTrees {
 		boolean timeout = false;
 
 		try {
-			proofTrees = futureCall.get(10,TimeUnit.SECONDS);
+			proofTrees = futureCall.get(45,TimeUnit.SECONDS);
 		} catch (OutOfMemoryError | TimeoutException e) {
 			timeout = true;
 			
