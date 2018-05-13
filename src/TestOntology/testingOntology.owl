@@ -96,6 +96,18 @@
     
 
 
+    <!-- urn:absolute:testingOntology#ClassU -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassU"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassV -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassV"/>
+    
+
+
     <!-- urn:absolute:testingOntology#ClassX -->
 
     <owl:Class rdf:about="urn:absolute:testingOntology#ClassX"/>
@@ -153,6 +165,18 @@
     <!-- urn:absolute:testingOntology#ClassZ2 -->
 
     <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ2"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassZ3 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ3"/>
+    
+
+
+    <!-- urn:absolute:testingOntology#ClassZ4 -->
+
+    <owl:Class rdf:about="urn:absolute:testingOntology#ClassZ4"/>
     
 
 
