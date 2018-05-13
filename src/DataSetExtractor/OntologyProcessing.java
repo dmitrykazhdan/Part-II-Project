@@ -93,9 +93,9 @@ public class OntologyProcessing {
 			Set<Explanation<OWLAxiom>> explanationSet = new HashSet<Explanation<OWLAxiom>>();
 			Future<Set<Explanation<OWLAxiom>>> explanationGenThreadCall = executor.submit(new ExplanationGeneratorThread(entailment, explanationGen));
 			
-			// Set a time limit of 10 minutes to the computation of all justifications.
+			// Set a time limit of 30 seconds for the computation of all justifications.
 			try {
-				explanationSet = explanationGenThreadCall.get(15, TimeUnit.SECONDS);
+				explanationSet = explanationGenThreadCall.get(30, TimeUnit.SECONDS);
 			} catch (TimeoutException e) {
 				System.out.println("Timeout on computing all justifications. Ontology: " + ontologyFile.getName() + " entailment: " + entailment.toString());
 			} finally {
@@ -177,6 +177,7 @@ public class OntologyProcessing {
 	/* Currently it is assumed that trivial subsumptions are:
 	1) X <= T
 	2) F <= X
+	3) X <= X
 	*/
 	private static boolean IsNonTrivialSubsumption(OWLAxiom subsumption) {
 
