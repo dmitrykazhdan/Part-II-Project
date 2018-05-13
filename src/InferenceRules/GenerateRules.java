@@ -38,7 +38,6 @@ public class GenerateRules {
 
 		if (rules == null) {
 			generateRules();
-//			TopBottomEntityCounter.addRules();
 		} 
 		return rules;
 	}

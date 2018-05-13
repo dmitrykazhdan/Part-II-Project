@@ -20,7 +20,6 @@ public class OWLAxiomStr {
 	
 	public OWLAxiomStr (AxiomType constructor, ExpressionGroup expGroup) {		
 		this.constructor = constructor;
-		this.children = children;
 		this.expGroup = expGroup;
 	}
 	
