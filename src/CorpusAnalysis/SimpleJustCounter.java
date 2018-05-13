@@ -26,9 +26,22 @@ public class SimpleJustCounter {
 
 	
 	public static void main(String args[]) {
+				
+		String explanationDirPathStr = "";
+		String nonTrivialExplanationsDirStr = "";
+
+		if (args.length == 1) {
+			explanationDirPathStr = args[0];
+			nonTrivialExplanationsDirStr = args[1];
+		} else {		
+			System.out.println("Input the following arguments: ");
+			System.out.println("1) Path to folder containing (entailment, justification) data.");
+			System.out.println("2) Path to where the non-trivial data should be moved to.");
+			return;
+		}
 		
-		Path explanationDirPath = Paths.get("/Users/AdminDK/Desktop/tmp/Original (07.03.2018)/FailedExplanations");
-//		Path nonTrivialExplanationsDirPath =  Paths.get("/Users/AdminDK/Desktop/NonTrivialComputedExplanations");
+		Path explanationDirPath = Paths.get(explanationDirPathStr);
+		Path nonTrivialExplanationsDirPath =  Paths.get(nonTrivialExplanationsDirStr);
 		File explanationsDir = new File(explanationDirPath.toString());
 		
 		File[] explanations = explanationsDir.listFiles(new FilenameFilter() {
@@ -38,7 +51,6 @@ public class SimpleJustCounter {
 		    }
 		});	
 		
-		int nonTrivialCounter = 0;
 		
 		for (File explanationFile : explanations) {
 			InputStream fileInputStream;
@@ -50,12 +62,8 @@ public class SimpleJustCounter {
 				Set<OWLAxiom> justification = explanation.getAxioms();
 				OWLAxiom entailment = explanation.getEntailment();
 				
-//				if (countLogicalAxioms(justification) < 5) {
-
-				if (isRule39Only(justification, entailment)) {
-					nonTrivialCounter++;
-					System.out.println("counter: " + nonTrivialCounter);
-				//	Files.move(explanationFile.toPath(), nonTrivialExplanationsDirPath.resolve(explanationFilePath.getFileName()), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+				if (!isTransitiveCase(justification, entailment)) {
+					Files.move(explanationFile.toPath(), nonTrivialExplanationsDirPath.resolve(explanationFilePath.getFileName()), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 				}
 				fileInputStream.close();
 				
@@ -78,7 +86,7 @@ public class SimpleJustCounter {
 	}
 	
 	
-	private static boolean isRule39Only(Set<OWLAxiom> justification, OWLAxiom entailment) {
+	private static boolean isTransitiveCase(Set<OWLAxiom> justification, OWLAxiom entailment) {
 		
 		Set<OWLAxiom> logicalSet = getLogicalAxioms(justification);
 		
@@ -88,7 +96,6 @@ public class SimpleJustCounter {
 		
 		OWLSubClassOfAxiom subClsEntailment = (OWLSubClassOfAxiom) entailment;
 		OWLClassExpression start = subClsEntailment.getSubClass();
-		OWLClassExpression end = subClsEntailment.getSuperClass();
 		
 		List<OWLClassExpression> chain = new ArrayList<OWLClassExpression>();
 		chain.add(start);
@@ -131,30 +138,5 @@ public class SimpleJustCounter {
 			}			
 		}
 		return logicalSet;
-	}
-	
-	
-
-	
-	
-	private static void copyFile(Path source, Path dest) throws IOException {
-		
-	    InputStream is = null;
-	    OutputStream os = null;
-	    
-	    try {
-	        is = new FileInputStream(source.toAbsolutePath().toString());
-	        os = new FileOutputStream(dest.toAbsolutePath().toString());
-	        byte[] buffer = new byte[1024];
-	        int length;
-	        
-	        while ((length = is.read(buffer)) > 0) {
-	            os.write(buffer, 0, length);
-	        }
-	        
-	    } finally {
-	        is.close();
-	        os.close();
-	    }
-	}
+	}	
 }
