@@ -35,10 +35,19 @@ public class ExpressionDepthEstimator {
 
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After_AWS/FailedExplanations");
-		File justificationFiles = new File(justificationFolderPath.toString());
+		String explanationDirPathStr = "";
 
-		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {
+		if (args.length == 1) {
+			explanationDirPathStr = args[0];
+		} else {		
+			System.out.println("Input the data path");
+			return;
+		}
+		
+		Path explanationFolderPath = Paths.get(explanationDirPathStr);
+		File explanationFiles = new File(explanationFolderPath.toString());
+
+		File[] allFiles = explanationFiles.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".xml");
@@ -47,7 +56,6 @@ public class ExpressionDepthEstimator {
 
 		Map<Integer, Integer> depthCounts = new HashMap<Integer, Integer>();
 
-		int counter = 0; // DELETE 
 		for (File explanationFile : allFiles) {
 
 			InputStream fileInputStream;
@@ -61,10 +69,6 @@ public class ExpressionDepthEstimator {
 				continue;
 			}
 			
-			// DELETE
-			counter++;
-			System.out.println(counter);
-
 			if (!depthCounts.keySet().contains(maxDepth)) {
 				depthCounts.put(maxDepth, 0);
 			}

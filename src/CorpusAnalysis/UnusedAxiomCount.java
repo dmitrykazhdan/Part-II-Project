@@ -20,10 +20,21 @@ public class UnusedAxiomCount {
 
 	public static void main(String args[]) throws IOException {
 
-		Path justificationFolderPath = Paths.get("/Users/AdminDK/Desktop/After AWS/FailedExplanations");
-		File justificationFiles = new File(justificationFolderPath.toString());
+		String explanationDirPathStr = "";
 
-		File[] allFiles = justificationFiles.listFiles(new FilenameFilter() {
+		if (args.length == 1) {
+			explanationDirPathStr = args[0];
+		} else {		
+			System.out.println("Input the following arguments: ");
+			System.out.println("1) Path to folder containing (entailment, justification) data.");
+			return;
+		}
+
+		
+		Path explanationDirPat = Paths.get(explanationDirPathStr);
+		File explanationFiles = new File(explanationDirPat.toString());
+
+		File[] allFiles = explanationFiles.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".xml");
@@ -38,7 +49,7 @@ public class UnusedAxiomCount {
 			fileInputStream = new FileInputStream(explanationFile.getAbsolutePath());
 			Explanation<OWLAxiom> explanation = Explanation.load(fileInputStream);
 			Set<OWLAxiom> justification = explanation.getAxioms();			
-			processJustification(justification, typeCounts);
+			countJustificationAxioms(justification, typeCounts);
 			fileInputStream.close();
 		}
 		
@@ -48,7 +59,7 @@ public class UnusedAxiomCount {
 	}
 	
 	
-	private static void processJustification(Set<OWLAxiom> justification, Map<AxiomType, Integer> typeCounts) {
+	private static void countJustificationAxioms(Set<OWLAxiom> justification, Map<AxiomType, Integer> typeCounts) {
 		
 		for (OWLAxiom axiom : justification) {
 			if (typeCounts.keySet().contains(axiom.getAxiomType())) {
