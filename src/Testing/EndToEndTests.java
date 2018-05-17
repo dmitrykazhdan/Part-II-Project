@@ -104,7 +104,6 @@ public class EndToEndTests {
 		Explanation<OWLAxiom> explanation = new Explanation<OWLAxiom>(entailment, justification);
 		List<ProofTree> proofTrees = ProofTreeGenerator.generateProofTrees(explanation);		
 		
-		removeDuplicateTrees(proofTrees);
 		assertTrue(proofTrees.size() == 1);
 		
 
@@ -148,7 +147,6 @@ public class EndToEndTests {
 		Explanation<OWLAxiom> explanation = new Explanation<OWLAxiom>(entailment, justification);
 		List<ProofTree> proofTrees = ProofTreeGenerator.generateProofTrees(explanation);		
 		
-		removeDuplicateTrees(proofTrees);
 		assertTrue(proofTrees.size() == 1);
 		
 
@@ -206,7 +204,6 @@ public class EndToEndTests {
 		Explanation<OWLAxiom> explanation = new Explanation<OWLAxiom>(entailment, justification);
 		List<ProofTree> proofTrees = ProofTreeGenerator.generateProofTrees(explanation);		
 		
-		removeDuplicateTrees(proofTrees);
 		assertTrue(proofTrees.size() == 1);
 		
 
@@ -239,19 +236,7 @@ public class EndToEndTests {
 	
 	
 	
-	public static void removeDuplicateTrees(List<ProofTree> proofTrees) {
-		
-		Set<ProofTree> proofTreeSet = new HashSet<ProofTree>();
-		proofTreeSet.addAll(proofTrees);
-		proofTrees.clear();
-		
-		for (ProofTree proofTree : proofTreeSet) {
-			if (!proofTrees.contains(proofTree)) {
-				proofTrees.add(proofTree);
-			}
-		}
-		
-	}
+
 	
 	
 	
