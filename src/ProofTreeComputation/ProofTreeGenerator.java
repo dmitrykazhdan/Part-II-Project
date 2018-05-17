@@ -56,8 +56,7 @@ public class ProofTreeGenerator {
 	
 	 */
 	
-	
-	
+		
 	public static List<ProofTree> generateProofTrees(Explanation<OWLAxiom> explanation) {	
 		return generateProofTrees(explanation.getEntailment(), explanation.getAxioms());
 	}
@@ -68,10 +67,26 @@ public class ProofTreeGenerator {
 		List<ProofTree> proofTreeList = computeProofTrees(justification, entailment);
 				
 		if ((proofTreeList != null) && proofTreeList.size() > 0) {
+			
+			removeDuplicateTrees(proofTreeList);
 			return proofTreeList;
 		} else {
 			return null;
 		}
+	}
+	
+	// Remove duplicates from trees.
+	private static void removeDuplicateTrees(List<ProofTree> proofTrees) {
+		
+		Set<ProofTree> proofTreeSet = new HashSet<ProofTree>();
+		proofTreeSet.addAll(proofTrees);
+		proofTrees.clear();
+		
+		for (ProofTree proofTree : proofTreeSet) {
+			if (!proofTrees.contains(proofTree)) {
+				proofTrees.add(proofTree);
+			}
+		}		
 	}
 	
 	
